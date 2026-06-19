@@ -172,7 +172,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     
     @objc func recognizeDebugGesture(recognizer: UITapGestureRecognizer) {
         if self.selectedIndex == 2 {
-            self.showDetailViewController(NavigationController(rootViewController: DebugController()), sender: self)
+            self.presentSwiftUI(DebugView())
         }
     }
     

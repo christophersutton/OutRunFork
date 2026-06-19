@@ -180,6 +180,7 @@
 		80E47226C8D5E9A9FBAF96F6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F4881D3C0ABDB9F29D9F1 /* SettingsView.swift */; };
 		8507A243F0F6AFD08A25BCDD /* UnitSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009326DFA9A337DBAC258D99 /* UnitSelectionView.swift */; };
 		8649F58A654C90B28807051B /* ContributorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A3B5D27FAE44448206DBB0 /* ContributorsView.swift */; };
+		8F574C77E5D8D115FD727CEC /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7562362E36F14105352924 /* DebugView.swift */; };
 		9955E7283E07143CDCEEF2D6 /* WorkoutDetailSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC69B536B9AE143386811D1F /* WorkoutDetailSnapshot.swift */; };
 		A2581B8208D2C6F85F24E4A1 /* WorkoutStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61294E219B86FDA8C97C1283 /* WorkoutStore.swift */; };
 		AF31E1B29D53919AB7862708 /* WorkoutDetailCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31ECD42757BAD59BC2162D1 /* WorkoutDetailCharts.swift */; };
@@ -420,6 +421,7 @@
 		61294E219B86FDA8C97C1283 /* WorkoutStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutStore.swift; path = OutRun/Models/Data/Store/WorkoutStore.swift; sourceTree = "<group>"; };
 		724F1B8CE3D9A6A7B1E7FF13 /* Color+Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Color+Theme.swift"; path = "OutRun/Extensions/SwiftUI/Color+Theme.swift"; sourceTree = "<group>"; };
 		775F282D0B7B495122A7D308 /* SettingsState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsState.swift; path = OutRun/Views/SwiftUI/Settings/SettingsState.swift; sourceTree = "<group>"; };
+		7D7562362E36F14105352924 /* DebugView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DebugView.swift; path = OutRun/Views/SwiftUI/Debug/DebugView.swift; sourceTree = "<group>"; };
 		8C0699EE439FF3DC5E16B8E0 /* Pods-OutRun.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OutRun.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OutRun/Pods-OutRun.debug.xcconfig"; sourceTree = "<group>"; };
 		980407DB8189D982A61A73F9 /* Pods-UnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		98CD3BFE1AA6D6576875D12C /* OnboardingStepViews.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OnboardingStepViews.swift; path = OutRun/Views/SwiftUI/Onboarding/OnboardingStepViews.swift; sourceTree = "<group>"; };
@@ -1067,6 +1069,14 @@
 			path = WorkoutBuilder;
 			sourceTree = "<group>";
 		};
+		3062863986359B32C3D7EC6A /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				7D7562362E36F14105352924 /* DebugView.swift */,
+			);
+			name = Debug;
+			sourceTree = SOURCE_ROOT;
+		};
 		3360672BA5650F8E28F2DBC9 /* WorkoutDetail */ = {
 			isa = PBXGroup;
 			children = (
@@ -1097,6 +1107,7 @@
 				581A3D11813D3235869DF5BE /* EditWorkout */,
 				14AD1E8E7FFFC60F3CD1EF3D /* Onboarding */,
 				ADBDC1C4967B27C864838A36 /* Timeline */,
+				3062863986359B32C3D7EC6A /* Debug */,
 			);
 			name = SwiftUI;
 			sourceTree = SOURCE_ROOT;
@@ -1527,6 +1538,7 @@
 				C5B9BCC72BAAA195CC220C0D /* WorkoutTimelineView.swift in Sources */,
 				02D986E9FE1A788D2DF68AED /* WorkoutTimelineRow.swift in Sources */,
 				C2C9B16E5FE10181432C4469 /* WorkoutTimelineSortSheet.swift in Sources */,
+				8F574C77E5D8D115FD727CEC /* DebugView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
