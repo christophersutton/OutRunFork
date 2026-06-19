@@ -42,15 +42,28 @@ script takes the same path). Build-green after each batch.
     screen / timeline sort sheet — those are NOT the type; leave them. Confirm `WorkoutStatFormat`/`StatTileData`
     (used live by `WorkoutDetailView`) aren't orphaned before deleting.
 
-**Phase B — BLOCKED behind one decision: port or drop `DebugController`.** The entire legacy Setting DSL is kept
-alive by a single thread: the 10-tap debug gesture in `TabBarController` opens `DebugController` (a
-`SettingsViewController` subclass that still builds a `SettingsModel`). The live Settings tab is already SwiftUI
-(`SettingsView`/`SettingsState`); `SettingsModel.main`/`.contributors` have **zero** callers. Once Debug is ported to
-SwiftUI or dropped, delete as one unit: `DebugController.swift`, `SettingsViewController.swift`, `SettingsModel.swift`,
-`SettingSection.swift`, all `OutRun/Models/Settings/Setting Models/*` subtypes, `Protocols/Setting.swift` +
-`Protocols/KeyboardAvoidanceSetting.swift`, and the `MeasurementUserPreference.setting(forTitle:)` method (its only
-caller is the dead `SettingsModel.main` — the type itself stays, it's live via SwiftUI). Then prune orphaned
-`Settings.UnitPick.*` LS keys.
+**Phase B — BLOCKED behind one decision: port or drop `DebugController`.** The entire legacy "Setting DSL"
+(~2,080 lines: `SettingsModel`/`SettingSection`/`SettingsViewController` + 11 `Setting*` cell subtypes + 2
+protocols — a homegrown pre-SwiftUI way to declare UIKit settings tables as data) is kept alive by a **single
+thread**: the 10-tap debug gesture in `TabBarController` opens `DebugController` (a `SettingsViewController`
+subclass that still builds a `SettingsModel`). The live Settings tab is already SwiftUI (`SettingsView`/
+`SettingsState`); `SettingsModel.main`/`.contributors` have **zero** callers. `DebugController` is the last user.
+
+> **Recommendation: PORT `DebugController` to SwiftUI (don't drop it).** It's a hidden developer screen (reached
+> by tapping the tab bar 10× while on Settings) showing read-only diagnostics — database disk size + entity row
+> counts (`DataManager.diskSize`, `DataManager.fetchCount(of:)` for `Workout`/`WorkoutRouteDataSample`/
+> `WorkoutEvent`/`WorkoutHeartRateDataSample`/`Event`), the map-image cache size + a **"Clear Cache"** button
+> (`CustomImageCache.mapImageCache.diskSize` / `.clear { … }`), and `Config` flags (`isDebug`, `isRunOnSimulator`,
+> `hasMobileProvision`, `hasSanboxReceipt`). The whole thing is ~60 lines of SwiftUI `List` rows + one button — a
+> ~1-hour port that **keeps a useful support tool AND unblocks deleting ~2,080 lines of legacy UIKit** (vs. just
+> dropping the tool). Access in the SwiftUI shell: a hidden `.onTapGesture(count: 10)` (e.g. on the Settings
+> header) presenting the debug view as a `.sheet`. (Numbers it reads can be fetched in an `.task`.)
+
+Once Debug is handled, delete as one unit: `DebugController.swift`, `SettingsViewController.swift`,
+`SettingsModel.swift`, `SettingSection.swift`, all `OutRun/Models/Settings/Setting Models/*` subtypes,
+`Protocols/Setting.swift` + `Protocols/KeyboardAvoidanceSetting.swift`, and the
+`MeasurementUserPreference.setting(forTitle:)` method (its only caller is the dead `SettingsModel.main` — the type
+itself stays, it's live via SwiftUI). Then prune orphaned `Settings.UnitPick.*` LS keys.
 
 **Do NOT delete:** `NavigationController` (still used by the Debug push in `TabBarController`), `TabBarController`,
 `DebugController` (live via the gesture), `HKImportListController` (the SwiftUI Settings "Import from Apple Health"
@@ -114,7 +127,8 @@ and a 10-tap debug gesture. Deployment is iOS 17 / Swift 5, iPhone-portrait only
   not regress** (may need an explicit `SceneDelegate` for CoreLocation background delivery during recording).
 - Vanilla `TabView` + overlaid button vs. a fully custom tab bar (determines whether `WorkoutTimelineView`/`SettingsView`
   keep their own `NavigationStack`s).
-- `DebugController`: port to SwiftUI or drop — this same decision unblocks cleanup Phase B.
+- `DebugController`: **recommended to port to SwiftUI** (it's ~60 lines — see cleanup Phase B for the rationale and
+  the row-by-row contents); this same decision unblocks deleting the ~2,080-line Setting DSL.
 - iPhone-portrait only — no `NavigationSplitView`/iPad work; `showDetailViewController`'s split-view-awareness is moot
   (it's always a full-screen modal on this target).
 - **Verify on sim:** cold launch (set-up & not-set-up), onboarding→main transition, live recording start/stop, the
