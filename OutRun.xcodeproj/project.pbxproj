@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		12C0BFFB7D880F9BF456CE53 /* WorkoutDetailSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92D1CAE9256DFED51A31E5F /* WorkoutDetailSupport.swift */; };
 		133636F0FFD1A9453D19D576 /* UIViewController+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9634604C51089F827F17B28 /* UIViewController+SwiftUI.swift */; };
 		22003DFC23A9655100EBCD05 /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003DFB23A9655100EBCD05 /* SetupViewController.swift */; };
 		22003DFE23A9779D00EBCD05 /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003DFD23A9779D00EBCD05 /* SetupView.swift */; };
@@ -211,6 +212,7 @@
 		B30B5B084939E4EA166338D8 /* WorkoutSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C5A10DC3F182FC4F6F99301 /* WorkoutSnapshot.swift */; };
 		EAEDF4F5F312CC7AC0778F6C /* ChangelogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8812305808037BFA1F93A0 /* ChangelogView.swift */; };
 		EB19CEFDBAA38F4005099E50 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724F1B8CE3D9A6A7B1E7FF13 /* Color+Theme.swift */; };
+		EFAD12F03BDC4780B39EB91B /* WorkoutDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2671425E51D73B9F85E13A95 /* WorkoutDetailView.swift */; };
 		FF7A2B894B89699365C21400 /* PolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527830B391FBD6E449D2B281 /* PolicyView.swift */; };
 /* End PBXBuildFile section */
 
@@ -458,6 +460,7 @@
 		22FEA0AE24CDD7B50007CA9C /* DiskStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskStorage.swift; sourceTree = "<group>"; };
 		22FEA0B024CDDFF80007CA9C /* CustomByteFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomByteFormatting.swift; sourceTree = "<group>"; };
 		22FEA0B224CDE31E0007CA9C /* DebugController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugController.swift; sourceTree = "<group>"; };
+		2671425E51D73B9F85E13A95 /* WorkoutDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutDetailView.swift; path = OutRun/Views/SwiftUI/WorkoutDetail/WorkoutDetailView.swift; sourceTree = "<group>"; };
 		26A40532C8F7D0A69A881840 /* StandardWorkoutTypeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StandardWorkoutTypeView.swift; path = OutRun/Views/SwiftUI/Settings/StandardWorkoutTypeView.swift; sourceTree = "<group>"; };
 		3F35FB551FC0CA6FB8E06726 /* RouteMapView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RouteMapView.swift; path = OutRun/Views/SwiftUI/RouteMapView.swift; sourceTree = "<group>"; };
 		527830B391FBD6E449D2B281 /* PolicyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PolicyView.swift; path = OutRun/Views/SwiftUI/PolicyView.swift; sourceTree = "<group>"; };
@@ -468,6 +471,7 @@
 		8C0699EE439FF3DC5E16B8E0 /* Pods-OutRun.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OutRun.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OutRun/Pods-OutRun.debug.xcconfig"; sourceTree = "<group>"; };
 		980407DB8189D982A61A73F9 /* Pods-UnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		A47496944ED1243905C4C74C /* GPSAccuracyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GPSAccuracyView.swift; path = OutRun/Views/SwiftUI/Settings/GPSAccuracyView.swift; sourceTree = "<group>"; };
+		A92D1CAE9256DFED51A31E5F /* WorkoutDetailSupport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutDetailSupport.swift; path = OutRun/Views/SwiftUI/WorkoutDetail/WorkoutDetailSupport.swift; sourceTree = "<group>"; };
 		C1B583B563EC4764AEDC9E50 /* Pods-UnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C1C8D965F1351F85D4E4F35D /* Pods-OutRun.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OutRun.release.xcconfig"; path = "Pods/Target Support Files/Pods-OutRun/Pods-OutRun.release.xcconfig"; sourceTree = "<group>"; };
 		C56A574B3F5BFCBF50DB5368 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1128,6 +1132,15 @@
 			path = WorkoutBuilder;
 			sourceTree = "<group>";
 		};
+		3360672BA5650F8E28F2DBC9 /* WorkoutDetail */ = {
+			isa = PBXGroup;
+			children = (
+				A92D1CAE9256DFED51A31E5F /* WorkoutDetailSupport.swift */,
+				2671425E51D73B9F85E13A95 /* WorkoutDetailView.swift */,
+			);
+			name = WorkoutDetail;
+			sourceTree = SOURCE_ROOT;
+		};
 		337EC3DE60C4DD8473F3541D /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
@@ -1144,6 +1157,7 @@
 				0A8812305808037BFA1F93A0 /* ChangelogView.swift */,
 				3F35FB551FC0CA6FB8E06726 /* RouteMapView.swift */,
 				6E5F3DAB255D7CE5B865E6EF /* Settings */,
+				3360672BA5650F8E28F2DBC9 /* WorkoutDetail */,
 			);
 			name = SwiftUI;
 			sourceTree = SOURCE_ROOT;
@@ -1575,6 +1589,8 @@
 				65B9D86DF8FD6F867AEDC3EC /* GPSAccuracyView.swift in Sources */,
 				8649F58A654C90B28807051B /* ContributorsView.swift in Sources */,
 				9955E7283E07143CDCEEF2D6 /* WorkoutDetailSnapshot.swift in Sources */,
+				12C0BFFB7D880F9BF456CE53 /* WorkoutDetailSupport.swift in Sources */,
+				EFAD12F03BDC4780B39EB91B /* WorkoutDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,6 +19,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class EditWorkoutController: SettingsViewController {
     
@@ -265,10 +266,9 @@ class EditWorkoutController: SettingsViewController {
     }
     
     func showWorkoutController(workout: Workout) {
-        if let mainController = TabBarController.lastCurrent {
-            let workoutController = WorkoutViewController()
-            workoutController.workout = workout
-            mainController.showDetailViewController(workoutController, sender: self)
+        if let mainController = TabBarController.lastCurrent, let id = workout.uuid {
+            let host = UIHostingController(rootView: NavigationStack { WorkoutDetailView(workoutID: id) })
+            mainController.showDetailViewController(host, sender: self)
         }
     }
     

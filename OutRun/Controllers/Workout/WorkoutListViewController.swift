@@ -19,6 +19,7 @@
 //
 
 import UIKit
+import SwiftUI
 import CoreData
 import CoreStore
 
@@ -110,12 +111,11 @@ class WorkoutListViewController: UITableViewController, ListSectionObserver, Tab
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let workout = DataManager.workoutMonitor[indexPath.section, indexPath.row]
-        
-        let controller = WorkoutViewController()
-        controller.workout = workout
-        
-        self.showDetailViewController(controller, sender: self)
-        
+        guard let id = workout.uuid else { return }
+
+        let host = UIHostingController(rootView: NavigationStack { WorkoutDetailView(workoutID: id) })
+        self.showDetailViewController(host, sender: self)
+
     }
     
     // MARK: ListObserver

@@ -43,6 +43,7 @@
 "Try Again" = "Try Again";
 "Turn Off" = "Turn Off";
 "Edit" = "Edit";
+"Share" = "Share";
 "Discard" = "Discard";
 "Close" = "Close";
 "Start" = "Start";
@@ -128,6 +129,9 @@
 "WorkoutStats.BurnedEnergy" = "Burned Energy";
 "WorkoutStats.TotalEnergy" = "Total Energy";
 "WorkoutStats.Route" = "Route";
+"WorkoutStats.HeartRate" = "Heart Rate";
+"WorkoutStats.AverageHeartRate" = "Avg. Heart Rate";
+"WorkoutStats.HeartRateOverTime" = "Heart Rate Over Time";
 "WorkoutDeletion.Title" = "Delete Workout?";
 "WorkoutDeletion.Message" = "Do you really want to delete the workout, you cannot restore it once deleted?";
 "WorkoutDeletion.AppleHealth.Title" = "Delete in Apple Health?";
