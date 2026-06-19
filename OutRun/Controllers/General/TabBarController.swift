@@ -133,9 +133,16 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
                     controller.initialWorkoutType = type
                     self.showDetailViewController(controller, sender: self)
                 },
-                manualAction: {
-                    let controller = EditWorkoutController()
-                    self.showDetailViewController(NavigationController(rootViewController: controller), sender: self)
+                manualAction: { [weak self] in
+                    guard let self = self else { return }
+                    // Manually add a workout via the SwiftUI create form; on save, show its detail screen.
+                    self.presentSwiftUI(
+                        EditWorkoutForm(mode: .create) { [weak self] workoutID in
+                            guard let self = self else { return }
+                            let host = UIHostingController(rootView: NavigationStack { WorkoutDetailView(workoutID: workoutID) })
+                            self.showDetailViewController(host, sender: self)
+                        }
+                    )
                 }
             )
             alert.present(on: self)

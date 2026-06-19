@@ -27,6 +27,7 @@ struct WorkoutDetailView: View {
     @State private var loadFailed = false
     @State private var reloadToken = 0
 
+    @State private var showEditSheet = false
     @State private var showDeleteConfirm = false
     @State private var showHealthDeletePrompt = false
 
@@ -65,6 +66,10 @@ struct WorkoutDetailView: View {
                 Text(LS["WorkoutDeletion.AppleHealth.Message"])
             }
             .task(id: reloadToken) { await load() }
+            .sheet(isPresented: $showEditSheet) {
+                // Editing the *existing* workout; refresh this screen's snapshot in place on save.
+                EditWorkoutForm(mode: .edit(workoutID)) { _ in reloadToken += 1 }
+            }
     }
 
     // MARK: - Content
@@ -278,7 +283,7 @@ struct WorkoutDetailView: View {
     private var actionsMenu: some View {
         Menu {
             Button { share() } label: { Label(LS["Share"], systemImage: "square.and.arrow.up") }
-            Button { edit() } label: { Label(LS["Edit"], systemImage: "pencil") }
+            Button { showEditSheet = true } label: { Label(LS["Edit"], systemImage: "pencil") }
             if let snapshot {
                 let inHealth = snapshot.healthKitUUID != nil
                 Button { toggleAppleHealth() } label: {
@@ -324,14 +329,6 @@ struct WorkoutDetailView: View {
     private func share() {
         guard let workout = liveWorkout(), let presenter = topMostViewController() else { return }
         ExportManager.displayShareAlert(for: .someWorkouts([workout]), on: presenter)
-    }
-
-    private func edit() {
-        guard let workout = liveWorkout(), let presenter = topMostViewController() else { return }
-        let editController = EditWorkoutController()
-        editController.workout = workout
-        editController.controller = presenter
-        presenter.present(NavigationController(rootViewController: editController), animated: true)
     }
 
     private func openFullScreenMap() {
