@@ -146,8 +146,6 @@
 "Settings.StandardWorkoutType.Message" = "Kumpi harjoitustyyppi valitset, on standardi uuden harjoituksen tallentamiseksi. Voit silti valita toisen tyypin painamalla pitkään plus-painiketta tai painamalla tallennusnäytön tyyppi-etikettiä";
 "Settings.StandardWorkoutType" = "Vakiotyyppi";
 "Settings.RecordingPreferences" = "Tallennusasetukset";
-"Settings.UnitPick.Message" = "Valittua yksikköä käytetään tietojen näyttämiseen";
-"Settings.UnitPick.Headline" = "Valitse Yksikkö";
 "Settings.WeightUnit" = "Painoyksikkö";
 "Settings.EnergyUnit" = "Energiayksikkö";
 "Settings.SpeedUnit" = "Nopeusyksikkö";

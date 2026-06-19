@@ -227,8 +227,6 @@
 "Settings.MapVisibility" = "Zobrazit mapu";
 "Settings.StandardWorkoutType" = "Standardní typ";
 "Settings.RecordingPreferences" = "Předvolby nahrávání";
-"Settings.UnitPick.Message" = "Vybraná jednotka bude sloužit k zobrazení dat";
-"Settings.UnitPick.Headline" = "Vyberte jednotku";
 "Settings.WeightUnit" = "Jednotka hmotnosti";
 "Settings.EnergyUnit" = "Jednotka energie";
 "Settings.SpeedUnit" = "Jednotka rychlosti";

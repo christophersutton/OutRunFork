@@ -106,8 +106,6 @@
 "Settings.StandardWorkoutType.Message" = "Qualquer exercício que você escolher será o padrão para registrar um novo exercício. Você ainda pode selecionar um tipo diferente ao pressionar e segurar o botão de mais ou pressionando o rótulo de tipo na tela de registro";
 "Settings.StandardWorkoutType" = "Tipo padrão";
 "Settings.RecordingPreferences" = "Registrando preferências";
-"Settings.UnitPick.Message" = "A unidade escolhida será usada para exibir os dados";
-"Settings.UnitPick.Headline" = "Escolha a unidade";
 "Settings.WeightUnit" = "Unidade de peso";
 "Settings.EnergyUnit" = "Unidade de energia";
 "Settings.SpeedUnit" = "Unidade de velocidade";

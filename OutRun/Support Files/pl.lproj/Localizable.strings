@@ -169,8 +169,6 @@
 "Settings.SpeedUnit" = "Jednostka Prędkości";
 "Settings.EnergyUnit" = "Jednostka Energetyczna";
 "Settings.WeightUnit" = "Jednostka Wagi";
-"Settings.UnitPick.Headline" = "Wybierz Jednostkę";
-"Settings.UnitPick.Message" = "Wybrana jednostka zostanie użyta do wyświetlenia danych";
 "Settings.RecordingPreferences" = "Preferencje Nagrywania";
 "Settings.StandardWorkoutType" = "Typ Standardowy";
 "Settings.StandardWorkoutType.Message" = "Wybrany typ treningu będzie standardem nagrywania nowego treningu. Możesz nadal wybrać inny typ, długo naciskając przycisk plus lub naciskając Etykietę typu na ekranie nagrywania";

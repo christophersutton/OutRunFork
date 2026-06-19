@@ -182,8 +182,6 @@
 "Settings.SpeedUnit" = "Speed Unit";
 "Settings.EnergyUnit" = "Energy Unit";
 "Settings.WeightUnit" = "Weight Unit";
-"Settings.UnitPick.Headline" = "Choose Unit";
-"Settings.UnitPick.Message" = "The chosen unit will be used to display data";
 "Settings.RecordingPreferences" = "Recording Preferences";
 "Settings.StandardWorkoutType" = "Standard Type";
 "Settings.StandardWorkoutType.Message" = "Whichever workout type you choose will be the standard for recording a new workout. You can still select a different type by long pressing the plus button or pressing the type label on the recording screen";

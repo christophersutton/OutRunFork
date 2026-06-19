@@ -121,8 +121,6 @@
 "Settings.StandardWorkoutType.Message" = "Uanset hvilken træningstype du vælger, er standarden for optagelse af en ny træning. Du kan stadig vælge en anden type ved at trykke langt på plusknappen eller trykke på typemærket på optageskærmen";
 "Settings.StandardWorkoutType" = "Standard type";
 "Settings.RecordingPreferences" = "Optagelsesindstillinger";
-"Settings.UnitPick.Message" = "Den valgte enhed bruges til at vise data";
-"Settings.UnitPick.Headline" = "Vælg enhed";
 "Settings.WeightUnit" = "Vægt enhed";
 "Settings.EnergyUnit" = "Energienhed";
 "Settings.SpeedUnit" = "Hastighedsenhed";

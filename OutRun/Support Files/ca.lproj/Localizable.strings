@@ -211,8 +211,6 @@
 "Settings.StandardWorkoutType.Message" = "El tipus d'entrenament que trieu serà l'aplicat per defecte per enregistrar un entrenament nou. Podeu seleccionar un tipus diferent prement el botó més o bé l’etiqueta de tipus a la pantalla de gravació";
 "Settings.StandardWorkoutType" = "Tipus per defecte";
 "Settings.RecordingPreferences" = "Preferències d'enregistrament";
-"Settings.UnitPick.Message" = "La unitat escollida s'utilitzarà per mostrar dades";
-"Settings.UnitPick.Headline" = "Trieu unitat";
 "Settings.WeightUnit" = "Unitat de pes";
 "Settings.EnergyUnit" = "Unitat d'Energia";
 "Settings.SpeedUnit" = "Unitat de velocitat";

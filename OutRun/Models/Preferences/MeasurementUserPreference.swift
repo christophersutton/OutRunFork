@@ -63,53 +63,6 @@ public class MeasurementUserPreference<UnitType> where UnitType: Unit {
         return rounded ? ((value * 100).rounded() / 100) : value
     }
     
-    func setting(forTitle title: String) -> Setting {
-        
-        let settingsModel = SettingsModel(title: title, sections: [
-            SettingSection(
-                title: LS["Settings.UnitPick.Headline"],
-                message: LS["Settings.UnitPick.Message"],
-                settings: {
-                    var settings = [SelectionSetting]()
-                    
-                    if let standardUnit = self.standardLocalValue {
-                        let selectSetting = SelectionSetting(
-                            title: LS["Standard"] + " (\(MeasurementFormatter().string(from: standardUnit)))",
-                            subTitle: "",
-                            isSelected: { () -> Bool in
-                                return self.value == nil
-                            }
-                        ) { (setting, controller, cell) in
-                            self.value = nil
-                        }
-                        settings.append(selectSetting)
-                    }
-                    
-                    for unit in self.possibleValues {
-                        let selectSetting = SelectionSetting(
-                            title: MeasurementFormatter().string(from: unit),
-                            subTitle: "",
-                            isSelected: { () -> Bool in
-                                return self.value == unit
-                            }
-                        ) { (setting, controller, cell) in
-                            self.value = unit
-                        }
-                        settings.append(selectSetting)
-                    }
-                    return settings
-                }()
-            )
-        ])
-        
-        return TitleSubTitleSetting(
-            title: title,
-            subTitle: MeasurementFormatter().string(from: self.safeValue),
-            settingsModel
-        )
-        
-    }
-    
     public func delete() {
         self.base.delete()
     }

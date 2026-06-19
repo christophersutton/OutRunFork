@@ -242,8 +242,6 @@
 "Settings.StandardWorkoutType.Message" = "Het trainingstype dat je kiest, wordt de standaard bij het opnemen van een nieuwe training. Je kunt nog steeds een ander type selecteren door lang op de plusknop te drukken of door op het typeplaatje in het opnamescherm te drukken.";
 "Settings.StandardWorkoutType" = "Standaardtype";
 "Settings.RecordingPreferences" = "Opnamevoorkeuren";
-"Settings.UnitPick.Message" = "De gekozen eenheid zal worden gebruikt om gegevens weer te geven";
-"Settings.UnitPick.Headline" = "Kies eenheid";
 "Settings.WeightUnit" = "Gewichtseenheid";
 "Settings.EnergyUnit" = "Energie-eenheid";
 "Settings.SpeedUnit" = "Snelheidseenheid";

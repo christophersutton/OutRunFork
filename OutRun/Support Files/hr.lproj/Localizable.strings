@@ -13,7 +13,6 @@
 "Setup.Permission.Location.Restricted.Message" = "Tvojoj lokaciji možemo pristupiti samo dok je ovaj program otvoren. Za praćenje treninga preporučuje se omogućiti pristup lokaciji u pozadini, tako da mobitel ne mora biti cijelo vrijeme uključen s otvorenim programom. Za stalni pristup tvojoj lokaciji, otvori postavke telefona i ručno promijeni način pristupa.";
 "WorkoutListViewController.Headline" = "Tvoji treninzi";
 "WorkoutViewController.LoadingError" = "Došlo je do greške prilikom pokušaja prikazivanja statistike za ovaj trening. Pokušaj ponovo.";
-"Settings.UnitPick.Message" = "Odabrana jedinica će se koristiti za prikaz podataka";
 "Settings.Email.Error" = "Čini se da na tvom mobitelu nema programa za e-poštu ili je iOS ne može otvoriti. I bez toga možeš poslati e-mail na support@tadris.de za pomoć u vezi s bilo kojim problemom u vezi s programom.";
 "Settings.SyncAll.AllSyncedAlready" = "Čini se da su svi treninzi već sinkronizirani.";
 "WorkoutStats.BurnedEnergy" = "Potrošena energija";
@@ -257,7 +256,6 @@
 "NewWorkoutAlert.Message" = "Koju vrstu treninga želiš snimiti?";
 "WorkoutDeletion.Error.AppleHealth.Message" = "Došlo je do greške prilikom pokušaja brisanja treninga iz Appleovog programa „Zdravlje”. Svejedno ga možeš izbrisati u Appleovom programu „Zdravlje”.";
 "Settings.Contribution" = "Doprinos";
-"Settings.UnitPick.Headline" = "Odberi jedinicu";
 "Workout.BurnedCalories" = "Potrošena energija";
 "Setup.Formalities.Title" = "Krenimo onda s formalnostima";
 "Settings.Contribution.CodeContributors" = "Doprinositelji kodu";

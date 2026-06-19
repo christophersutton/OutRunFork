@@ -22,8 +22,6 @@
 "Settings.StandardWorkoutType.Message" = "Träningstypen du väljer kommer att vara standard för inspelning av ett nytt träningspass. Du kan fortfarande välja en annan typ genom att trycka länge på plusknappen eller trycka på typetiketten på inspelningsskärmen";
 "Settings.StandardWorkoutType" = "Standardtyp";
 "Settings.RecordingPreferences" = "Inspelningsinställningar";
-"Settings.UnitPick.Message" = "Den valda enheten kommer att användas för att visa data";
-"Settings.UnitPick.Headline" = "Välj Enhet";
 "Settings.WeightUnit" = "Viktenhet";
 "Settings.EnergyUnit" = "Energienhet";
 "Settings.SpeedUnit" = "Hastighetsenhet";

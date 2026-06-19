@@ -116,8 +116,6 @@
 "Settings.StandardWorkoutType.Message" = "N'importe quel type d'entraînement que vous choisissez sera la norme pour enregistrer un nouvel entraînement. Vous pouvez toujours sélectionner un type différent en appuyant longuement sur le bouton plus ou en appuyant sur l'étiquette de type sur l'écran d'enregistrement";
 "Settings.StandardWorkoutType" = "Type standard";
 "Settings.RecordingPreferences" = "Préférences d'enregistrement";
-"Settings.UnitPick.Message" = "L'unité choisie sera utilisée pour afficher les données";
-"Settings.UnitPick.Headline" = "Choisissez une unité";
 "Settings.WeightUnit" = "Unité de poids";
 "Settings.EnergyUnit" = "Unité d'énergie";
 "Settings.SpeedUnit" = "Unité de vitesse";

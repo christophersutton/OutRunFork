@@ -178,8 +178,6 @@
 "Settings.AltitudeUnit" = "Höheneinheit";
 "Settings.EnergyUnit" = "Energieeinheit";
 "Settings.WeightUnit" = "Gewichtseinheit";
-"Settings.UnitPick.Headline" = "Einheit wählen";
-"Settings.UnitPick.Message" = "Die Einheit, die du wählst, wird dann standardmäßig zur Anzeige von Daten verwendet.";
 "Settings.RecordingPreferences" = "Aufnahmeeinstellungen";
 "Settings.StandardWorkoutType" = "Standardtyp";
 "Settings.StandardWorkoutType.Message" = "Der Workouttyp, den du auswählst, wird als Standard für das Aufnehmen eines neuen Workouts genutzt. Du kannst andere Typen auswählen, indem du lange auf den Plusknopf oder auf die Typanzeige im Aufnahmebildschirm drückst.";
