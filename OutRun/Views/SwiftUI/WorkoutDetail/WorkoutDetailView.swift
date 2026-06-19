@@ -138,7 +138,7 @@ struct WorkoutDetailView: View {
         }
         return StatSectionView(title: LS["Workout.Distance"]) {
             StatTileGrid(tiles: tiles)
-            // [charts] altitude-over-time inserted here
+            altitudeChart(snapshot)
         }
     }
 
@@ -164,7 +164,7 @@ struct WorkoutDetailView: View {
         }
         return StatSectionView(title: LS["WorkoutStats.Speed"]) {
             StatTileGrid(tiles: tiles)
-            // [charts] speed-over-time inserted here
+            speedChart(snapshot)
         }
     }
 
@@ -183,7 +183,53 @@ struct WorkoutDetailView: View {
         }
         return StatSectionView(title: LS["WorkoutStats.HeartRate"]) {
             StatTileGrid(tiles: tiles)
-            // [charts] heart-rate-over-time inserted here
+            heartRateChart(snapshot)
+        }
+    }
+
+    // MARK: Charts
+
+    @ViewBuilder
+    private func altitudeChart(_ snapshot: WorkoutDetailSnapshot) -> some View {
+        if snapshot.hasAltitudeData {
+            let unit = UserPreferences.altitudeMeasurementType.safeValue
+            WorkoutLineChartView(
+                title: LS["WorkoutStats.AltitudeOverTime"],
+                points: convertSeries(snapshot.altitudeSeries, from: UnitLength.meters, to: unit),
+                unitSymbol: CustomMeasurementFormatting.string(forUnit: unit, short: true)
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func speedChart(_ snapshot: WorkoutDetailSnapshot) -> some View {
+        if snapshot.hasSpeedData {
+            let unit = UserPreferences.speedMeasurementType.safeValue
+            WorkoutLineChartView(
+                title: LS["WorkoutStats.SpeedOverTime"],
+                points: convertSeries(snapshot.speedSeries, from: UnitSpeed.metersPerSecond, to: unit),
+                unitSymbol: CustomMeasurementFormatting.string(forUnit: unit, short: true)
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func heartRateChart(_ snapshot: WorkoutDetailSnapshot) -> some View {
+        if snapshot.hasHeartRateData {
+            WorkoutLineChartView(
+                title: LS["WorkoutStats.HeartRateOverTime"],
+                points: snapshot.heartRateSeries,   // bpm — no conversion
+                unitSymbol: "bpm"
+            )
+        }
+    }
+
+    /// Converts a raw (metric) series into the user's preferred display unit for the chart axis,
+    /// dropping any non-finite results (e.g. a 0 m/s sample under an inverse pace unit).
+    private func convertSeries(_ points: [WorkoutChartPoint], from source: Dimension, to display: Dimension) -> [WorkoutChartPoint] {
+        points.compactMap { point in
+            let y = Measurement(value: point.y, unit: source).converted(to: display).value
+            return y.isFinite ? WorkoutChartPoint(x: point.x, y: y) : nil
         }
     }
 

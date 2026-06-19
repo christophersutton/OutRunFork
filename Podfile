@@ -3,7 +3,6 @@ platform :ios, '17.0'
 
 def ui_pods
   pod 'SnapKit'
-  pod 'Charts'
   # pod 'JTAppleCalendar'
 end
 

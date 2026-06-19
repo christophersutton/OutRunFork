@@ -22,30 +22,12 @@ import UIKit
 import MapKit
 
 class WorkoutMapViewController: MapViewControllerWithContainerView {
-    
+
     var workout: Workout?
-    var stats: WorkoutStats?
-    
+
     var annotation: MKPointAnnotation?
     lazy var marker = MKMarkerAnnotationView(annotation: self.annotation, reuseIdentifier: nil)
-    
-    let diagramView = LabelledDiagramView()
-    
-    lazy var segementedControl: UISegmentedControl = {
-        let control = UISegmentedControl()
-        
-        control.styleLikeIOS12()
-        
-        control.insertSegment(withTitle: LS["WorkoutStats.Altitude"], at: 0, animated: false)
-        control.insertSegment(withTitle: LS["WorkoutStats.Speed"], at: 1, animated: false)
-        
-        control.selectedSegmentIndex = 0
-        
-        control.addTarget(self, action: #selector(displayDiagramData(sender:)), for: .valueChanged)
-        
-        return control
-    }()
-    
+
     lazy var compass: MKCompassButton = {
         let compass = MKCompassButton(mapView: mapView)
         compass.compassVisibility = .adaptive
@@ -103,27 +85,34 @@ class WorkoutMapViewController: MapViewControllerWithContainerView {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .backgroundColor
-        
+
+        // The old bottom panel hosted an (always-empty) DGCharts diagram; it has been removed, so the map
+        // is now full-bleed. Collapse the inherited containerView and anchor the controls to the safe area.
+        containerView.isHidden = true
+        containerView.snp.makeConstraints { (make) in
+            make.height.equalTo(0)
+        }
+
         self.view.addSubview(compass)
         self.view.addSubview(mapTypeButton)
-        
+
         compass.snp.makeConstraints { (make) in
             make.right.equalTo(view.safeAreaLayoutGuide).offset(-20)
-            make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.top).offset(-20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
         }
         mapTypeButton.snp.makeConstraints { (make) in
             make.left.equalTo(view.safeAreaLayoutGuide).offset(10)
-            make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.top).offset(-10)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-10)
         }
-        
+
         guard let workout = workout else {
             print("Workout map controller dismissed, because workout == nil")
             self.dismiss(animated: true)
             return
         }
-        
+
         self.headline = LS["WorkoutMapController.Headline"]
-        
+
         if let mapView = self.mapView {
             WorkoutMapViewManager.setupRoute(
                 forWorkout: workout,
@@ -133,38 +122,10 @@ class WorkoutMapViewController: MapViewControllerWithContainerView {
                 print("Map set up")
             }
         }
-        
-        self.displayDiagramData(sender: segementedControl)
-        
-        containerView.addSubview(segementedControl)
-        containerView.addSubview(diagramView)
-        
-        let spacing = 20
-        
-        segementedControl.snp.makeConstraints { (make) in
-            make.left.right.top.equalTo(containerView.safeAreaLayoutGuide).inset(spacing)
-            make.height.equalTo(30)
-        }
-        diagramView.snp.makeConstraints { (make) in
-            make.left.right.bottom.equalTo(containerView.safeAreaLayoutGuide).inset(spacing)
-            make.top.equalTo(segementedControl.snp.bottom).offset(spacing / 2)
-        }
     }
-    
+
     override func close() {
         self.dismiss(animated: true)
     }
-    
-    @objc func displayDiagramData(sender: UISegmentedControl) {
-        
-    }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
 
-        if previousTraitCollection?.hasDifferentColorAppearance(comparedTo: traitCollection) ?? false {
-            segementedControl.styleLikeIOS12()
-        }
-    }
-    
 }
