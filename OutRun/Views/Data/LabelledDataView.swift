@@ -57,5 +57,12 @@ class LabelledDataView: UIView, SmallStatView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
+    /// The value shown in the data label. Setting `nil` (or leaving it unset) shows the "--" placeholder.
+    /// Used by the live-recording screen's stat tiles.
+    var value: String? {
+        get { dataLabel.text }
+        set { dataLabel.text = newValue ?? "--" }
+    }
+
 }

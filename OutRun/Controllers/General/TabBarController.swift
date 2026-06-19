@@ -19,6 +19,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class TabBarController: UITabBarController, UITabBarControllerDelegate {
     
@@ -44,11 +45,9 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             selectedImage: .tabbarTimelineFilled
         )
         
-        let settingsController = SettingsViewController()
-        settingsController.settingsModelClosure = {
-            return SettingsModel.main
-        }
-        let settings = NavigationController(rootViewController: settingsController)
+        // Settings is now a SwiftUI screen (it provides its own NavigationStack, so it is hosted
+        // directly rather than wrapped in a UIKit NavigationController).
+        let settings = UIHostingController(rootView: SettingsView())
         let settingsTabBarItem = UITabBarItem(
             title: LS["TabBar.Settings"],
             image: .tabbarSettings,

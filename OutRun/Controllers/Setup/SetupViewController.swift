@@ -239,9 +239,7 @@ class SetupViewController: UIViewController {
                     self.toggleButtonStatusForAgreements()
                     
                 }, buttonAction: {
-                    let policyController = PolicyViewController()
-                    policyController.type = .privacyPolicy
-                    self.showDetailViewController(policyController, sender: self)
+                    self.presentSwiftUI(PolicyView(type: .privacyPolicy))
                 }
             )
             let termsSwitchView = SetupSwitchView(
@@ -253,9 +251,7 @@ class SetupViewController: UIViewController {
                     self.toggleButtonStatusForAgreements()
                     
                 }, buttonAction: {
-                    let policyController = PolicyViewController()
-                    policyController.type = .termsOfService
-                    self.showDetailViewController(policyController, sender: self)
+                    self.presentSwiftUI(PolicyView(type: .termsOfService))
                 }
             )
             

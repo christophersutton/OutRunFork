@@ -83,7 +83,7 @@ class LiveStats: WorkoutBuilderComponent {
     /// Binds location updates and the current start date to this component for speed calculation
     private var speedMapper: ([TempWorkoutRouteDataSample], Date?, [TempWorkoutPause], Double) -> String? = { locations, startDate, pauses, distance in
         guard let startDate = startDate else { return nil }
-        
+
         let speed: Double?
         
         if UserPreferences.displayRollingSpeed.value { // rolling
@@ -139,7 +139,7 @@ class LiveStats: WorkoutBuilderComponent {
         
         self.cancellables = []
         let output = builder.tranform(Input())
-            
+
         output.status.sink(receiveValue: statusRelay.accept).store(in: &cancellables)
         output.workoutType.sink(receiveValue: workoutTypeRelay.accept).store(in: &cancellables)
         output.distance.map(distanceMapper).sink(receiveValue: distanceRelay.accept).store(in: &cancellables)
@@ -155,15 +155,20 @@ class LiveStats: WorkoutBuilderComponent {
             .sink(receiveValue: speedRelay.accept)
             .store(in: &cancellables)
         
-        let periodicUpdates = Timer.TimerPublisher(interval: 1, runLoop: .main, mode: .default)
-        
-        periodicUpdates
+        // The duration / burned-energy readouts tick on a 1s timer. Two things were broken before:
+        //   1. `Timer.TimerPublisher` is a `ConnectablePublisher` — without `.autoconnect()` it never fires.
+        //   2. `.default` runloop mode is starved while MKMapView animates the follow-camera, so the timer
+        //      must run in `.common` mode to keep firing during an active recording.
+        // Each chain gets its own autoconnected timer to avoid shared-Connectable subscription ambiguity.
+        Timer.publish(every: 1, on: .main, in: .common)
+            .autoconnect()
             .combineLatest(output.startDate, output.pauses, output.endDate)
             .compactMap(durationMapper)
             .sink(receiveValue: durationRelay.accept)
             .store(in: &cancellables)
-        
-        periodicUpdates
+
+        Timer.publish(every: 1, on: .main, in: .common)
+            .autoconnect()
             .combineLatest(output.workoutType, output.distance)
             .compactMap(burnedEnergyMapper)
             .sink(receiveValue: burnedEnergyRelay.accept)

@@ -491,20 +491,14 @@ class SettingsModel {
                     title: LS["Settings.TermsOfService"],
                     doesRedirect: true,
                     selectAction: { (setting, controller, cell) in
-                        
-                        let policyController = PolicyViewController()
-                        policyController.type = .termsOfService
-                        controller.showDetailViewController(policyController, sender: controller)
+                        controller.presentSwiftUI(PolicyView(type: .termsOfService))
                     }
                 ),
                 TitleSetting(
                     title: LS["Settings.PrivacyPolicy"],
                     doesRedirect: true,
                     selectAction: { (setting, controller, cell) in
-                        
-                        let policyController = PolicyViewController()
-                        policyController.type = .privacyPolicy
-                        controller.showDetailViewController(policyController, sender: controller)
+                        controller.presentSwiftUI(PolicyView(type: .privacyPolicy))
                     }
                 ),
                 TitleSubTitleSetting(

@@ -56,12 +56,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                 if AppDelegate.lastVersion.value != Config.version && AppDelegate.lastVersion.value != nil {
                                     
                                     if let changeLog = Config.changeLogs[Config.version] {
-                                        let changeLogController = ChangeLogViewController()
-                                        changeLogController.changeLog = changeLog
-                                        changeLogController.modalPresentationStyle = .overFullScreen
-                                        changeLogController.modalTransitionStyle = .crossDissolve
-                                        
-                                        controller.present(changeLogController, animated: true)
+                                        controller.presentSwiftUI(
+                                            ChangelogView(changelog: changeLog),
+                                            modalPresentationStyle: .overFullScreen,
+                                            modalTransitionStyle: .crossDissolve
+                                        )
                                     }
                                     
                                     AppDelegate.lastVersion.value = Config.version

@@ -1,5 +1,5 @@
 project 'OutRun.xcodeproj'
-platform :ios, '13.0'
+platform :ios, '17.0'
 
 def ui_pods
   pod 'SnapKit'

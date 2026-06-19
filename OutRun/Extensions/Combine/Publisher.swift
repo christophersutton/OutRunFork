@@ -21,12 +21,21 @@
 import Foundation
 import Combine
 
+/// A single, responsive serial queue used to deliver WorkoutBuilder output off the relay-mutation thread.
+///
+/// This replaces the previous implementation, which created a fresh `qos: .background` queue per call and
+/// added `.subscribe(on:)`. That had two problems: `.background` QoS starved real-time GPS/timer updates, and
+/// — critically — combining several of these publishers with `combineLatest` never emitted, because each had
+/// its own async `.subscribe(on:)` queue, which broke combineLatest's subscription/demand coordination. That
+/// silently froze the live duration, speed and burned-energy readouts. Delivering on one shared queue (and
+/// dropping `.subscribe(on:)`) restores combineLatest while keeping work off the mutation thread.
+private let outRunBackgroundDeliveryQueue = DispatchQueue(label: "outrun.background.delivery", qos: .userInitiated)
+
 public extension Publisher {
-    
-    /// Creates a `Publisher` which will always be observed and susbcribed to on a background queue.
+
+    /// Creates a `Publisher` whose values are delivered on a shared, responsive background queue.
     func asBackgroundPublisher() -> AnyPublisher<Output, Failure> {
-        let backgroundQueue = DispatchQueue(label: "background", qos: .background)
-        return self.receive(on: backgroundQueue).subscribe(on: backgroundQueue).eraseToAnyPublisher()
+        return self.receive(on: outRunBackgroundDeliveryQueue).eraseToAnyPublisher()
     }
     
     /**
