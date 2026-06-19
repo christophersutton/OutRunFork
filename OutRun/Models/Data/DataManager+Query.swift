@@ -232,6 +232,38 @@ extension DataManager {
         }
     }
     
+    // MARK: - Workout Detail Snapshot
+
+    /**
+     Asynchronously builds an immutable, value-type `WorkoutDetailSnapshot` for the SwiftUI workout detail
+     screen. The snapshot (scalar stats, route coordinates, and chart series) is built entirely on the
+     CoreStore transaction queue using raw `_x.value` accessors, so no thread-confined CoreStore object ever
+     escapes to the UI layer.
+     - parameter id: the `UUID` of the workout to snapshot
+     - returns: the snapshot, or `nil` if the workout could not be found or the transaction failed
+     */
+    public static func workoutDetailSnapshot(for id: UUID?) async -> WorkoutDetailSnapshot? {
+
+        await withCheckedContinuation { continuation in
+
+            dataStack.perform(asynchronous: { (transaction) -> WorkoutDetailSnapshot? in
+
+                guard let workout: Workout = queryObject(from: id, transaction: transaction) else {
+                    return nil
+                }
+                return WorkoutDetailSnapshot(workout)
+
+            }) { (result) in
+                switch result {
+                case .success(let snapshot):
+                    continuation.resume(returning: snapshot)
+                case .failure:
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+    }
+
     // MARK: - Backup
     
     /**

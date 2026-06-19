@@ -205,6 +205,7 @@
 		80E47226C8D5E9A9FBAF96F6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F4881D3C0ABDB9F29D9F1 /* SettingsView.swift */; };
 		8507A243F0F6AFD08A25BCDD /* UnitSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009326DFA9A337DBAC258D99 /* UnitSelectionView.swift */; };
 		8649F58A654C90B28807051B /* ContributorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A3B5D27FAE44448206DBB0 /* ContributorsView.swift */; };
+		9955E7283E07143CDCEEF2D6 /* WorkoutDetailSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC69B536B9AE143386811D1F /* WorkoutDetailSnapshot.swift */; };
 		A2581B8208D2C6F85F24E4A1 /* WorkoutStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61294E219B86FDA8C97C1283 /* WorkoutStore.swift */; };
 		AF71630F2A31DFC054E84AB7 /* SettingsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F282D0B7B495122A7D308 /* SettingsState.swift */; };
 		B30B5B084939E4EA166338D8 /* WorkoutSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C5A10DC3F182FC4F6F99301 /* WorkoutSnapshot.swift */; };
@@ -470,6 +471,7 @@
 		C1B583B563EC4764AEDC9E50 /* Pods-UnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C1C8D965F1351F85D4E4F35D /* Pods-OutRun.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OutRun.release.xcconfig"; path = "Pods/Target Support Files/Pods-OutRun/Pods-OutRun.release.xcconfig"; sourceTree = "<group>"; };
 		C56A574B3F5BFCBF50DB5368 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC69B536B9AE143386811D1F /* WorkoutDetailSnapshot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutDetailSnapshot.swift; path = OutRun/Models/Data/Snapshots/WorkoutDetailSnapshot.swift; sourceTree = "<group>"; };
 		D2DC1601B9458B3FC1788F0E /* Pods_OutRun.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OutRun.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9634604C51089F827F17B28 /* UIViewController+SwiftUI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIViewController+SwiftUI.swift"; path = "OutRun/Extensions/SwiftUI/UIViewController+SwiftUI.swift"; sourceTree = "<group>"; };
 		EF9F4881D3C0ABDB9F29D9F1 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = OutRun/Views/SwiftUI/Settings/SettingsView.swift; sourceTree = "<group>"; };
@@ -1174,6 +1176,7 @@
 			isa = PBXGroup;
 			children = (
 				0C5A10DC3F182FC4F6F99301 /* WorkoutSnapshot.swift */,
+				CC69B536B9AE143386811D1F /* WorkoutDetailSnapshot.swift */,
 			);
 			name = Snapshots;
 			sourceTree = SOURCE_ROOT;
@@ -1571,6 +1574,7 @@
 				2676AF4F71AE3CCAF60C22A9 /* StandardWorkoutTypeView.swift in Sources */,
 				65B9D86DF8FD6F867AEDC3EC /* GPSAccuracyView.swift in Sources */,
 				8649F58A654C90B28807051B /* ContributorsView.swift in Sources */,
+				9955E7283E07143CDCEEF2D6 /* WorkoutDetailSnapshot.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
