@@ -16,6 +16,7 @@
 import SwiftUI
 import UIKit
 
+@MainActor
 struct WorkoutDetailView: View {
 
     let workoutID: UUID
