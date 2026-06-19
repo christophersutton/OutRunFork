@@ -12,8 +12,8 @@ SwiftUI `App` last. **Maps, the live-recording screen, the ORBanner system, and 
 not project-wide strict concurrency yet).
 
 - Repo: `/Users/chrissutton/wavelength/OutRunFork`, branch `swiftui-rewrite`, baseline commit `45db21d "early phases"`.
-- **Done & committed: Phases 0, 1, 2, Phase 3 core (Settings), and Phase 4 detail screen (4.1–4.3).** All build-green; verified on simulator.
-- **Next: Phase 4 remainder** — EditWorkout SwiftUI port (4.4) + onboarding rewrite (4.5); then **Phase 5** (timeline → SwiftUI).
+- **Done & committed: Phases 0, 1, 2, Phase 3 core (Settings), and ALL of Phase 4 (detail 4.1–4.3, EditWorkout 4.4, onboarding 4.5).** All build-green; verified on simulator.
+- **Next: Phase 5** — timeline → SwiftUI `List` backed by the existing `WorkoutStore`.
 
 ## Phase 4 — workout detail screen: DONE (commits `6b4d213`, `aa3a6b6`, `d8af6b6`, `ab068d6`)
 
@@ -44,13 +44,39 @@ bug was found and fixed (`@MainActor` on the view).
 - **Known low-pri nit (left as-is):** under a *pace* speed unit, 0 m/s samples drop from the speed chart
   (infinite pace; `.monotone` interpolation bridges the gap). Reviewer deemed it a defensible design choice.
 
-### Phase 4 remainder / next
+## Phase 4.4 — EditWorkout → SwiftUI: DONE (commits `bd76fe7`, `293347b`)
 
-- **4.4 EditWorkout** is currently **bridged to the existing UIKit `EditWorkoutController`** (functional). The
-  SwiftUI `Form` port (per the plan below) is still TODO.
-- **4.5 Onboarding** (`SetupViewController`) — not started.
+`OutRun/Views/SwiftUI/EditWorkout/`: `EditWorkoutForm` (a single `Form` for **both** create & edit) +
+`EditWorkoutState` (`@MainActor @Observable`, owns the save logic lifted out of the controller). Wired from the
+detail-screen `Edit` action (`.sheet`, refreshes in place via `reloadToken`) and the tab-bar manual-add
+long-press (`.create`, then shows the new workout's detail). **Deleted** `EditWorkoutController` + the dead
+`EditWorkoutView`. Bugs fixed in the rewrite: positive duration seeding (legacy used the reversed
+`endDate.distance(to:startDate)`); Save validated on appear; reactive Steps/Strokes label; grouping-free field
+seeds (so an untouched 12,000-step value isn't wiped on save); type picker preserves a non-standard existing
+type. Apple Health save errors are surfaced in an alert then the form finalizes (parity with the legacy).
+Verified on sim: edit→save→in-place refresh; manual create→save→new detail (avg speed/energy computed).
+- **Known low-pri nit (left as-is):** `isValid` uses `Date()` but only recomputes on a re-render, so a manual
+  workout whose `start+duration` is ~now shows a stale-disabled Save until any interaction. Matches the legacy
+  `validateData` (only ran on control changes). Real fix would be a timer tick; not worth it.
+
+## Phase 4.5 — onboarding → SwiftUI: DONE (commit `1f50859`)
+
+`OutRun/Views/SwiftUI/Onboarding/`: `OnboardingView` (welcome + 4 gated steps: Formalities, User Info, Apple
+Health, Permissions, with page dots + contextual Next/Skip/Finish) + `OnboardingState` (`@MainActor
+@Observable`, `finish()` ports `finishSetup()` verbatim — incl. the conditional unit-pref block — with the
+imperial-altitude `.yards`→`.feet` fix) + `OnboardingStepViews` + `OnboardingLauncher` (hosts the flow and
+swaps the window root to `TabBarController` on finish). Permission steps **reuse `PermissionManager.standard`**.
+Weight kept canonically in kg, live-reconverted on the Metric/Imperial switch (driven by `.onChange`).
+Wired into the `AppDelegate` launch gate (`!isSetUp`) and the `SettingsModel` "delete all data" reset path;
+**deleted** `StartScreenViewController`, `SetupViewController`, and the whole `Views/Setup` custom-view stack.
+Verified on sim: welcome + formalities render, gating/links/page-dots correct, builds/boots/runs. (Full
+step-by-step click-through not exhausted — motion permission can't be granted on the simulator anyway; owner
+will spot-check the simpler screens.)
+
+### Phase 4 leftover cleanup (safe, do whenever)
+
 - **`WorkoutStats`/`WorkoutStatsSeries`/`queryWorkoutStats` are now unused** (only the snapshot path remains).
-  Safe to delete in a later cleanup; left in place for now.
+  Safe to delete; left in place for now.
 
 ## Strategy / scope decisions (locked with the product owner)
 
