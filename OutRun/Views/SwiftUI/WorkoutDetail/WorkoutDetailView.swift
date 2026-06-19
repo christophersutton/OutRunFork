@@ -67,8 +67,12 @@ struct WorkoutDetailView: View {
             }
             .task(id: reloadToken) { await load() }
             .sheet(isPresented: $showEditSheet) {
-                // Editing the *existing* workout; refresh this screen's snapshot in place on save.
-                EditWorkoutForm(mode: .edit(workoutID)) { _ in reloadToken += 1 }
+                // Editing the *existing* workout; on save, dismiss the sheet and refresh this screen's
+                // snapshot in place (the form delegates all teardown to this hook).
+                EditWorkoutForm(mode: .edit(workoutID)) { _ in
+                    showEditSheet = false
+                    reloadToken += 1
+                }
             }
     }
 

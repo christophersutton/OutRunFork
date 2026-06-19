@@ -135,12 +135,16 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
                 },
                 manualAction: { [weak self] in
                     guard let self = self else { return }
-                    // Manually add a workout via the SwiftUI create form; on save, show its detail screen.
+                    // Manually add a workout via the SwiftUI create form. On save, dismiss the form and — in
+                    // the dismiss completion — show the new workout's detail (presenting during the dismiss
+                    // would silently fail).
                     self.presentSwiftUI(
                         EditWorkoutForm(mode: .create) { [weak self] workoutID in
                             guard let self = self else { return }
-                            let host = UIHostingController(rootView: NavigationStack { WorkoutDetailView(workoutID: workoutID) })
-                            self.showDetailViewController(host, sender: self)
+                            self.dismiss(animated: true) {
+                                let host = UIHostingController(rootView: NavigationStack { WorkoutDetailView(workoutID: workoutID) })
+                                self.showDetailViewController(host, sender: self)
+                            }
                         }
                     )
                 }

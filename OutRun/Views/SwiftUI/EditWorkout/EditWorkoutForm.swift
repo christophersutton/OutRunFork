@@ -21,6 +21,10 @@ struct EditWorkoutForm: View {
     @State private var showDurationWheels = false
     @FocusState private var keyboardFocused: Bool
 
+    /// Holds a saved-but-Apple-Health-sync-failed result: the workout id to finalize with, plus the localized
+    /// error to surface. The DB write already succeeded, so we alert and *then* finalize (dismiss + onSaved).
+    @State private var healthSyncFailure: (id: UUID, message: String)?
+
     /// Called on the main queue after a successful save, with the saved workout's id.
     private let onSaved: (UUID) -> Void
 
@@ -60,6 +64,19 @@ struct EditWorkoutForm: View {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(state.errorMessage ?? "")
+            }
+            // Apple Health sync failed but the workout was saved: tell the user, then finalize on dismiss.
+            .alert(
+                LS["Error"],
+                isPresented: Binding(
+                    get: { healthSyncFailure != nil },
+                    set: { if !$0 { healthSyncFailure = nil } }
+                ),
+                presenting: healthSyncFailure
+            ) { failure in
+                Button("OK", role: .cancel) { finalize(failure.id) }
+            } message: { failure in
+                Text(failure.message)
             }
         }
     }
@@ -153,10 +170,22 @@ struct EditWorkoutForm: View {
 
     private func save() {
         keyboardFocused = false
-        state.save { workoutID in
-            dismiss()
-            onSaved(workoutID)
+        state.save { workoutID, healthError in
+            if let healthError {
+                // Surface the sync failure; finalize once the user acknowledges it.
+                healthSyncFailure = (id: workoutID, message: healthError)
+            } else {
+                finalize(workoutID)
+            }
         }
+    }
+
+    /// On a successful save the caller's `onSaved` hook owns *all* of the teardown: dismissing this form and
+    /// any follow-up (an edit refreshes the underlying detail in place; a create dismisses then presents the
+    /// new workout's detail). Centralizing dismissal in the caller lets the create path sequence its modal
+    /// present in the dismiss completion — presenting while this form is still dismissing would silently fail.
+    private func finalize(_ workoutID: UUID) {
+        onSaved(workoutID)
     }
 }
 

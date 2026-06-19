@@ -161,13 +161,16 @@ final class EditWorkoutState {
 
     // MARK: Save
 
-    /// Persists the workout. On a successful database write, `onSuccess` is called on the main queue with the
-    /// resulting workout's id (the caller decides whether to refresh an existing detail screen or navigate to
-    /// the new one). On a database failure, `errorMessage` is set and `onSuccess` is not called.
-    func save(onSuccess: @escaping (_ workoutID: UUID) -> Void) {
+    /// Persists the workout. On a successful database write, `completion` is called on the main queue with the
+    /// resulting workout's id and an optional Apple Health error message: `nil` means the (optional) HealthKit
+    /// sync also succeeded, while a non-nil string is the localized error the caller should surface before
+    /// finalizing (the DB write already succeeded either way, so the id is always valid here). On a database
+    /// failure, `errorMessage` is set and `completion` is **not** called (the form stays open to retry).
+    func save(completion: @escaping (_ workoutID: UUID, _ healthError: String?) -> Void) {
         let endDate = startDate.addingTimeInterval(duration)
         let distanceInMeters = (distanceKilometers ?? 0) * 1000
         let commentValue = comment.isEmpty ? nil : comment
+        let syncEnabled = UserPreferences.synchronizeWorkoutsWithAppleHealth.value
 
         switch mode {
         case .edit(let id):
@@ -191,7 +194,20 @@ final class EditWorkoutState {
                         self.errorMessage = LS["EditWorkoutController.SaveWorkout.Error"]
                         return
                     }
-                    self.syncHealthIfNeeded(update: updated) { onSuccess(uuid) }
+                    guard syncEnabled else { completion(uuid, nil); return }
+                    HealthStoreManager.updateHealthWorkout(for: updated) { healthError in
+                        DispatchQueue.main.async {
+                            if healthError != nil {
+                                // Drop the now-stale health reference (matches the legacy controller).
+                                if let healthKitUUID = updated.healthKitUUID {
+                                    DataManager.removeHealthReference(reference: healthKitUUID)
+                                }
+                                completion(uuid, LS["EditWorkoutController.AlterWorkout.AppleHealth.Error"])
+                            } else {
+                                completion(uuid, nil)
+                            }
+                        }
+                    }
                 }
             }
 
@@ -218,33 +234,14 @@ final class EditWorkoutState {
                         self.errorMessage = LS["EditWorkoutController.SaveWorkout.Error"]
                         return
                     }
-                    self.syncHealthIfNeeded(create: saved) { onSuccess(uuid) }
+                    guard syncEnabled else { completion(uuid, nil); return }
+                    HealthStoreManager.saveHealthWorkout(for: saved) { healthError, _ in
+                        DispatchQueue.main.async {
+                            completion(uuid, healthError != nil ? LS["EditWorkoutController.SaveWorkout.AppleHealth.Error"] : nil)
+                        }
+                    }
                 }
             }
-        }
-    }
-
-    /// Mirrors the legacy edit-path Apple Health behaviour: when sync is on, push the update to HealthKit and,
-    /// on failure, drop the (now stale) health reference. The DB write already succeeded, so the form still
-    /// completes — the workout is never lost to a HealthKit hiccup.
-    private func syncHealthIfNeeded(update workout: Workout, then completion: @escaping () -> Void) {
-        guard UserPreferences.synchronizeWorkoutsWithAppleHealth.value else { completion(); return }
-        HealthStoreManager.updateHealthWorkout(for: workout) { error in
-            DispatchQueue.main.async {
-                if error != nil, let healthKitUUID = workout.healthKitUUID {
-                    DataManager.removeHealthReference(reference: healthKitUUID)
-                }
-                completion()
-            }
-        }
-    }
-
-    /// Create-path Apple Health sync: save to HealthKit when enabled. A failure is non-blocking — the workout
-    /// is already persisted, so we still complete and show its detail.
-    private func syncHealthIfNeeded(create workout: Workout, then completion: @escaping () -> Void) {
-        guard UserPreferences.synchronizeWorkoutsWithAppleHealth.value else { completion(); return }
-        HealthStoreManager.saveHealthWorkout(for: workout) { _, _ in
-            DispatchQueue.main.async { completion() }
         }
     }
 }
