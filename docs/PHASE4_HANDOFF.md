@@ -12,8 +12,8 @@ SwiftUI `App` last. **Maps, the live-recording screen, the ORBanner system, and 
 not project-wide strict concurrency yet).
 
 - Repo: `/Users/chrissutton/wavelength/OutRunFork`, branch `swiftui-rewrite`, baseline commit `45db21d "early phases"`.
-- **Done & committed: Phases 0, 1, 2, Phase 3 core (Settings), and ALL of Phase 4 (detail 4.1–4.3, EditWorkout 4.4, onboarding 4.5).** All build-green; verified on simulator.
-- **Next: Phase 5** — timeline → SwiftUI `List` backed by the existing `WorkoutStore`.
+- **Done & committed: Phases 0, 1, 2, Phase 3 core (Settings), ALL of Phase 4 (detail 4.1–4.3, EditWorkout 4.4, onboarding 4.5), and Phase 5 (timeline).** All build-green; verified on simulator.
+- **The strangler-fig is essentially complete for data-browsing screens** — timeline, detail, settings, edit, onboarding, policy/changelog are all SwiftUI. What remains UIKit (by design): live recording (`NewWorkoutViewController`), maps, banners, CoreStore, and the app shell. **Next: leftovers/cleanup** (see Backlog) or the Phase-6 SwiftUI-`App` shell flip (out of scope unless revisited).
 
 ## Phase 4 — workout detail screen: DONE (commits `6b4d213`, `aa3a6b6`, `d8af6b6`, `ab068d6`)
 
@@ -77,6 +77,33 @@ will spot-check the simpler screens.)
 
 - **`WorkoutStats`/`WorkoutStatsSeries`/`queryWorkoutStats` are now unused** (only the snapshot path remains).
   Safe to delete; left in place for now.
+
+## Phase 5 — timeline → SwiftUI: DONE (commit `82738af`)
+
+Replaces the UIKit `WorkoutListViewController` timeline with a SwiftUI screen driven by the Phase-1
+`WorkoutStore` (`@MainActor @Observable`, observes `DataManager.workoutMonitor`, republishes `[WorkoutSnapshot]`
+on the main queue — the view holds only value snapshots). Files in `OutRun/Views/SwiftUI/Timeline/`:
+- **`WorkoutTimelineView`** — `ScrollView` + `LazyVStack` (NOT `List`, for pixel control of the timeline
+  decoration: a continuous accent line + a ring per card). Orange small-caps "Your Workouts" title, `Date ↓`
+  sort button, `ContentUnavailableView` empty state. **Hosted directly in the tab bar** (own `NavigationStack`,
+  like Settings — `TabBarController` no longer wraps it in a `NavigationController`). Row tap → `WorkoutDetailView`
+  as a `.sheet` (matches the legacy modal). `.onAppear` re-renders rows on a distance-unit change (replacing the
+  legacy `TabBarSelectionObserver.willGetSelected` reload).
+- **`WorkoutTimelineRow`** — the card (`TYPE` / big distance / big duration via `CustomMeasurementFormatting`
+  with the legacy "big number + small-caps unit" treatment) + the timeline gutter + `RouteThumbnail` (async,
+  cached, off the workout uuid via the existing `WorkoutMapImageManager` — no live `Workout` needed). Race cards
+  get the accent border.
+- **`WorkoutTimelineSortSheet`** — sort (Date/Distance + Descending) + filter (type + race) as a SwiftUI sheet
+  bound to **in-memory** state (NOT `UserPreferences`, matching legacy). Sort/filter applied in memory on the
+  snapshot array (the store stays a pure read model — no CoreStore `refetch`).
+- **Day headers de-duplicated** (one per day, while date-sorted) — an improvement over the legacy drawing a
+  header above every card. Headers are suppressed under distance sort (where day grouping is incoherent and
+  would risk duplicate `ForEach` ids).
+- **Deleted** `WorkoutListViewController`, `WorkoutListSortViewController`, `WorkoutListCell`, `WorkoutListHeader`
+  (all verified unreferenced). `DataManager.workoutMonitor` stays (now consumed by `WorkoutStore`).
+- Verified on sim: empty state, card render (line/ring/header/big-number stats), live insert on create,
+  row→detail sheet, create→detail. (Route thumbnail not visually exercised — manual workouts have no route — but
+  it reuses the same `WorkoutMapImageManager` the detail-screen route map uses.)
 
 ## Strategy / scope decisions (locked with the product owner)
 
@@ -226,13 +253,13 @@ Highest value = the **workout detail screen** (proves the data seam, fixes the c
    SwiftUI `TabView(.page)` / step state machine reusing SwiftUI form rows + permission rows. Gate behind
    `UserPreferences.isSetUp`. Larger and more isolated — can come after the detail screen.
 
-## Backlog (after Phase 4)
+## Backlog (after Phase 5)
 
-- **Phase 5** — timeline → SwiftUI `List`/`ForEach` backed by `WorkoutStore` (already built!). Rows render the
-  route as a **static `MKMapSnapshotter` image** (`WorkoutMapImageManager`), never a live map. Add
-  `fetchBatchSize`/prefetch tuning. Empty state = `ContentUnavailableView`. **WorkoutListSort** popover (Phase 3
-  leftover) lands here as a SwiftUI sheet binding to the list view-model (in-memory, not UserPreferences).
-- **Phase 3 leftovers:** EditWorkout (now in Phase 4), Debug screen (hidden dev, low priority), and 3 action
+- **Phase 5 follow-ups (deferred):** the legacy loaded all workouts eagerly too, and `WorkoutStore` maps the whole
+  monitor to value snapshots, so `fetchBatchSize`/prefetch tuning was **not** needed for the value-snapshot model
+  (revisit only if a user has thousands of workouts). The route thumbnail wasn't visually exercised on the sim
+  (manual workouts have no route) — spot-check with a recorded GPS workout.
+- **Phase 3 leftovers:** Debug screen (hidden dev, low priority), and 3 action
   placeholders left in `SettingsView` — "Import from Apple Health" (push UIKit `HKImportListController` via bridge),
   "Create Backup" / "Import Backup Data" (need a presenting `UIViewController` → wire via the bridge/host).
 - **Cleanup:** delete now-dead UIKit files once nothing references them — `PolicyViewController`,
