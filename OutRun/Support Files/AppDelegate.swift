@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         if UserPreferences.isSetUp.value {
                             return TabBarController()
                         } else {
-                            return StartScreenViewController()
+                            return OnboardingLauncher.makeHostingController()
                         }
                     }()
                     

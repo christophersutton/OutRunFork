@@ -385,9 +385,7 @@ class SettingsModel {
                                                                     completion()
                                                                 }
                                                                 
-                                                                let startController = StartScreenViewController()
-                                                                startController.modalTransitionStyle = .crossDissolve
-                                                                startController.modalPresentationStyle = .fullScreen
+                                                                let startController = OnboardingLauncher.makeHostingController()
                                                                 controller.endLoading {
                                                                     controller.present(startController, animated: true)
                                                                 }
