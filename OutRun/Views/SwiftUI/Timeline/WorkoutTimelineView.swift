@@ -123,8 +123,14 @@ struct WorkoutTimelineView: View {
         return list
     }
 
-    /// Interleaves day headers with workout rows. Headers are only emitted while date-sorted (where same-day
-    /// workouts are contiguous, giving each day a single header); distance-sorted rows have no day grouping.
+    /// Interleaves day headers with workout rows (only while date-sorted; distance-sorted rows have no day
+    /// grouping). A header is emitted whenever the stored `dayIdentifier` changes from the previous row.
+    ///
+    /// The header's identity is the *first workout in its group* (a unique uuid), NOT the `dayIdentifier`:
+    /// `dayIdentifier` is a local-day string stamped at creation time, so for cross-time-zone history the same
+    /// day label can legitimately recur non-contiguously once sorted by the absolute `startDate` — keying the
+    /// `ForEach` header on the label would then produce duplicate ids (undefined behavior). We keep the legacy
+    /// stored-local-day labels and just guarantee unique ids.
     private var timelineItems: [TimelineItem] {
         let showHeaders = (sortField == .date)
         var result: [TimelineItem] = []
@@ -132,7 +138,7 @@ struct WorkoutTimelineView: View {
         for snapshot in displayedSnapshots {
             if showHeaders, snapshot.dayIdentifier != lastDayIdentifier {
                 let text = CustomDateFormatting.dayString(forIdentifier: snapshot.dayIdentifier) ?? ""
-                result.append(.header(id: snapshot.dayIdentifier, text: text))
+                result.append(.header(id: snapshot.id.uuidString, text: text))
                 lastDayIdentifier = snapshot.dayIdentifier
             }
             result.append(.workout(snapshot))

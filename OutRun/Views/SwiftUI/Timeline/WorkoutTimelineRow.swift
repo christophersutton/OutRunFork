@@ -130,14 +130,19 @@ struct WorkoutTimelineRow: View {
 enum WorkoutStatText {
     /// Renders a "number unit" string as large normal digits + lowercase-small-caps unit at the same size
     /// (matching the legacy `attributedStringWithBigNumbers`). Numeric tokens stay upright; the rest is small-caps.
+    ///
+    /// Splits on any Unicode whitespace (so locales that separate the number and unit — or group digits — with a
+    /// no-break/narrow space, e.g. fr_FR's U+202F, still split correctly) and treats a token as numeric if it
+    /// contains any digit (so grouped numbers like "1,234" render upright). This is a deliberate improvement over
+    /// the legacy split-on-ASCII-space + `NumberFormatter` parse, which lost the styling in those locales.
     static func bigStat(_ string: String, size: CGFloat) -> Text {
         let base = Font.system(size: size, weight: .bold)
         let smallCaps = base.lowercaseSmallCaps()
-        let tokens = string.split(separator: " ", omittingEmptySubsequences: false).map(String.init)
+        let tokens = string.split(whereSeparator: \.isWhitespace).map(String.init)
 
         var text = Text("")
         for (index, token) in tokens.enumerated() {
-            let isNumber = NumberFormatter().number(from: token) != nil
+            let isNumber = token.contains(where: \.isNumber)
             let piece = Text(token).font(isNumber ? base : smallCaps)
             if index == 0 {
                 text = piece
