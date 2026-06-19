@@ -12,8 +12,45 @@ SwiftUI `App` last. **Maps, the live-recording screen, the ORBanner system, and 
 not project-wide strict concurrency yet).
 
 - Repo: `/Users/chrissutton/wavelength/OutRunFork`, branch `swiftui-rewrite`, baseline commit `45db21d "early phases"`.
-- **Done & committed: Phases 0, 1, 2, and Phase 3 core (Settings).** All build-green; key flows verified on simulator.
-- **Next: Phase 4** — onboarding rewrite + **workout detail screen** (the big one).
+- **Done & committed: Phases 0, 1, 2, Phase 3 core (Settings), and Phase 4 detail screen (4.1–4.3).** All build-green; verified on simulator.
+- **Next: Phase 4 remainder** — EditWorkout SwiftUI port (4.4) + onboarding rewrite (4.5); then **Phase 5** (timeline → SwiftUI).
+
+## Phase 4 — workout detail screen: DONE (commits `6b4d213`, `aa3a6b6`, `d8af6b6`, `ab068d6`)
+
+Verified on simulator (timeline → detail; charts; full-screen map; actions menu; no crash). Adversarially
+reviewed (3 skeptics → verify): the CoreStore queue-correctness claim **held**; one real off-main `@State`
+bug was found and fixed (`@MainActor` on the view).
+
+- **4.1 `WorkoutDetailSnapshot`** (`OutRun/Models/Data/Snapshots/WorkoutDetailSnapshot.swift`) — immutable value
+  type: scalar stats + `[CLLocationCoordinate2D]` route + `[WorkoutChartPoint]` altitude/speed/HR series.
+  Built **inside `dataStack.perform`** via raw `_x.value` (never the main-marshaling public accessors). Facade:
+  `DataManager.workoutDetailSnapshot(for: UUID?) async -> WorkoutDetailSnapshot?` (single-resume continuation).
+- **4.2 `WorkoutDetailView`** (`OutRun/Views/SwiftUI/WorkoutDetail/`: `WorkoutDetailView`, `…Support`, `…Charts`)
+  replaces `WorkoutViewController`. Renders **real** tiles (old screen's tiles were never bound → showed `--`).
+  Formats via `StatsHelper`/`CustomMeasurementFormatting`/`CustomDateFormatting` + `UserPreferences` units.
+  Actions menu bridges to `ExportManager`/`EditWorkoutController`/`HealthStoreManager`/`DataManager.deleteObject`;
+  route tap presents the (now full-bleed) UIKit `WorkoutMapViewController`. Entry points rewired: both
+  `WorkoutViewController()` sites (`WorkoutListViewController.didSelectRowAt`, `EditWorkoutController.showWorkoutController`)
+  now push `NavigationStack { WorkoutDetailView(workoutID:) }`. Presenter via `topMostViewController()` (keyWindow).
+- **4.3 DGCharts → Swift Charts** — `WorkoutDetailCharts.swift` is now the **only** `import Charts` (Apple's).
+  The `Charts` pod (DGCharts 4.1.0, module name `Charts` — collided with Apple's, so removal + adoption had to
+  land together) is gone from the Podfile (`pod install` ran). Deleted the dead UIKit detail stack:
+  `WorkoutViewController`, `{Distance,Speed,Time,Energy,Route,Text}StatsView`, `StatsView`, `WorkoutHeaderView`,
+  `LabelledDiagramView`, `BigStatView` (each verified zero live referrers; `LabelledDataView`/`StatView`/
+  `SmallStatView` STAY — used by the live recording screen). Stripped the always-empty diagram from
+  `WorkoutMapViewController` (map is full-bleed now). Added `scripts/remove_files_from_target.rb`.
+- **Bonus fixes** (latent bugs hidden by the never-rendered legacy charts): chart x-axis sign
+  (`startDate.distance(to: timestamp)`), `topSpeed` (`max(by: >)` returned the min).
+- **Known low-pri nit (left as-is):** under a *pace* speed unit, 0 m/s samples drop from the speed chart
+  (infinite pace; `.monotone` interpolation bridges the gap). Reviewer deemed it a defensible design choice.
+
+### Phase 4 remainder / next
+
+- **4.4 EditWorkout** is currently **bridged to the existing UIKit `EditWorkoutController`** (functional). The
+  SwiftUI `Form` port (per the plan below) is still TODO.
+- **4.5 Onboarding** (`SetupViewController`) — not started.
+- **`WorkoutStats`/`WorkoutStatsSeries`/`queryWorkoutStats` are now unused** (only the snapshot path remains).
+  Safe to delete in a later cleanup; left in place for now.
 
 ## Strategy / scope decisions (locked with the product owner)
 
@@ -133,6 +170,10 @@ GEM_HOME="$FL" GEM_PATH="$FL" /opt/homebrew/opt/ruby/bin/ruby scripts/add_files_
 (`scripts/add_files_to_target.rb` adds file refs to the OutRun target's source build phase + group. Idempotent.)
 
 ## Phase 4 plan (onboarding + workout detail)
+
+> **Status:** steps 1–3 (detail screen + Swift Charts) are **DONE** — see the "Phase 4 — workout detail screen:
+> DONE" section near the top. Steps 4 (EditWorkout SwiftUI port) and 5 (onboarding) remain. The original plan
+> is preserved below for reference.
 
 Highest value = the **workout detail screen** (proves the data seam, fixes the crash class, brings Swift Charts).
 
