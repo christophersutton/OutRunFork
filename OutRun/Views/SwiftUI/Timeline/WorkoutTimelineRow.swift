@@ -1,0 +1,185 @@
+//
+//  WorkoutTimelineRow.swift
+//
+//  OutRun
+//
+//  The SwiftUI timeline row + its supporting pieces (the left timeline gutter with the accent line/ring, the
+//  workout card, the async route thumbnail, and the "big number / small-caps unit" stat formatting). Rows are
+//  driven entirely by an immutable `WorkoutSnapshot` — never a live CoreStore `Workout`.
+//
+
+import SwiftUI
+import MapKit
+
+// MARK: - Timeline gutter (continuous accent line + per-card ring)
+
+/// The fixed-width left column that draws the vertical timeline line and, for workout rows, the ring that
+/// "punches" the line. Stacking gutters with no inter-row spacing makes the line continuous.
+struct TimelineGutter: View {
+    var showRing: Bool = false
+
+    static let width: CGFloat = 40
+
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(Color.orAccent.opacity(0.25))
+                .frame(width: 4)
+                .frame(maxHeight: .infinity)
+            if showRing {
+                Circle()
+                    .fill(Color.orBackground)
+                    .overlay(Circle().strokeBorder(Color.orAccent, lineWidth: 4))
+                    .frame(width: 20, height: 20)
+            }
+        }
+        .frame(width: Self.width)
+    }
+}
+
+// MARK: - Day header row
+
+struct TimelineDayHeader: View {
+    let text: String
+
+    var body: some View {
+        HStack(spacing: 0) {
+            TimelineGutter()
+            Text(text)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(Color.orSecondary)
+            Spacer(minLength: 0)
+        }
+        .frame(height: 40)
+    }
+}
+
+// MARK: - Workout row (gutter + card)
+
+struct WorkoutTimelineRow: View {
+    let snapshot: WorkoutSnapshot
+    let onTap: () -> Void
+
+    var body: some View {
+        HStack(spacing: 0) {
+            TimelineGutter(showRing: true)
+            card
+                .padding(.trailing, 10)
+                .padding(.vertical, 6)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { onTap() }
+    }
+
+    private var card: some View {
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(snapshot.workoutType.description.uppercased())
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Color.orSecondary)
+                WorkoutStatText.bigStat(Self.distanceString(snapshot), size: 36)
+                    .foregroundStyle(Color.orPrimary)
+                WorkoutStatText.bigStat(Self.durationString(snapshot), size: 24)
+                    .foregroundStyle(Color.orSecondary)
+            }
+            .padding(.leading, 20)
+            .padding(.vertical, 14)
+
+            Spacer(minLength: 12)
+
+            if snapshot.hasRouteData {
+                RouteThumbnail(workoutID: snapshot.id)
+                    .frame(width: Self.thumbnailWidth, height: 120)
+            }
+        }
+        .frame(minHeight: snapshot.hasRouteData ? 120 : 0)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.orForeground)
+        .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
+        .overlay {
+            if snapshot.isRace {
+                RoundedRectangle(cornerRadius: 25, style: .continuous)
+                    .strokeBorder(Color.orAccent.opacity(0.5), lineWidth: 4)
+            }
+        }
+    }
+
+    private static var thumbnailWidth: CGFloat { (UIScreen.main.bounds.width - 50) / 2 }
+
+    /// Distance in the user's unit, rounded to whole numbers (e.g. "5 km") — same call the legacy cell used.
+    static func distanceString(_ snapshot: WorkoutSnapshot) -> String {
+        CustomMeasurementFormatting.string(
+            forMeasurement: NSMeasurement(doubleValue: snapshot.distance, unit: UnitLength.meters),
+            type: .distance,
+            rounding: .wholeNumbers
+        )
+    }
+
+    /// Active duration in natural scale (e.g. "2 min", "1 hr 5 min").
+    static func durationString(_ snapshot: WorkoutSnapshot) -> String {
+        CustomMeasurementFormatting.string(
+            forMeasurement: NSMeasurement(doubleValue: snapshot.activeDuration, unit: UnitDuration.seconds),
+            type: .time,
+            rounding: .wholeNumbers
+        )
+    }
+}
+
+// MARK: - Big-number stat text
+
+enum WorkoutStatText {
+    /// Renders a "number unit" string as large normal digits + lowercase-small-caps unit at the same size
+    /// (matching the legacy `attributedStringWithBigNumbers`). Numeric tokens stay upright; the rest is small-caps.
+    static func bigStat(_ string: String, size: CGFloat) -> Text {
+        let base = Font.system(size: size, weight: .bold)
+        let smallCaps = base.lowercaseSmallCaps()
+        let tokens = string.split(separator: " ", omittingEmptySubsequences: false).map(String.init)
+
+        var text = Text("")
+        for (index, token) in tokens.enumerated() {
+            let isNumber = NumberFormatter().number(from: token) != nil
+            let piece = Text(token).font(isNumber ? base : smallCaps)
+            if index == 0 {
+                text = piece
+            } else {
+                text = text + Text(" ").font(base) + piece
+            }
+        }
+        return text
+    }
+}
+
+// MARK: - Route thumbnail (async, cached, off the workout uuid)
+
+/// A static route preview rendered by the existing `WorkoutMapImageManager` (which resolves coordinates off
+/// the uuid and caches by uuid+size+appearance). No live `Workout` needed. The completion is funneled to the
+/// main queue; a late result for a torn-down row simply no-ops. (We avoid a continuation here because the
+/// manager's queue de-dups identical uuid+size requests by *removing* a pending one — which would leak a
+/// continuation that never resumes.)
+struct RouteThumbnail: View {
+    let workoutID: UUID
+
+    @State private var image: UIImage?
+
+    var body: some View {
+        ZStack {
+            Color.orBackground.opacity(0.5)
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            }
+        }
+        .clipped()
+        .onAppear(perform: loadIfNeeded)
+    }
+
+    private func loadIfNeeded() {
+        guard image == nil else { return }
+        let request = WorkoutMapImageRequest(workoutUUID: workoutID, size: .list) { _, image in
+            guard let image else { return }
+            DispatchQueue.main.async { self.image = image }
+        }
+        WorkoutMapImageManager.execute(request)
+    }
+}

@@ -37,8 +37,9 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         self.tabBar.barTintColor = .backgroundColor
         self.tabBar.isTranslucent = false
         
-        let listController = WorkoutListViewController()
-        let timeline = NavigationController(rootViewController: listController)
+        // The timeline is now a SwiftUI screen (it provides its own NavigationStack, so it is hosted
+        // directly rather than wrapped in a UIKit NavigationController, mirroring the Settings tab).
+        let timeline = UIHostingController(rootView: WorkoutTimelineView())
         timeline.tabBarItem = UITabBarItem(
             title: LS["TabBar.Timeline"],
             image: .tabbarTimeline,

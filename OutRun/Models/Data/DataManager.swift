@@ -677,7 +677,8 @@ struct DataManager {
     
     // MARK: - Monitoring
     
-    /// A `CoreStore.ListMonitor` to observe changes in the database and refresh the `WorkoutListViewController`
+    /// A `CoreStore.ListMonitor` observing database changes; consumed by `WorkoutStore` to republish
+    /// `[WorkoutSnapshot]` for the SwiftUI timeline.
     public static let workoutMonitor = dataStack.monitorList(
         From<Workout>()
             .orderBy(.descending(\._startDate))
