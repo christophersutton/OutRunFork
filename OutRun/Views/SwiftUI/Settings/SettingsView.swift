@@ -331,10 +331,8 @@ struct SettingsView: View {
             Toggle(LS["Settings.AutoImportHealthWorkouts"], isOn: $state.autoImport)
                 .disabled(!state.syncWorkouts)
 
-            // TODO: Wire up to the Apple Health import flow. The existing list (HKImportListController)
-            // is a UIKit controller; this row is a placeholder until a SwiftUI import screen exists.
             Button(LS["Settings.ImportFromAppleHealth"]) {
-                // Intentionally empty - awaiting SwiftUI replacement for HKImportListController.
+                presentHealthImportList()
             }
             .foregroundStyle(Color.orPrimary)
 
@@ -363,6 +361,12 @@ struct SettingsView: View {
                 showSyncResult = true
             }
         }
+    }
+
+    private func presentHealthImportList() {
+        guard let presenter = UIApplication.shared.topMostViewController else { return }
+        let controller = UINavigationController(rootViewController: HKImportListController())
+        presenter.present(controller, animated: true)
     }
 
     // MARK: S5 - Data Preferences
@@ -449,19 +453,28 @@ struct SettingsView: View {
             }
 
             Button {
+                if let url = URL(string: "https://github.com/christophersutton/OutRunFork") {
+                    UIApplication.shared.open(url)
+                }
+            } label: {
+                detailRow(LS["Settings.SourceCode"], "OutRunFork")
+            }
+
+            Button {
                 if let url = URL(string: "https://github.com/timfraedrich/OutRun") {
                     UIApplication.shared.open(url)
                 }
             } label: {
-                detailRow(LS["Settings.SourceCode"], "github.com")
+                detailRow(LS["Settings.OriginalSourceCode"], "timfraedrich/OutRun")
             }
 
+            detailRow(LS["Settings.License"], "GPLv3")
             detailRow(LS["Settings.AppVersion"], Config.version)
             detailRow(LS["Settings.ReleaseStatus"], Config.releaseStatus.rawValue)
         } header: {
             Text(LS["Settings.AppInfo"])
         } footer: {
-            Text("ⓒ 2020 Tim Fraedrich")
+            Text("Original OutRun © 2020 Tim Fraedrich. This fork preserves the original GPLv3 license and attribution.")
         }
     }
 

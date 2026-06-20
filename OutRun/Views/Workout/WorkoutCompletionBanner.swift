@@ -24,6 +24,7 @@ import UIKit
 class WorkoutCompletionBanner: ORBaseBanner {
     
     private var handler: WorkoutCompletionActionHandler
+    private var isConfirmingDiscard = false
     
     private let titleLabel: UILabel = UILabel(
         text: LS["NewWorkoutCompletion.Title"],
@@ -89,7 +90,14 @@ class WorkoutCompletionBanner: ORBaseBanner {
     }
     
     @objc private func discardWorkout() {
-        
+        guard isConfirmingDiscard else {
+            isConfirmingDiscard = true
+            discardButton.setTitle(LS["NewWorkoutCompletion.Discard.Confirm"], for: .normal)
+            discardButton.setTitleColor(.white, for: .normal)
+            discardButton.backgroundColor = .accentColor
+            return
+        }
+
         handler.discardWorkout()
         self.dismiss()
         

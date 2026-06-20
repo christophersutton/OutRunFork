@@ -45,7 +45,14 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
     }
     
     let readinessIndicatorView = WorkoutBuilderReadinessIndicationView()
-    lazy var typeView = FloatingButton(title: "") { (button) in }
+    lazy var typeView = FloatingButton(title: workoutTypeSubject.value.description) { [weak self] button in
+        guard let self else { return }
+        let alert = WorkoutTypeAlert { [weak self, weak button] type in
+            self?.workoutTypeSubject.send(type)
+            button?.setTitle(type.description.uppercased(), for: .normal)
+        }
+        alert.present(on: self)
+    }
     
     let distanceView = LabelledDataView(title: LS["Workout.Distance"])
     let durationView = LabelledDataView(title: LS["Workout.Duration"])

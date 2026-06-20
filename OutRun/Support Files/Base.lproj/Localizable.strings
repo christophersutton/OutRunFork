@@ -71,6 +71,7 @@
 "NewWorkoutCompletion.Save.Error" = "Unfortunately your workout could not be saved.";
 "NewWorkoutCompletion.Continue.Success" = "The app is now continuing to record your workout.";
 "NewWorkoutCompletion.Continue.Error" = "Unfortunately your workout could not be continued.";
+"NewWorkoutCompletion.Discard.Confirm" = "Discard Workout";
 "WorkoutViewController.LoadingError" = "There was an error while trying to display statistics about this workout, please try again.";
 "Workout" = "Workout";
 "Workout.Distance" = "Distance";
@@ -203,7 +204,9 @@
 "Settings.Email" = "Email";
 "Settings.Email.Error" = "There seems to be no E-Mail app on your phone, or iOS cannot open it, you can still send an E-Mail to support@tadris.de for assistance with any problems regarding the app.";
 "Settings.SourceCode" = "View Source Code";
+"Settings.OriginalSourceCode" = "Original OutRun Source";
 "Settings.SourceCode.Error" = "The link could not be opened due to the system rejecting it.";
+"Settings.License" = "License";
 "Settings.AppInfo" = "App Info";
 "Settings.Contribution" = "Contribution";
 "Settings.Contribution.Maintainers" = "Maintainers";

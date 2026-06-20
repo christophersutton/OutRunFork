@@ -106,12 +106,12 @@ struct WorkoutTimelineRow: View {
 
     private static var thumbnailWidth: CGFloat { (UIScreen.main.bounds.width - 50) / 2 }
 
-    /// Distance in the user's unit, rounded to whole numbers (e.g. "5 km") — same call the legacy cell used.
+    /// Distance in the user's unit with a single decimal place (e.g. "5.2 km").
     static func distanceString(_ snapshot: WorkoutSnapshot) -> String {
         CustomMeasurementFormatting.string(
             forMeasurement: NSMeasurement(doubleValue: snapshot.distance, unit: UnitLength.meters),
             type: .distance,
-            rounding: .wholeNumbers
+            rounding: .oneDigit
         )
     }
 

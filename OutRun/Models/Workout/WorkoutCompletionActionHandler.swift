@@ -70,6 +70,11 @@ class WorkoutCompletionActionHandler {
             let banner = TextBanner(text: LS["NewWorkoutCompletion.Save." + (success ? "Success" : "Error")])
             banner.duration = 5
             banner.show()
+
+            guard success else { return }
+            DispatchQueue.main.async {
+                UIApplication.shared.topMostViewController?.dismiss(animated: true)
+            }
             
         }
         

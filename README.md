@@ -4,6 +4,10 @@ OutRun is an iOS app for recording and viewing your outdoor workouts. Despite th
 
 This project is fully open-source and ad-free.
 
+## Wavelength Port Notice
+
+This fork is based on [OutRun](https://github.com/timfraedrich/OutRun) by Tim Fraedrich. Original OutRun code and notices remain under the GNU General Public License version 3 or later. Wavelength-specific policy URLs, support contact details, and final source-publication text should be set before distributing a Wavelength build.
+
 <a href="https://apps.apple.com/us/app/OutRun/id1477511092">
     <img src="https://outrun.tadris.de/src/download.svg">
 </a>
