@@ -10,6 +10,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
 
@@ -26,6 +27,20 @@ struct SettingsView: View {
     // Delete-all flow.
     @State private var showDeleteConfirmation = false
     @State private var showDeleteError = false
+
+    // Backup import/export flow.
+    @State private var showBackupImporter = false
+    @State private var isImportingBackup = false
+    @State private var isCreatingBackup = false
+    @State private var showBackupResult = false
+    @State private var backupResultMessage = ""
+
+    /// Content types the backup importer accepts. Prefers the declared `.orbup` UTI (`de.tadris.orbup`),
+    /// falling back to raw data so files are never greyed out — `insertBackup` validates the contents.
+    private static let backupContentTypes: [UTType] = {
+        if let orbup = UTType("de.tadris.orbup") { return [orbup] }
+        return [.data]
+    }()
 
     var body: some View {
         NavigationStack {
@@ -62,6 +77,105 @@ struct SettingsView: View {
         } message: {
             Text(LS["Settings.DeleteAll.Error.Message"])
         }
+        .fileImporter(
+            isPresented: $showBackupImporter,
+            allowedContentTypes: SettingsView.backupContentTypes,
+            allowsMultipleSelection: false
+        ) { result in
+            handleBackupImport(result)
+        }
+        .alert(LS["Settings.ImportBackupData"], isPresented: $showBackupResult) {
+            Button(LS["Okay"], role: .cancel) {}
+        } message: {
+            Text(backupResultMessage)
+        }
+        .overlay {
+            if isImportingBackup || isCreatingBackup {
+                ZStack {
+                    Color.black.opacity(0.25).ignoresSafeArea()
+                    VStack(spacing: 12) {
+                        ProgressView()
+                        Text(isImportingBackup ? LS["Settings.ImportBackupData.Message"] : LS["Loading"])
+                            .font(.subheadline)
+                            .foregroundStyle(Color.orSecondary)
+                    }
+                    .padding(24)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                }
+            }
+        }
+    }
+
+    /// Reads the picked `.orbup` file and inserts its workouts/events into the database, then reports
+    /// the outcome via an alert. The heavy lifting (and de-duplication) lives in `BackupManager`.
+    private func handleBackupImport(_ result: Result<[URL], Error>) {
+        guard case let .success(urls) = result, let url = urls.first else {
+            if case .failure = result {
+                backupResultMessage = LS["Settings.ImportBackupData.Error"]
+                showBackupResult = true
+            }
+            // A `.success` with no URL means the user cancelled — nothing to do.
+            return
+        }
+
+        // The picked file lives outside the app sandbox; we must claim access before reading it.
+        let needsScopedAccess = url.startAccessingSecurityScopedResource()
+        isImportingBackup = true
+
+        BackupManager.insertBackup(from: url) { success, _, _ in
+            DispatchQueue.main.async {
+                if needsScopedAccess { url.stopAccessingSecurityScopedResource() }
+                isImportingBackup = false
+                backupResultMessage = success
+                    ? LS["Settings.ImportBackupData.Success"]
+                    : LS["Settings.ImportBackupData.Error"]
+                showBackupResult = true
+            }
+        }
+    }
+
+    /// Writes an `.orbup` backup of every workout/event to a temp file, then hands it to the iOS share
+    /// sheet so the user can save it to Files, AirDrop it, etc. A full backup only ever exports `.orbup`,
+    /// so there's no format picker to show.
+    private func createBackup() {
+        isCreatingBackup = true
+        BackupManager.createBackup(for: .all) { success, url in
+            DispatchQueue.main.async {
+                isCreatingBackup = false
+                guard success, let url = url else {
+                    backupResultMessage = LS["ExportManager.BackupError"]
+                    showBackupResult = true
+                    return
+                }
+                presentShareSheet(for: url)
+            }
+        }
+    }
+
+    /// Presents the system share sheet for the freshly-created backup. Bridged through the SwiftUI shell's
+    /// front-most view controller (`UIActivityViewController` has no idiomatic SwiftUI equivalent that
+    /// preserves the full share menu). The temp `.orbup` is deleted once the sheet is dismissed.
+    private func presentShareSheet(for url: URL) {
+        guard let presenter = UIApplication.shared.topMostViewController else {
+            try? FileManager.default.removeItem(at: url)
+            return
+        }
+
+        let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        activityVC.completionWithItemsHandler = { _, _, _, _ in
+            try? FileManager.default.removeItem(at: url)
+        }
+
+        // iPad presents this as a popover and crashes without an anchor; anchor it to the presenter.
+        if let popover = activityVC.popoverPresentationController {
+            popover.sourceView = presenter.view
+            popover.sourceRect = CGRect(x: presenter.view.bounds.midX,
+                                        y: presenter.view.bounds.midY,
+                                        width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+
+        presenter.present(activityVC, animated: true)
     }
 
     // MARK: S1 - User Settings
@@ -255,18 +369,17 @@ struct SettingsView: View {
 
     private var dataPreferencesSection: some View {
         Section {
-            // TODO: Wire up backup export. ExportManager.displayShareAlert(for:on:) needs a presenting
-            // UIViewController; this row is a placeholder until a SwiftUI-friendly share path exists.
             Button(LS["Settings.CreateBackup"]) {
-                // Intentionally empty - awaiting UIViewController bridge for ExportManager.
+                createBackup()
             }
             .foregroundStyle(Color.orPrimary)
+            .disabled(isCreatingBackup)
 
-            // TODO: Wire up backup import. The import flow is UIKit-based; placeholder for now.
             Button(LS["Settings.ImportBackupData"]) {
-                // Intentionally empty - awaiting SwiftUI backup import implementation.
+                showBackupImporter = true
             }
             .foregroundStyle(Color.orPrimary)
+            .disabled(isImportingBackup)
 
             Button(role: .destructive) {
                 showDeleteConfirmation = true

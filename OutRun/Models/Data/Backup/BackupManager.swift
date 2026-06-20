@@ -142,11 +142,16 @@ enum BackupManager {
                 
                 completeIfAppropriate()
             }
-            
+
+            // The two async saves above own the completion callback. Without this return the
+            // success path falls through to the failure `completion(false, …)` below, firing the
+            // completion twice (once with a bogus failure, then again with the real result).
+            return
+
         default:
             break
         }
-        
+
         completion(false, [], [])
         return
     }
