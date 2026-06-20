@@ -169,8 +169,8 @@ public class ORBaseBanner: UIView {
             return
         }
         
-        if let window = UIApplication.shared.keyWindow {
-            
+        if let window = UIApplication.shared.activeKeyWindow {
+
             window.windowLevel = .statusBar + 1
             
             window.addSubview(self)
@@ -272,7 +272,7 @@ public class ORBaseBanner: UIView {
     private var calculatedSize: CGSize {
         let referenceSize = CGSize(
             width: UIScreen.main.bounds.width - ( 2 * self.spacing ),
-            height: (UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.height ?? UIScreen.main.bounds.height) - ( 2 * self.spacing )
+            height: (UIApplication.shared.activeKeyWindow?.safeAreaLayoutGuide.layoutFrame.height ?? UIScreen.main.bounds.height) - ( 2 * self.spacing )
         )
         let size = self.systemLayoutSizeFitting(
             referenceSize,
@@ -289,7 +289,7 @@ public class ORBaseBanner: UIView {
     
     /// The calculated `CGPoint` for the end frame of the banner for it to be on the screen
     private var calculatedEndOrigin: CGPoint {
-        return CGPoint(x: self.spacing, y: self.spacing + (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0))
+        return CGPoint(x: self.spacing, y: self.spacing + (UIApplication.shared.activeKeyWindow?.safeAreaInsets.top ?? 0))
     }
     
     /// The start frame of the banner, being the first and last postion of the banner in the display process

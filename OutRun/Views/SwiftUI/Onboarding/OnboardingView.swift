@@ -7,14 +7,14 @@
 //  (the four-page pager). A welcome screen leads into a forward-only sequence of four gated steps —
 //  Formalities, User Info, Apple Health, Permissions — with a page indicator and a contextual
 //  Next/Skip/Finish button. On finish it persists the user's choices (`OnboardingState.finish()`) and calls
-//  `onComplete`, which swaps the window's root to the main `TabBarController`.
+//  `onComplete`, which flips the SwiftUI root (`RootRouter`) from onboarding to the main tab shell.
 //
 
 import SwiftUI
 
 struct OnboardingView: View {
 
-    /// Invoked after setup is persisted; the host swaps the window root to the app proper.
+    /// Invoked after setup is persisted; flips the SwiftUI root from onboarding to the main tab shell.
     let onComplete: () -> Void
 
     @State private var state = OnboardingState()

@@ -325,7 +325,7 @@ struct WorkoutDetailView: View {
 
     /// The frontmost view controller, used as a presenter for the UIKit share sheet / editor / map.
     private func topMostViewController() -> UIViewController? {
-        var top = UIApplication.shared.keyWindow?.rootViewController
+        var top = UIApplication.shared.activeKeyWindow?.rootViewController
         while let presented = top?.presentedViewController { top = presented }
         return top
     }

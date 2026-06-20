@@ -285,6 +285,9 @@ struct SettingsView: View {
             DispatchQueue.main.async {
                 if success {
                     UserPreferences.reset()
+                    // Return the running app to onboarding (the SwiftUI shell has no window-root swap to rely
+                    // on, unlike the legacy UIKit shell which required a relaunch).
+                    NotificationCenter.default.post(name: .outRunDidResetData, object: nil)
                 } else {
                     showDeleteError = true
                 }
