@@ -1,28 +1,83 @@
-# OutRun SwiftUI Migration — Handoff (Phases 0–5 done; next: cleanup + Phase 6 shell flip)
+# OutRun SwiftUI Migration — Handoff (Phases 0–6 DONE; cleanup DONE — only small backlog + a device check remain)
 
 > Pick this up in a fresh session. Read this top-to-bottom before touching code. It captures the
-> architecture, conventions, tooling, and gotchas established across Phases 0–5. **Phases 0–5 are DONE
-> (records below). The two remaining tasks — dead-code cleanup and the Phase 6 SwiftUI-`App` shell flip —
-> are scoped, verified, and executable in the "Remaining work" section right below the TL;DR.**
+> architecture, conventions, tooling, and gotchas established across Phases 0–6. **The migration is
+> functionally complete: every screen is SwiftUI and the app shell is a SwiftUI `App`.** What remains is
+> the small polish backlog near the bottom and ONE owner action: a real-device check that background GPS
+> during live recording didn't regress under the new scene lifecycle.
 
 ## TL;DR
 
-OutRun is a UIKit GPS workout tracker being migrated to modern Swift/SwiftUI **incrementally
-(strangler-fig)** — leaf SwiftUI screens are hosted in the existing UIKit shell; the shell flips to a
-SwiftUI `App` last. **Maps, the live-recording screen, the ORBanner system, and CoreStore stay UIKit/AS-IS**
-(bridged). Toolchain: **Xcode 26.3, iOS 17 deployment floor, Swift 5 language mode** (explicit `@MainActor`,
-not project-wide strict concurrency yet).
+OutRun is a UIKit GPS workout tracker that has been migrated to modern Swift/SwiftUI **incrementally
+(strangler-fig)**. As of Phase 6 the shell is a SwiftUI `@main App`; **the live-recording screen, maps,
+the ORBanner system, and CoreStore stay UIKit/AS-IS** (bridged from SwiftUI). Toolchain: **Xcode 26.3,
+iOS 17 deployment floor, Swift 5 language mode** (explicit `@MainActor`, not project-wide strict concurrency yet).
 
 - Repo: `/Users/chrissutton/wavelength/OutRunFork`, branch `swiftui-rewrite`, baseline commit `45db21d "early phases"`.
-- **Done & committed: Phases 0, 1, 2, Phase 3 core (Settings), ALL of Phase 4 (detail 4.1–4.3, EditWorkout 4.4, onboarding 4.5), and Phase 5 (timeline).** All build-green; verified on simulator.
-- **The strangler-fig is essentially complete for data-browsing screens** — timeline, detail, settings, edit, onboarding, policy/changelog are all SwiftUI. What remains UIKit (by design): live recording (`NewWorkoutViewController`), maps, banners, CoreStore, and the app shell. **Next: leftovers/cleanup** (see Backlog) or the Phase-6 SwiftUI-`App` shell flip (out of scope unless revisited).
+- **Done & committed: Phases 0–5, the cleanup (Phase A + DebugController port + Phase B), and Phase 6 (the SwiftUI-`App` shell flip).** All build-green; verified on simulator.
+- **The strangler-fig is complete.** All screens are SwiftUI; the shell is a SwiftUI `App`. What remains UIKit (by design, bridged): live recording (`NewWorkoutViewController`), maps (`WorkoutMapViewController`), banners (`ORBanner`), CoreStore. **Remaining: the small polish backlog (bottom) + the owner's real-device background-GPS check (see Phase 6 record).**
 
-## ⭐ Remaining work (START HERE) — cleanup, then the Phase 6 App-shell flip
+## ✅ Cleanup + Phase 6 — DONE (records)
 
-> Phases 0–5 are DONE (detailed records follow this section). Two things remain. Do **cleanup Phase A** first
-> (quick, low-risk, fully verified), then the **Phase 6 shell flip**; cleanup **Phase B** falls out of the
-> shell flip's Debug decision. Referrer analysis below was verified by grepping the whole repo (excluding Pods)
-> on 2026-06-19 at branch `swiftui-rewrite` HEAD.
+> Everything in the former "Remaining work" section is **complete and committed** (2026-06-19, branch
+> `swiftui-rewrite`). Records below. The ONLY open item is the owner's real-device background-GPS check
+> (see the Phase 6 record). The original verified plans are preserved further down for reference, prefixed
+> "(HISTORICAL PLAN — DONE)".
+
+### Cleanup — DONE (commits `77904df`, `00d5a49`, `2e6dd8d`)
+- **Phase A** (`77904df`): deleted zero-referrer dead code — `PolicyViewController`, `ChangeLogViewController`,
+  `ClearSettingsViewController`, and the dead `WorkoutStats`/`WorkoutStatsSeries` + `queryWorkoutStats`/
+  `querySectionedMetrics` cycle (deleted atomically). `WorkoutStatFormat`/`StatTileData` kept (live).
+- **DebugController → SwiftUI** (`00d5a49`): `OutRun/Views/SwiftUI/Debug/DebugView.swift` — faithful 1:1 port
+  (DB stats, map-cache size + Clear Cache, Config flags), counts loaded async via `Task.detached`. The 10-tap
+  gesture now presents `DebugView()`. (codex implemented under a precise brief; reviewed + build-verified here.)
+- **Phase B** (`2e6dd8d`): deleted the entire legacy "Setting DSL" — **17 files / 2,083 lines**
+  (`SettingsModel`/`SettingsViewController`/`SettingSection` + 11 `Setting*` subtypes + 2 protocols +
+  `DebugController`), removed `MeasurementUserPreference.setting(forTitle:)` (the type stays — live via SwiftUI),
+  pruned the orphaned `Settings.UnitPick.*` LS keys from all 14 locale files that defined them. Verified the
+  live SwiftUI `SettingsView` (incl. Unit Preferences) is unaffected.
+
+### Phase 6 — SwiftUI `App` shell flip — DONE (commit `86df73f`)
+The shell is now `OutRun/Views/SwiftUI/Shell/`:
+- **`OutRunApp`** — `@main App` + `@UIApplicationDelegateAdaptor(AppDelegate.self)`. The old
+  `applicationDidEnterBackground`/`WillEnterForeground` work (map-render suspend/resume +
+  `ApplicationStateObservation`) moved onto `scenePhase`. **GOTCHA (caused a launch crash, now fixed):**
+  `WorkoutMapImageManager.suspend/resumeRenderProcess()` are raw, unbalanced `dispatch_suspend`/`resume`;
+  `scenePhase` becomes `.active` on **cold launch** (unlike UIKit's `willEnterForeground`), so an unguarded
+  resume over-resumed the queues and trapped (SIGTRAP). Fixed with a `@State renderSuspended` flag that keeps
+  suspend/resume balanced (also covers Control-Center `.inactive→.active` round-trips).
+- **`RootView` + `RootRouter`** — boot state machine (`launching → migrating → onboarding | main`) running
+  `DataManager.setup` as before, then the launch permission re-check (location→motion→health, presented on the
+  scene's top VC with a bounded retry) and the post-update changelog (`.fullScreenCover` + `.presentationBackground(.clear)`).
+  Onboarding completion and the Settings "delete all data" reset (via a `.outRunDidResetData` notification) flip
+  `router.phase` instead of swapping a `UIWindow` root.
+- **`MainTabView`** — custom tab shell (SwiftUI `TabView` can't host the in-bar floating `+`). The `+` is a
+  **non-clipped bottom overlay** (a raised button inside a `.safeAreaInset` had its top half clipped from touch
+  delivery); tap → recording, long-press (via `.highPriorityGesture(LongPressGesture)` so it wins over the tap)
+  → `WorkoutTypeAlert`/manual create. Hidden 10-tap on the bar (Settings only) → `DebugView`. Live recording /
+  full-screen map / manual create are presented **imperatively on the front-most VC** (preserving their
+  self-dismiss contracts) — deferred via `DispatchQueue.main.async` so presenting from a `UIAlertController`
+  action doesn't no-op.
+- **`UIApplication+Scene.swift`** — scene-aware `activeKeyWindow` / `topMostViewController`, replacing the
+  deprecated `keyWindow` at the live sites (`ORBaseBanner` ×3, `WorkoutDetailView`).
+- **Deleted** the dead UIKit shell: `TabBarController`, `PlaceholderController`, `NavigationController`,
+  `ProgressViewController`, `OnboardingLauncher`, `TabBarSelectionObserver`. `AppDelegate` is now an adaptor
+  stub (keeps `lastVersion` + static `checkPermissionStatus`). (Minor leftover: the now-unused
+  `UIViewController.findFirstNonTabOrNavigationController()` helper — harmless, optional to remove.)
+- **Adversarially reviewed** (a review subagent caught the over-resume crash, a duplicate HealthKit-observer
+  registration on onboarding, the clipped `+` top half, and an alert→present race — all fixed). **Sim-verified:**
+  cold launch, tab switching, `+` tap (full button) → recording, long-press → type alert → typed recording, and
+  a background→foreground cycle (no crash).
+- **⚠️ OPEN — owner action:** verify on a **real device** that background GPS tracking during live recording did
+  NOT regress under the new UIScene lifecycle (the sim can't exercise this; Core Motion is unavailable there).
+  Background location delivery is independent of the app-delegate background callbacks (it flows through
+  `CLLocationManager` + `UIBackgroundModes=[location]`, both unchanged), so this is expected to be fine — but
+  confirm a lock-screen recording keeps logging points. Also spot-check the **not-set-up onboarding path** and a
+  **delete-all-data → onboarding** reset (both verified by review, not exercised on sim).
+
+---
+
+<details><summary>(HISTORICAL PLAN — DONE) Original verified cleanup + Phase 6 plan</summary>
 
 ### 1. Dead-code cleanup (verified)
 
@@ -134,6 +189,8 @@ and a 10-tap debug gesture. Deployment is iOS 17 / Swift 5, iPhone-portrait only
 - **Verify on sim:** cold launch (set-up & not-set-up), onboarding→main transition, live recording start/stop, the
   background→foreground map-render suspend, and the changelog on a version bump.
 
+</details>
+
 ---
 
 ## Phase 4 — workout detail screen: DONE (commits `6b4d213`, `aa3a6b6`, `d8af6b6`, `ab068d6`)
@@ -224,8 +281,9 @@ on the main queue — the view holds only value snapshots). Files in `OutRun/Vie
 ## Strategy / scope decisions (locked with the product owner)
 
 - **iOS 17 floor** (unlocks @Observable, NavigationStack, Swift Charts, SwiftUI Map). Confirmed.
-- **Pragmatic end-state (Phases 0–5):** SwiftUI for all data-browsing screens; keep UIKit shell, maps,
-  live-recording, banners. (Phase 6 SwiftUI-`App` shell flip is *out of scope* unless revisited.)
+- **End-state (Phases 0–6, DONE):** SwiftUI for all screens *and* the app shell (`@main App`); the
+  live-recording screen, maps, banners, and CoreStore stay UIKit/AS-IS, bridged from SwiftUI. (Phase 6,
+  the SwiftUI-`App` shell flip, was revisited and completed — commit `86df73f`.)
 - **Don't fix bugs in code we're going to replace.** We only fixed regressions on code that *stays*
   (live recording stays UIKit → fixed; detail screen is being replaced → its old bugs were left/reverted
   and get fixed *properly* by the rewrite).
