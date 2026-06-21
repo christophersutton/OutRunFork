@@ -120,7 +120,7 @@ extension HealthStoreManager {
             guard authorisation else { completion(.insufficientAuthorisation, []); return }
             
             let unsyncedWorkouts = NSCompoundPredicate(notPredicateWithSubpredicate: HKQuery.predicateForObjects(with: Set(DataManager.queryExistingHealthUUIDs())))
-            let supportedTypes = NSCompoundPredicate(orPredicateWithSubpredicates: Workout.WorkoutType.allCases.map { HKQuery.predicateForWorkouts(with: $0.healthKitType) })
+            let supportedTypes = NSCompoundPredicate(orPredicateWithSubpredicates: Workout.WorkoutType.supportedTypes.map { HKQuery.predicateForWorkouts(with: $0.healthKitType) })
             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [unsyncedWorkouts, supportedTypes])
             
             let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)

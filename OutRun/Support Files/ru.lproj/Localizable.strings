@@ -47,7 +47,6 @@
 "NewWorkoutCompletion.Continue.Error" = "К сожалению, не удалось продолжить вашу тренировку.";
 "Workout.Distance" = "Расстояние";
 "Workout.Steps" = "Шаги";
-"Workout.Strokes" = "Обороты Педалей";
 "Workout.Duration" = "Длительность";
 "Workout.ActiveDuration" = "Длительности Активности";
 "Workout.PauseDuration" = "Длительность пауз";
@@ -56,8 +55,6 @@
 "Workout.BurnedCalories" = "Сожженные Калории";
 "Workout.NewWorkout" = "Новая Тренировка";
 "Workout.Type.Walking" = "Прогулка";
-"Workout.Type.Cycling" = "Катание на велосипеде";
-"Workout.Type.Skating" = "Катание на коньках";
 "Workout.Type.Hiking" = "Пешая прогулка";
 "Workout.Type.Unknown" = "Неизвестный";
 "Workout.Race" = "Соревнование";

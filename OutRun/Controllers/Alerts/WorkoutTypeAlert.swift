@@ -34,7 +34,7 @@ class WorkoutTypeAlert: UIAlertController {
             )
         }
         
-        var options = Workout.WorkoutType.allCases.map { typeOption(for: $0) }
+        var options = Workout.WorkoutType.supportedTypes.map { typeOption(for: $0) }
         
         if let manualAction = manualAction {
             options.append(

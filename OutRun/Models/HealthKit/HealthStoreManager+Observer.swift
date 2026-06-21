@@ -115,7 +115,7 @@ extension HealthStoreManager {
     // MARK: - Weight Observer
     
     /// An optional UserPreference to save the anchor data to the weight observer.
-    private static let weightObserverAnchorData = UserPreference.Optional<Data>(key: "previousWorkoutAnchorData")
+    private static let weightObserverAnchorData = UserPreference.Optional<Data>(key: "previousWeightAnchorData")
     /// A wrapper for the weight observer anchor.
     private static var weightObserverAnchor: HKQueryAnchor? {
         get { getAnchor(from: weightObserverAnchorData) }
@@ -154,7 +154,7 @@ extension HealthStoreManager {
         
         HealthStoreManager.gainAuthorisation(for: [HealthType.Workout]) { authorisation, _ in
             guard authorisation && UserPreferences.synchronizeWorkoutsWithAppleHealth.value else { return }
-            let typePredicates = Workout.WorkoutType.allCases.map { HKQuery.predicateForWorkouts(with: $0.healthKitType) }
+            let typePredicates = Workout.WorkoutType.supportedTypes.map { HKQuery.predicateForWorkouts(with: $0.healthKitType) }
             let predicate = NSCompoundPredicate(orPredicateWithSubpredicates: typePredicates)
             
             executeAnchoredQuery(
