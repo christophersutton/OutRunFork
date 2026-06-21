@@ -56,9 +56,9 @@ extension WorkoutHeartRateDataSample: TempValueConvertible {
     
     public var asTemp: TempWorkoutHeartRateDataSample {
         TempWorkoutHeartRateDataSample(
-            uuid: uuid,
-            heartRate: heartRate,
-            timestamp: timestamp
+            uuid: _uuid.value,
+            heartRate: _heartRate.value,
+            timestamp: _timestamp.value
         )
     }
     

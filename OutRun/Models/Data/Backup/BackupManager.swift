@@ -48,7 +48,7 @@ enum BackupManager {
                 let url = directory.appendingPathComponent(name)
                 
                 do {
-                    try data.write(to: url)
+                    try TemporaryExportFileProtection.write(data: data, to: url)
                     completion(true, url)
                 } catch {
                     completion(false, nil)

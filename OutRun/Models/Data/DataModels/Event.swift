@@ -58,12 +58,12 @@ extension Event: TempValueConvertible {
     
     public var asTemp: TempEvent {
         TempEvent(
-            uuid: uuid,
-            title: title,
-            comment: comment,
-            startDate: startDate,
-            endDate: endDate,
-            workouts: workouts.compactMap { $0.uuid }
+            uuid: _uuid.value,
+            title: _title.value,
+            comment: _comment.value,
+            startDate: _startDate.value,
+            endDate: _endDate.value,
+            workouts: _workouts.value.compactMap { $0._uuid.value }
         )
     }
     

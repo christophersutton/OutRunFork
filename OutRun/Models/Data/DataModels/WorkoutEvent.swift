@@ -142,9 +142,9 @@ extension WorkoutEvent: TempValueConvertible {
     
     public var asTemp: TempWorkoutEvent {
         TempWorkoutEvent(
-            uuid: uuid,
-            eventType: eventType,
-            timestamp: timestamp
+            uuid: _uuid.value,
+            eventType: _eventType.value,
+            timestamp: _timestamp.value
         )
     }
     

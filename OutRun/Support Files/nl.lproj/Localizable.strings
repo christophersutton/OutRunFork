@@ -63,7 +63,6 @@
 "WorkoutList.Order.Descending" = "Dalend";
 "Workout.Comment" = "Reactie";
 "Workout.Race" = "Wedstrijd";
-"Workout.Type.Skating" = "Rolschaatsen";
 "NewWorkoutAlert.Message" = "Welke soort training wil je opnemen?";
 "NewWorkoutAlert.Title" = "Training";
 "AppleHealth.Add.Error" = "Kon de training niet toevoegen aan Apple Gezondheid. Probeer later nog eens.";
@@ -80,7 +79,6 @@
 "Workout.PauseDuration" = "Pauseduur";
 "Workout.ActiveDuration" = "Actieve duur";
 "Workout.Duration" = "Duratie";
-"Workout.Strokes" = "Pedaalslagen";
 "Workout.Steps" = "Stappen";
 "Workout.Distance" = "Afstand";
 "Workout" = "Training";
@@ -127,7 +125,6 @@
 "Workout.Type.Unknown" = "Onbekend";
 "Workout.Type.Hiking" = "Wandelen";
 "Workout.Type.Walking" = "Lopen";
-"Workout.Type.Cycling" = "Fietsen";
 "Workout.Type.Running" = "Rennen";
 "Workout.Type" = "Soort";
 "Workout.NewWorkout" = "Nieuwe training";
@@ -203,7 +200,7 @@
 "Setup.Feature.Lock.Title" = "Privacygericht";
 "Setup.Feature.Chart.Message" = "Kijk naar gedetailleerde statistieken zoals de topsnelheid en je gemiddelde tempo na afloop van de training";
 "Setup.Feature.Chart.Title" = "Gedetailleerde statistieken";
-"Setup.Feature.Route.Message" = "Neem je hardloop-, wandel- of fietstrainingen met de hoogst mogelijke nauwkeurigheid op je telefoon op.";
+"Setup.Feature.Route.Message" = "Neem je hardloop-, loop- of wandeltrainingen met de hoogst mogelijke nauwkeurigheid op je telefoon op.";
 "Setup.Feature.Route.Title" = "Nauwkeurig traceren";
 "Setup.StartButton" = "Aan de slag";
 "Setup.Introduction" = "de hardloopapp die daadwerkelijk om je privacy geeft, waarbij je geen gebruikersaccount hoeft aan te maken of gevoelige gegevens hoeft te geven die dan op een server “in the middle of nowhere” liggen.\nHier hebben we het later nog wel over, laten we later voor nu gewoon beginnen.";

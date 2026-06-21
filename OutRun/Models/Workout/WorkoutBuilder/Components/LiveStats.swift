@@ -155,20 +155,21 @@ class LiveStats: WorkoutBuilderComponent {
             .sink(receiveValue: speedRelay.accept)
             .store(in: &cancellables)
         
-        // The duration / burned-energy readouts tick on a 1s timer. Two things were broken before:
+        // The duration / burned-energy readouts tick on a shared 1s timer. Two things were broken before:
         //   1. `Timer.TimerPublisher` is a `ConnectablePublisher` — without `.autoconnect()` it never fires.
         //   2. `.default` runloop mode is starved while MKMapView animates the follow-camera, so the timer
         //      must run in `.common` mode to keep firing during an active recording.
-        // Each chain gets its own autoconnected timer to avoid shared-Connectable subscription ambiguity.
-        Timer.publish(every: 1, on: .main, in: .common)
+        let liveStatsTimer = Timer.publish(every: 1, tolerance: 0.1, on: .main, in: .common)
             .autoconnect()
+            .share()
+
+        liveStatsTimer
             .combineLatest(output.startDate, output.pauses, output.endDate)
             .compactMap(durationMapper)
             .sink(receiveValue: durationRelay.accept)
             .store(in: &cancellables)
 
-        Timer.publish(every: 1, on: .main, in: .common)
-            .autoconnect()
+        liveStatsTimer
             .combineLatest(output.workoutType, output.distance)
             .compactMap(burnedEnergyMapper)
             .sink(receiveValue: burnedEnergyRelay.accept)

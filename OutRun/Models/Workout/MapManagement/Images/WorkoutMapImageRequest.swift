@@ -24,27 +24,59 @@ class WorkoutMapImageRequest: Equatable {
     
     let workoutUUID: UUID?
     let size: WorkoutMapImageSize
+    let pointSize: CGSize
+    let scale: CGFloat
+    let usesDarkAppearance: Bool
     let highPriority: Bool
     var completion: (Bool, UIImage?) -> Void
     
-    func cacheIdentifier(forDarkAppearance usesDarkAppearance: Bool = Config.isDarkModeEnabled) -> String? {
+    func cacheIdentifier(forDarkAppearance usesDarkAppearance: Bool? = nil) -> String? {
         guard let uuid = workoutUUID else {
             return nil
         }
-        let id = String(describing: uuid)
+        let id = uuid.uuidString
         let size = self.size.identifier
-        let appearance = usesDarkAppearance ? "dark" : "light"
-        return id + "_" + size + "_" + appearance
+        let pointSize = Self.identifierComponent(for: self.pointSize)
+        let scale = Self.identifierComponent(for: self.scale)
+        let appearance = (usesDarkAppearance ?? self.usesDarkAppearance) ? "dark" : "light"
+        return id + "_" + size + "_" + pointSize + "_@" + scale + "x_" + appearance
     }
     
-    init(workoutUUID: UUID?, size: WorkoutMapImageSize, highPriority: Bool = false, completion: @escaping (Bool, UIImage?) -> Void) {
+    init(
+        workoutUUID: UUID?,
+        size: WorkoutMapImageSize,
+        pointSize: CGSize,
+        scale: CGFloat,
+        usesDarkAppearance: Bool = Config.isDarkModeEnabled,
+        highPriority: Bool = false,
+        completion: @escaping (Bool, UIImage?) -> Void
+    ) {
         self.workoutUUID = workoutUUID
         self.size = size
+        self.pointSize = pointSize
+        self.scale = scale
+        self.usesDarkAppearance = usesDarkAppearance
         self.highPriority = highPriority
         self.completion = completion
     }
     
     static func == (lhs: WorkoutMapImageRequest, rhs: WorkoutMapImageRequest) -> Bool {
-        return lhs.workoutUUID == rhs.workoutUUID && lhs.size == rhs.size
+        return lhs.workoutUUID == rhs.workoutUUID &&
+            lhs.size == rhs.size &&
+            lhs.pointSize == rhs.pointSize &&
+            lhs.scale == rhs.scale &&
+            lhs.usesDarkAppearance == rhs.usesDarkAppearance
+    }
+
+    private static func identifierComponent(for size: CGSize) -> String {
+        return identifierComponent(for: size.width) + "x" + identifierComponent(for: size.height)
+    }
+
+    private static func identifierComponent(for value: CGFloat) -> String {
+        let rounded = value.rounded()
+        if value == rounded {
+            return String(Int(rounded))
+        }
+        return String(format: "%.3f", Double(value))
     }
 }

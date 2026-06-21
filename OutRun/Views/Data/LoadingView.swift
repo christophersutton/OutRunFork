@@ -20,6 +20,7 @@
 
 import UIKit
 
+@MainActor
 class LoadingView: UIView {
     
     override init(frame: CGRect = .zero) {

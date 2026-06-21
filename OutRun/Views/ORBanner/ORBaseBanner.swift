@@ -20,6 +20,7 @@
 
 import UIKit
 
+@MainActor
 public class ORBaseBanner: UIView {
     
     /// The closure being run on display or resume of the banner

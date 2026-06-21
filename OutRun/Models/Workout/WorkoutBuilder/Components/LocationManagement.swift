@@ -38,7 +38,32 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
     private var averageAccuracy: Double = 0
     /// An array of altitude samples provided by the `WorkoutBuilder`.
     private var altitudeData: [AltitudeManagement.AltitudeSample] = []
-    
+
+    static func locationUpdatesEnabled(forGPSAccuracyPreference gpsAccuracyPreference: Double?) -> Bool {
+        gpsAccuracyPreference != -1
+    }
+
+    static func routeFilteringAccuracy(forGPSAccuracyPreference gpsAccuracyPreference: Double?) -> Double? {
+        guard locationUpdatesEnabled(forGPSAccuracyPreference: gpsAccuracyPreference) else { return nil }
+        return gpsAccuracyPreference ?? 20
+    }
+
+    static func locationManagerDesiredAccuracy(forGPSAccuracyPreference gpsAccuracyPreference: Double?) -> CLLocationAccuracy? {
+        guard locationUpdatesEnabled(forGPSAccuracyPreference: gpsAccuracyPreference) else { return nil }
+        guard gpsAccuracyPreference != nil else { return kCLLocationAccuracyBest }
+        return routeFilteringAccuracy(forGPSAccuracyPreference: gpsAccuracyPreference)
+    }
+
+    private func startLocationUpdatesIfEnabled() {
+        guard Self.locationUpdatesEnabled(forGPSAccuracyPreference: UserPreferences.gpsAccuracy.value) else {
+            locationManager.stopUpdatingLocation()
+            readinessRelay.accept(.ready(LocationManagement.self))
+            return
+        }
+
+        locationManager.startUpdatingLocation()
+    }
+
     /**
      Checks a `CLLocation` for appropriate horizontal accuracy based on user preferences and gathered data
      - parameter location: the `CLLocation` that is supposed to be checked
@@ -122,7 +147,7 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
             if isSuspended {
                 self.locationManager.stopUpdatingLocation()
             } else {
-                self.locationManager.startUpdatingLocation()
+                self.startLocationUpdatesIfEnabled()
             }
         }
     }
@@ -133,7 +158,7 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
             guard let self else { return }
             self.locationsRelay.accept(snapshot?.routeData.map { .init(from: $0) } ?? [])
             self.distanceRelay.accept(snapshot?.distance ?? 0)
-            self.locationManager.startUpdatingLocation()
+            self.startLocationUpdatesIfEnabled()
         }
     }
     
@@ -165,13 +190,22 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
     }
     
     public func prepare() {
-        
-        if UserPreferences.gpsAccuracy.value != -1 {
-            self.desiredAccuracy = UserPreferences.gpsAccuracy.value ?? 20
-        }
-        
+
+        let gpsAccuracyPreference = UserPreferences.gpsAccuracy.value
+        self.desiredAccuracy = Self.routeFilteringAccuracy(forGPSAccuracyPreference: gpsAccuracyPreference)
+
         self.locationManager.delegate = self
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+
+        guard Self.locationUpdatesEnabled(forGPSAccuracyPreference: gpsAccuracyPreference) else {
+            self.locationManager.stopUpdatingLocation()
+            self.readinessRelay.accept(.ready(LocationManagement.self))
+            return
+        }
+
+        if let desiredAccuracy = Self.locationManagerDesiredAccuracy(forGPSAccuracyPreference: gpsAccuracyPreference) {
+            self.locationManager.desiredAccuracy = desiredAccuracy
+        }
+
         self.locationManager.allowsBackgroundLocationUpdates = true
         self.locationManager.activityType = .fitness
         self.locationManager.showsBackgroundLocationIndicator = true
@@ -183,8 +217,14 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
     // MARK: - CLLocationManagerDelegate
     
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard Self.locationUpdatesEnabled(forGPSAccuracyPreference: UserPreferences.gpsAccuracy.value) else {
+            manager.stopUpdatingLocation()
+            readinessRelay.accept(.ready(LocationManagement.self))
+            return
+        }
+
         updateDesiredAccuracy(from: locations)
-        
+
         guard self.shouldRecord else {
             if let lastLocation = locations.last {
                 currentLocationRelay.accept(lastLocation.asTemp)

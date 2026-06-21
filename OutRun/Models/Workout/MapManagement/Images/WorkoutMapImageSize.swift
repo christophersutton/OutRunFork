@@ -18,23 +18,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import UIKit
+import Foundation
 
 enum WorkoutMapImageSize {
     case list, stats
-    
-    var rawSize: CGSize {
-        switch self {
-        case .list:
-            let ultimateScreenWidth = UIScreen.main.bounds.width
-            let width = (ultimateScreenWidth - 50) / 2
-            return CGSize(width: width, height: 120)
-        case .stats:
-            let ultimateScreenWidth = UIScreen.main.bounds.width
-            let width = (ultimateScreenWidth - 40)
-            return CGSize(width: width, height: 300)
-        }
-    }
     
     var identifier: String {
         switch self {

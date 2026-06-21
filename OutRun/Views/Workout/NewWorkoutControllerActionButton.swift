@@ -20,6 +20,7 @@
 
 import UIKit
 
+@MainActor
 class NewWorkoutControllerActionButton: UIView {
     
     let actionClosure: (NewWorkoutControllerActionButton, ActionType) -> Void

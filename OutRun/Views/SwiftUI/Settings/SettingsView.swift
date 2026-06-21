@@ -157,13 +157,13 @@ struct SettingsView: View {
     /// preserves the full share menu). The temp `.orbup` is deleted once the sheet is dismissed.
     private func presentShareSheet(for url: URL) {
         guard let presenter = UIApplication.shared.topMostViewController else {
-            try? FileManager.default.removeItem(at: url)
+            cleanupTemporaryBackup(at: url)
             return
         }
 
         let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         activityVC.completionWithItemsHandler = { _, _, _, _ in
-            try? FileManager.default.removeItem(at: url)
+            cleanupTemporaryBackup(at: url)
         }
 
         // iPad presents this as a popover and crashes without an anchor; anchor it to the presenter.
@@ -176,6 +176,14 @@ struct SettingsView: View {
         }
 
         presenter.present(activityVC, animated: true)
+    }
+
+    private func cleanupTemporaryBackup(at url: URL) {
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch {
+            print("[SettingsView] Failed to delete temporary backup file:", error.localizedDescription)
+        }
     }
 
     // MARK: S1 - User Settings
@@ -230,31 +238,31 @@ struct SettingsView: View {
             NavigationLink {
                 UnitSelectionView(title: LS["Settings.DistanceUnit"], preference: UserPreferences.distanceMeasurementType)
             } label: {
-                detailRow(LS["Settings.DistanceUnit"], MeasurementFormatter().string(from: UserPreferences.distanceMeasurementType.safeValue))
+                detailRow(LS["Settings.DistanceUnit"], CustomMeasurementFormatting.string(forUnit: UserPreferences.distanceMeasurementType.safeValue))
             }
 
             NavigationLink {
                 UnitSelectionView(title: LS["Settings.AltitudeUnit"], preference: UserPreferences.altitudeMeasurementType)
             } label: {
-                detailRow(LS["Settings.AltitudeUnit"], MeasurementFormatter().string(from: UserPreferences.altitudeMeasurementType.safeValue))
+                detailRow(LS["Settings.AltitudeUnit"], CustomMeasurementFormatting.string(forUnit: UserPreferences.altitudeMeasurementType.safeValue))
             }
 
             NavigationLink {
                 UnitSelectionView(title: LS["Settings.SpeedUnit"], preference: UserPreferences.speedMeasurementType)
             } label: {
-                detailRow(LS["Settings.SpeedUnit"], MeasurementFormatter().string(from: UserPreferences.speedMeasurementType.safeValue))
+                detailRow(LS["Settings.SpeedUnit"], CustomMeasurementFormatting.string(forUnit: UserPreferences.speedMeasurementType.safeValue))
             }
 
             NavigationLink {
                 UnitSelectionView(title: LS["Settings.EnergyUnit"], preference: UserPreferences.energyMeasurementType)
             } label: {
-                detailRow(LS["Settings.EnergyUnit"], MeasurementFormatter().string(from: UserPreferences.energyMeasurementType.safeValue))
+                detailRow(LS["Settings.EnergyUnit"], CustomMeasurementFormatting.string(forUnit: UserPreferences.energyMeasurementType.safeValue))
             }
 
             NavigationLink {
                 UnitSelectionView(title: LS["Settings.WeightUnit"], preference: UserPreferences.weightMeasurementType)
             } label: {
-                detailRow(LS["Settings.WeightUnit"], MeasurementFormatter().string(from: UserPreferences.weightMeasurementType.safeValue))
+                detailRow(LS["Settings.WeightUnit"], CustomMeasurementFormatting.string(forUnit: UserPreferences.weightMeasurementType.safeValue))
             }
         } header: {
             Text(LS["Settings.UnitPreferences"])

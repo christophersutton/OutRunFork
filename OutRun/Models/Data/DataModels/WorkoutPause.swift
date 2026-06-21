@@ -84,10 +84,10 @@ extension WorkoutPause: TempValueConvertible {
     
     public var asTemp: TempWorkoutPause {
         TempWorkoutPause(
-            uuid: uuid,
-            startDate: startDate,
-            endDate: endDate,
-            pauseType: pauseType
+            uuid: _uuid.value,
+            startDate: _startDate.value,
+            endDate: _endDate.value,
+            pauseType: _pauseType.value
         )
     }
     

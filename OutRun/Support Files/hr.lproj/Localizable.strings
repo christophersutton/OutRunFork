@@ -57,7 +57,6 @@
 "WorkoutStats.TopSpeed" = "Najveća brzina";
 "Settings.TermsOfService" = "Uvjeti usluge";
 "WorkoutStats.AltitudeOverTime" = "Visina kroz vrijeme";
-"Workout.Type.Skating" = "Klizanje";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Neuspjelo dodavanje treninga u Appleov program „Zdravlje”";
 "NewWorkoutViewController.WaitingAlert.Title" = "Čekanje na GPS";
 "Setup.UserInfo.PreferredSystem.Imperial" = "Imperijalni";
@@ -119,7 +118,7 @@
 "Settings.DeleteAll.Error.Title" = "Nije bilo moguće izbrisati";
 "Setup.UserInfo.PreferredSystem" = "Preferirani sustav";
 "Workout.Distance" = "Udaljenost";
-"Setup.Feature.Route.Message" = "Snimi tvoje treninge trčanja, hodanja ili vožnji biciklom na mobitelu, s najvećom mogućom preciznošću.";
+"Setup.Feature.Route.Message" = "Snimi tvoje treninge trčanja, hodanja ili planinarenja na mobitelu, s najvećom mogućom preciznošću.";
 "NoData.Message" = "Čini se da ovdje nema ničega.";
 "Settings.DeleteAllData" = "Izbriši sve podatke";
 "Setup.AppleHealth.Title" = "Želiš li sinkronizirati s Appleovim programom „Zdravlje”?";
@@ -154,7 +153,6 @@
 "Settings.DeleteAll.AppleHealth.Error.Title" = "Nije bilo moguće izbrisati";
 "NewWorkoutViewController.Cancel.Error.Recording.Title" = "Trening se snima";
 "NewWorkoutViewController.Cancel.Error.Recording.Action.StopRecording" = "Prekini snimanje";
-"Workout.Strokes" = "Pedaliranje";
 "Settings" = "Postavke";
 "EditWorkoutController.EditPauses" = "Uredi pauze";
 "Try Again" = "Pokušaj ponovo";
@@ -195,7 +193,6 @@
 "Setup.Permission.Location.Restricted.Title" = "Pristup lokaciji ograničen";
 "WorkoutEvent.Type.Segment" = "Odsječak";
 "Settings.AltitudeUnit" = "Jedinica visine";
-"Workout.Type.Cycling" = "Vožnja biciklom";
 "EditWorkoutController.NewWorkout" = "Novi trening";
 "Settings.RecordingPreferences.Message" = "Ako se tijekom snimanja treninga dogode greške u programu, isključi opciju „Prikaži kartu”, jer ona zna biti čest uzrok za probleme.\n\nAko je opcija „Prikaži vrijeme” aktivirana, umjesto brzine, prikazuje se vrijeme. Ako je opcija „Prikaži brzinu odsječka” aktivirana, prikazat će se prosječna brzina ili vrijeme za zadnji kilometar, a inače trenutačna brzina ili ukupno vrijeme.";
 "Setup.Permission.Location.Error" = "Čini se da nemamo dozvolu za snimanje tvoje lokacije, što je neophodno za rad naše usluge. Postavi dozvolu u postavkama tvog mobitela. Nakon toga ponovo pritisni gumb. Želiš li otvoriti postavke?";

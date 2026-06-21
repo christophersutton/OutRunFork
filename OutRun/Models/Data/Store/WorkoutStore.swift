@@ -39,7 +39,13 @@ final class WorkoutStore {
 
     /// Rebuilds the snapshot array from the monitor's current objects. Main-queue only.
     private func rebuild() {
-        workouts = monitor.objectsInAllSections().map(WorkoutSnapshot.init)
+        let objects = monitor.objectsInAllSections()
+        var snapshots = [WorkoutSnapshot]()
+        snapshots.reserveCapacity(objects.count)
+        for object in objects {
+            snapshots.append(WorkoutSnapshot(object))
+        }
+        workouts = snapshots
         isLoaded = true
     }
 }

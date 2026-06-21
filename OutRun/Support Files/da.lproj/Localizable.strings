@@ -84,7 +84,7 @@
 "Setup.Feature.Lock.Title" = "Privatlivsfokuseret";
 "Setup.Feature.Chart.Message" = "Se på detaljerede statistikker som tophastighed og dit gennemsnitstempo, når du er færdig med din træning";
 "Setup.Feature.Chart.Title" = "Detaljerede statistikker";
-"Setup.Feature.Route.Message" = "Optag dine løb, gå eller cykeltræning med den højest mulige nøjagtighed på din telefon.";
+"Setup.Feature.Route.Message" = "Optag dine løbe-, gå- eller vandretræninger med den højest mulige nøjagtighed på din telefon.";
 "Setup.Feature.Route.Title" = "Nøjagtig sporing";
 "Setup.StartButton" = "Lad os gå";
 "Setup.Introduction" = "den kørende app, der faktisk holder af dit privatliv, hvor du ikke behøver at oprette en brugerkonto eller give følsomme data, der derefter ligger på en server midt i himlen.\nMen mere af det senere for nu, lad os bare komme i gang.";
@@ -214,8 +214,6 @@
 "Workout.Comment" = "Kommentar";
 "Workout.Type.Unknown" = "Ukendt";
 "Workout.Type.Hiking" = "Vandreture";
-"Workout.Type.Skating" = "Stå på skøjter";
-"Workout.Type.Cycling" = "Cykling";
 "Workout.Type.Walking" = "Gå";
 "Workout.Type.Running" = "Løb";
 "Workout.Type" = "Type";
@@ -228,7 +226,6 @@
 "Workout.PauseDuration" = "Pause Varighed";
 "Workout.ActiveDuration" = "Aktiv varighed";
 "Workout.Duration" = "Varighed";
-"Workout.Strokes" = "Pedal slagtilfælde";
 "Workout.Steps" = "Trin";
 "Workout.Distance" = "Afstand";
 "Workout" = "Træning";

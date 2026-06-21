@@ -38,6 +38,7 @@ public class ORBannerQueue {
      - parameter banner: The banner being added to the queue
      - parameter position: The `Position` where a banner will be added to the queue
      */
+    @MainActor
     public func add(_ banner: ORBaseBanner, position: ORBannerQueue.Position = .back) {
         
         switch position {
@@ -85,6 +86,7 @@ public class ORBannerQueue {
     /**
      Displayes (or resumes) the next banner after removing the current banner from the queue
      */
+    @MainActor
     public func displayNext() {
         
         if !self.banners.isEmpty {

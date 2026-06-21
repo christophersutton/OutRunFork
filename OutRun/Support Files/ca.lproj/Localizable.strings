@@ -42,8 +42,6 @@
 "Workout.Race" = "Cursa";
 "Workout.Type.Unknown" = "Desconegut";
 "Workout.Type.Hiking" = "Senderisme";
-"Workout.Type.Skating" = "Patinatge";
-"Workout.Type.Cycling" = "Ciclisme";
 "Workout.Type.Walking" = "Caminar";
 "Workout.Type.Running" = "Córrer";
 "Workout.Type" = "Tipus";
@@ -57,7 +55,6 @@
 "Workout.PauseDuration" = "Durada de la pausa";
 "Workout.ActiveDuration" = "Durada activa";
 "Workout.Duration" = "Durada";
-"Workout.Strokes" = "Cops de pedal";
 "Workout.Steps" = "Passos";
 "Workout.Distance" = "Distància";
 "NewWorkoutCompletion.Save.Error" = "Malauradament, no s'ha pogut desar el teu entrenament.";
@@ -173,7 +170,7 @@
 "Setup.Feature.Lock.Title" = "Centrat en la privadesa";
 "Setup.Feature.Chart.Message" = "Mireu estadístiques detallades com ara la velocitat màxima i el ritme mitjà després d’acabar l’entrenament";
 "Setup.Feature.Chart.Title" = "Estadístiques detallades";
-"Setup.Feature.Route.Message" = "Enregistreu els entrenaments de córrer, caminar o anar amb bicicleta amb la màxima precisió possible al vostre telèfon.";
+"Setup.Feature.Route.Message" = "Enregistreu els entrenaments de córrer, caminar o senderisme amb la màxima precisió possible al vostre telèfon.";
 "Setup.Feature.Route.Title" = "Seguiment precís";
 "Setup.StartButton" = "Som-hi";
 "Setup.Headline" = "benvingut a";

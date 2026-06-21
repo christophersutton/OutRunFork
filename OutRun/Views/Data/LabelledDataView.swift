@@ -20,6 +20,7 @@
 
 import UIKit
 
+@MainActor
 class LabelledDataView: UIView, SmallStatView {
     
     fileprivate let titleLabel = UILabel(

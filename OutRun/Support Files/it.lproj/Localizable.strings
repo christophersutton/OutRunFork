@@ -68,7 +68,7 @@
 "Setup.Feature.Lock.Title" = "Focalizzato Sulla Privacy";
 "Setup.Feature.Chart.Message" = "Guardate le statistiche dettagliate come la velocità massima e il vostro ritmo medio dopo aver terminato l'allenamento";
 "Setup.Feature.Chart.Title" = "Statistiche Dettagliate";
-"Setup.Feature.Route.Message" = "Registrate i vostri allenamenti di corsa, a piedi o in bicicletta con la massima precisione possibile sul vostro telefono.";
+"Setup.Feature.Route.Message" = "Registrate i vostri allenamenti di corsa, camminata o escursione con la massima precisione possibile sul vostro telefono.";
 "Setup.Feature.Route.Title" = "Tracciamento Accurato";
 "Setup.StartButton" = "Andiamo";
 "Setup.Introduction" = "l'applicazione di corsa che ci tiene veramente alla tua privacy, nella quale non hai bisogno di creare un profilo utente, o di fornire dati sensibili salvati su server in giro per il mondo.\nMa ne riparleremo dopo, adesso iniziamo.";
@@ -198,8 +198,6 @@
 "Workout.Race" = "Gara";
 "Workout.Type.Unknown" = "Sconosciuto";
 "Workout.Type.Hiking" = "Escursione";
-"Workout.Type.Skating" = "Pattinaggio";
-"Workout.Type.Cycling" = "Ciclismo";
 "Workout.Type.Walking" = "Camminata";
 "Workout.Type.Running" = "Corsa";
 "Workout.Type" = "Tipo";
@@ -210,7 +208,6 @@
 "Workout.PauseDuration" = "Durata pausa";
 "Workout.ActiveDuration" = "Durata attiva";
 "Workout.Duration" = "Durata";
-"Workout.Strokes" = "Colpi Di Pedale";
 "Workout.Steps" = "Passi";
 "Workout.Distance" = "Distanza";
 "Workout" = "Allenamento";

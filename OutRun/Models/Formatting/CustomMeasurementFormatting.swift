@@ -21,54 +21,83 @@
 import Foundation
 
 class CustomMeasurementFormatting {
+
+    private static let formatterLock = NSLock()
+    private static let wholeNumberFormatter = measurementFormatter(roundingIncrement: 1, unitOptions: .providedUnit)
+    private static let oneDigitFormatter = measurementFormatter(roundingIncrement: 0.1, unitOptions: .providedUnit)
+    private static let twoDigitFormatter = measurementFormatter(roundingIncrement: 0.01, unitOptions: .providedUnit)
+    private static let fourDigitFormatter = measurementFormatter(roundingIncrement: 0.0001, unitOptions: .providedUnit)
+    private static let unroundedFormatter = measurementFormatter(roundingIncrement: nil, unitOptions: .providedUnit)
+    private static let naturalScaleFormatter = measurementFormatter(roundingIncrement: nil, unitOptions: .naturalScale)
+    private static let unitFormatter = MeasurementFormatter()
+
+    private static let clockFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .positional
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
+
+    private static let paceFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .positional
+        formatter.allowedUnits = [.minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
     
     static func string(forMeasurement measurement: NSMeasurement, type: FormattingMeasurementType = .auto, rounding: FormattingRoundingType = .twoDigits) -> String {
         
-        let formatter = MeasurementFormatter()
-        formatter.unitOptions = .providedUnit
-        
-        switch rounding {
-        case .wholeNumbers:
-            formatter.numberFormatter.roundingIncrement = 1
-        case .oneDigit:
-            formatter.numberFormatter.roundingIncrement = 0.1
-        case .twoDigits:
-            formatter.numberFormatter.roundingIncrement = 0.01
-        case .fourDigits:
-            formatter.numberFormatter.roundingIncrement = 0.0001
-        case .none:
-            break
-        }
-        
+        let formatter = formatter(for: rounding)
         let type = type == .auto ? FormattingMeasurementType(for: measurement.unit) : type
         
         switch type {
         case .clock, .pace:
             let seconds = measurement.converting(to: UnitDuration.seconds).value
-            let timeFormatter = DateComponentsFormatter()
-            timeFormatter.unitsStyle = .positional
-            timeFormatter.allowedUnits = type == .pace ? [.minute, .second] : [.hour, .minute, .second]
-            timeFormatter.zeroFormattingBehavior = .pad
-            return timeFormatter.string(from: seconds) ?? "Error"
+            let formatter = type == .pace ? paceFormatter : clockFormatter
+            return formatterLock.withLock { formatter.string(from: seconds) } ?? "Error"
         case .distance:
-            return formatter.string(from: measurement.converting(to: UserPreferences.distanceMeasurementType.safeValue))
+            return formatterLock.withLock { formatter.string(from: measurement.converting(to: UserPreferences.distanceMeasurementType.safeValue)) }
         case .altitude:
-            return formatter.string(from: measurement.converting(to: UserPreferences.altitudeMeasurementType.safeValue))
+            return formatterLock.withLock { formatter.string(from: measurement.converting(to: UserPreferences.altitudeMeasurementType.safeValue)) }
         case .speed:
-            return formatter.string(from: measurement.converting(to: UserPreferences.speedMeasurementType.safeValue))
+            return formatterLock.withLock { formatter.string(from: measurement.converting(to: UserPreferences.speedMeasurementType.safeValue)) }
         case .energy:
-            return formatter.string(from: measurement.converting(to: UserPreferences.energyMeasurementType.safeValue))
+            return formatterLock.withLock { formatter.string(from: measurement.converting(to: UserPreferences.energyMeasurementType.safeValue)) }
         case .weight:
-            return formatter.string(from: measurement.converting(to: UserPreferences.weightMeasurementType.safeValue))
+            return formatterLock.withLock { formatter.string(from: measurement.converting(to: UserPreferences.weightMeasurementType.safeValue)) }
         default:
-            formatter.unitOptions = .naturalScale
-            return formatter.string(from: measurement as Measurement)
+            return formatterLock.withLock { naturalScaleFormatter.string(from: measurement as Measurement) }
         }
     }
     
     static func string(forUnit unit: Unit, short: Bool = false) -> String {
-        let formatter = MeasurementFormatter()
-        return short ? unit.symbol : formatter.string(from: unit)
+        short ? unit.symbol : formatterLock.withLock { unitFormatter.string(from: unit) }
+    }
+
+    private static func formatter(for rounding: FormattingRoundingType) -> MeasurementFormatter {
+        switch rounding {
+        case .wholeNumbers:
+            return wholeNumberFormatter
+        case .oneDigit:
+            return oneDigitFormatter
+        case .twoDigits:
+            return twoDigitFormatter
+        case .fourDigits:
+            return fourDigitFormatter
+        case .none:
+            return unroundedFormatter
+        }
+    }
+
+    private static func measurementFormatter(roundingIncrement: NSNumber?, unitOptions: MeasurementFormatter.UnitOptions) -> MeasurementFormatter {
+        let measurementFormatter = MeasurementFormatter()
+        measurementFormatter.unitOptions = unitOptions
+        if let roundingIncrement {
+            measurementFormatter.numberFormatter.roundingIncrement = roundingIncrement
+        }
+        return measurementFormatter
     }
     
     enum FormattingMeasurementType {

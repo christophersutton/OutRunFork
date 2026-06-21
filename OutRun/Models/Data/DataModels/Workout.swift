@@ -37,7 +37,9 @@ public extension Workout {
     
     enum WorkoutType: CaseIterable, CustomStringConvertible, CustomDebugStringConvertible, RawRepresentable, ImportableAttributeType, Codable {
         
-        case running, walking, cycling, skating, hiking, unknown
+        case running, walking, hiking, unknown
+
+        static let supportedTypes: [WorkoutType] = [.running, .walking, .hiking]
         
         public init(rawValue: Int) {
             switch rawValue {
@@ -45,10 +47,6 @@ public extension Workout {
                 self = .running
             case 1:
                 self = .walking
-            case 2:
-                self = .cycling
-            case 3:
-                self = .skating
             case 4:
                 self = .hiking
             default:
@@ -62,10 +60,6 @@ public extension Workout {
                 self = .running
             case .walking:
                 self = .walking
-            case .cycling:
-                self = .cycling
-            case .skatingSports:
-                self = .skating
             case .hiking:
                 self = .hiking
             default:
@@ -79,10 +73,6 @@ public extension Workout {
                 return 0
             case .walking:
                 return 1
-            case .cycling:
-                return 2
-            case .skating:
-                return 3
             case .hiking:
                 return 4
             case .unknown:
@@ -96,10 +86,6 @@ public extension Workout {
                 return LS["Workout.Type.Running"]
             case .walking:
                 return LS["Workout.Type.Walking"]
-            case .cycling:
-                return LS["Workout.Type.Cycling"]
-            case .skating:
-                return LS["Workout.Type.Skating"]
             case .hiking:
                 return LS["Workout.Type.Hiking"]
             case .unknown:
@@ -113,10 +99,6 @@ public extension Workout {
                 return "Running"
             case .walking:
                 return "Walking"
-            case .cycling:
-                return "Cycling"
-            case .skating:
-                return "Skating"
             case .hiking:
                 return "Hiking"
             case .unknown:
@@ -130,10 +112,6 @@ public extension Workout {
                 return 1.035
             case .walking, .hiking:
                 return 0.655
-            case .cycling:
-                return 0.450
-            case .skating:
-                return 0.560
             case .unknown:
                 return 0
             }
@@ -145,13 +123,9 @@ public extension Workout {
                 return .running
             case .walking:
                 return .walking
-            case .cycling:
-                return .cycling
-            case .skating:
-                return .skatingSports
             case .hiking:
                 return .hiking
-            case .unknown:
+            default:
                 return .other
             }
         }
@@ -160,8 +134,6 @@ public extension Workout {
             switch self {
             case .running, .walking, .hiking:
                 return HealthStoreManager.HealthType.DistanceWalkingRunning
-            case .cycling:
-                return HealthStoreManager.HealthType.DistanceCycling
             default:
                 return nil
             }
@@ -228,23 +200,23 @@ extension Workout: TempValueConvertible {
     
     public var asTemp: TempWorkout {
         return TempWorkout(
-            uuid: uuid,
-            workoutType: workoutType,
-            distance: distance,
-            steps: steps,
-            startDate: startDate,
-            endDate: endDate,
-            burnedEnergy: burnedEnergy,
-            isRace: isRace,
-            comment: comment,
-            isUserModified: isUserModified,
-            healthKitUUID: healthKitUUID,
-            finishedRecording: finishedRecording,
-            ascend: ascend,
-            descend: descend,
-            activeDuration: activeDuration,
-            pauseDuration: pauseDuration,
-            dayIdentifier: dayIdentifier,
+            uuid: _uuid.value,
+            workoutType: _workoutType.value,
+            distance: _distance.value,
+            steps: _steps.value,
+            startDate: _startDate.value,
+            endDate: _endDate.value,
+            burnedEnergy: _burnedEnergy.value,
+            isRace: _isRace.value,
+            comment: _comment.value,
+            isUserModified: _isUserModified.value,
+            healthKitUUID: _healthKitUUID.value,
+            finishedRecording: _finishedRecording.value,
+            ascend: _ascend.value,
+            descend: _descend.value,
+            activeDuration: _activeDuration.value,
+            pauseDuration: _pauseDuration.value,
+            dayIdentifier: _dayIdentifier.value,
             heartRates: _heartRates.value.map { $0.asTemp },
             routeData: _routeData.value.map { $0.asTemp },
             pauses: _pauses.value.map { $0.asTemp },

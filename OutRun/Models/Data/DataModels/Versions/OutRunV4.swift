@@ -19,6 +19,7 @@
 //
 
 import CoreStore
+import Foundation
 
 public enum OutRunV4: ORDataModel {
     
@@ -73,8 +74,7 @@ public enum OutRunV4: ORDataModel {
                 transformer: { (sourceObject: CustomSchemaMappingProvider.UnsafeSourceObject, createDestinationObject: () -> CustomSchemaMappingProvider.UnsafeDestinationObject) in
                     
                     let destinationObject = createDestinationObject()
-                    
-                    destinationObject["heartRate"] = Int(sourceObject["heartRate"] as! Double)
+                    destinationObject["heartRate"] = OutRunV4.migratedHeartRate(from: sourceObject["heartRate"])
                     
                     destinationObject.enumerateAttributes { (attribute, sourceAttribute) in
                         if let sourceAttribute = sourceAttribute, sourceAttribute.coreStoreDumpString != "heartRate" {
@@ -89,6 +89,17 @@ public enum OutRunV4: ORDataModel {
     )
     static let migrationChain: [ORDataModel.Type] = [OutRunV1.self, OutRunV2.self, OutRunV3.self, OutRunV3to4.self, OutRunV4.self]
     
+    static func migratedHeartRate(from legacyValue: Any?) -> Int {
+        switch legacyValue {
+        case let value as Double:
+            return Int(value)
+        case let value as NSNumber:
+            return Int(truncating: value)
+        default:
+            return 0
+        }
+    }
+
     // MARK: Workout
     public final class Workout: CoreStoreObject, ORDataType {
         

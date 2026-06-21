@@ -69,6 +69,7 @@ struct DebugView: View {
                     } label: {
                         Image(systemName: "xmark")
                     }
+                    .accessibilityLabel(Text(LS["Close"]))
                     .tint(Color.orAccent)
                 }
             }
@@ -90,40 +91,36 @@ struct DebugView: View {
     }
     
     private func loadValues() async {
-        let values = await Task.detached(priority: .userInitiated) {
-            let databaseRows = [
-                DebugInfoRow(
-                    title: "Database Storage Size",
-                    value: CustomByteFormatting.string(for: DataManager.diskSize ?? -1)
-                ),
-                DebugInfoRow(
-                    title: "Workouts",
-                    value: String(DataManager.fetchCount(of: Workout.self))
-                ),
-                DebugInfoRow(
-                    title: "RouteDataSamples",
-                    value: String(DataManager.fetchCount(of: WorkoutRouteDataSample.self))
-                ),
-                DebugInfoRow(
-                    title: "WorkoutEvents",
-                    value: String(DataManager.fetchCount(of: WorkoutEvent.self))
-                ),
-                DebugInfoRow(
-                    title: "HeartRateDataSamples",
-                    value: String(DataManager.fetchCount(of: WorkoutHeartRateDataSample.self))
-                ),
-                DebugInfoRow(
-                    title: "Events",
-                    value: String(DataManager.fetchCount(of: Event.self))
-                )
-            ]
-            let cacheDiskSize = CustomImageCache.mapImageCache.diskSize
-            
-            return DebugValues(databaseRows: databaseRows, cacheDiskSize: cacheDiskSize)
-        }.value
+        let summary = await DataManager.debugSummary()
+        let databaseRows = [
+            DebugInfoRow(
+                title: "Database Storage Size",
+                value: CustomByteFormatting.string(for: summary.databaseStorageSize ?? -1)
+            ),
+            DebugInfoRow(
+                title: "Workouts",
+                value: String(summary.workoutCount)
+            ),
+            DebugInfoRow(
+                title: "RouteDataSamples",
+                value: String(summary.routeDataSampleCount)
+            ),
+            DebugInfoRow(
+                title: "WorkoutEvents",
+                value: String(summary.workoutEventCount)
+            ),
+            DebugInfoRow(
+                title: "HeartRateDataSamples",
+                value: String(summary.heartRateDataSampleCount)
+            ),
+            DebugInfoRow(
+                title: "Events",
+                value: String(summary.eventCount)
+            )
+        ]
         
-        databaseRows = values.databaseRows
-        updateCacheSize(values.cacheDiskSize)
+        self.databaseRows = databaseRows
+        updateCacheSize(summary.cacheDiskSize)
     }
     
     private func clearCache() {
@@ -175,12 +172,5 @@ private struct DebugInfoRow: Identifiable, Sendable {
     var id: String {
         title
     }
-    
-}
-
-private struct DebugValues: Sendable {
-    
-    let databaseRows: [DebugInfoRow]
-    let cacheDiskSize: Int?
     
 }

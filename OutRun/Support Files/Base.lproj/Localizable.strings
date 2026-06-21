@@ -76,7 +76,6 @@
 "Workout" = "Workout";
 "Workout.Distance" = "Distance";
 "Workout.Steps" = "Steps";
-"Workout.Strokes" = "Pedal Strokes";
 "Workout.Duration" = "Duration";
 "Workout.ActiveDuration" = "Active Duration";
 "Workout.PauseDuration" = "Pause Duration";
@@ -90,8 +89,6 @@
 "Workout.Type" = "Type";
 "Workout.Type.Running" = "Running";
 "Workout.Type.Walking" = "Walking";
-"Workout.Type.Cycling" = "Cycling";
-"Workout.Type.Skating" = "Skating";
 "Workout.Type.Hiking" = "Hiking";
 "Workout.Type.Unknown" = "Unknown";
 "Workout.Race" = "Race";
@@ -227,7 +224,7 @@
 "Setup.Introduction" = "the running app that actually cares about your privacy, where you don't have to create a user account, or give sensitive data that then lies on a server in the middle of nowhere.\nBut more of that later for now let's just get started.";
 "Setup.StartButton" = "Let's go";
 "Setup.Feature.Route.Title" = "Accurate Tracking";
-"Setup.Feature.Route.Message" = "Record your running, walking or cycling workouts with the highest accuracy possible on your phone.";
+"Setup.Feature.Route.Message" = "Record your running, walking or hiking workouts with the highest accuracy possible on your phone.";
 "Setup.Feature.Chart.Title" = "Detailed Statistics";
 "Setup.Feature.Chart.Message" = "Look at detailed statistics like top speed and your average pace after you finished your workout";
 "Setup.Feature.Lock.Title" = "Privacy Focused";

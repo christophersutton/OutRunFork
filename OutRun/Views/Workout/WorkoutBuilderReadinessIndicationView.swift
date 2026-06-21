@@ -20,6 +20,7 @@
 
 import UIKit
 
+@MainActor
 class WorkoutBuilderReadinessIndicationView: UIView {
     
     var status: WorkoutBuilder.Status {

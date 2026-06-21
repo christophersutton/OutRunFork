@@ -2,7 +2,7 @@
 //  MigrationTests.swift
 //
 //  OutRun
-//  Copyright (C) 2022 Tim Fraedrich <timfraedrich@icloud.com>
+//  Copyright (C) 2026 Tim Fraedrich <timfraedrich@icloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -18,30 +18,160 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import CoreStore
+import SQLite3
 import XCTest
+@testable import OutRun
 
-class MigrationTests: XCTestCase {
+final class MigrationTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    private static var cleanedTemporaryStoreRoot = false
+
+    func testV3ToV4HeartRateMigrationConvertsLegacyDoubleSamples() throws {
+        try withTemporaryStoreURL { storeURL in
+            try seedV3to4Store(at: storeURL, heartRate: 142.9)
+            try assertMigratedHeartRates(in: storeURL, equal: [142])
+        }
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    func testV3ToV4HeartRateMigrationFallsBackForMalformedLegacySamples() throws {
+        try withTemporaryStoreURL { storeURL in
+            try seedV3to4Store(at: storeURL, heartRate: 142.9)
+            try replaceStoredHeartRate(at: storeURL, with: "not-a-number")
+            try assertMigratedHeartRates(in: storeURL, equal: [0])
+        }
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    func testV4HeartRateMigrationConvertsSupportedLegacyValues() {
+        XCTAssertEqual(OutRunV4.migratedHeartRate(from: 142.9), 142)
+        XCTAssertEqual(OutRunV4.migratedHeartRate(from: NSNumber(value: 143.8)), 143)
+        XCTAssertEqual(OutRunV4.migratedHeartRate(from: nil), 0)
+        XCTAssertEqual(OutRunV4.migratedHeartRate(from: "142.9"), 0)
     }
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
+    func testV4HeartRateMigrationDoesNotForceCastLegacyValues() throws {
+        let unitTestsDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        let repositoryRoot = unitTestsDirectory.deletingLastPathComponent()
+        let v4SourceURL = repositoryRoot.appendingPathComponent("OutRun/Models/Data/DataModels/Versions/OutRunV4.swift")
+        let v4Source = try String(contentsOf: v4SourceURL, encoding: .utf8)
+        let forceCast = "as" + "! Double"
+
+        XCTAssertFalse(
+            v4Source.contains(forceCast),
+            "OutRunV4 migration must not force-cast legacy heart-rate values; migration code should tolerate unexpected persisted values."
+        )
+    }
+
+    private func withTemporaryStoreURL(_ body: (URL) throws -> Void) throws {
+        let storeRoot = FileManager.default.temporaryDirectory
+            .appendingPathComponent("OutRunMigrationTests", isDirectory: true)
+
+        if !Self.cleanedTemporaryStoreRoot {
+            try? FileManager.default.removeItem(at: storeRoot)
+            Self.cleanedTemporaryStoreRoot = true
+        }
+
+        let storeDirectory = storeRoot.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: storeDirectory, withIntermediateDirectories: true)
+
+        try body(storeDirectory.appendingPathComponent("OutRun.sqlite"))
+    }
+
+    private func seedV3to4Store(at storeURL: URL, heartRate: Double) throws {
+        let seedStack = DataStack(oRMigrationChain: OutRunV3to4.migrationChain, oRDataModel: OutRunV3to4.self)
+
+        try addStorage(
+            SQLiteStore(
+                fileURL: storeURL,
+                migrationMappingProviders: OutRunV3to4.migrationChain.compactMap { $0.mappingProvider },
+                localStorageOptions: .none
+            ),
+            to: seedStack
+        )
+
+        try seedStack.perform(synchronous: { transaction in
+            let sample = transaction.create(Into<OutRunV3to4.WorkoutHeartRateDataSample>())
+            sample.uuid .= UUID()
+            sample.timestamp .= Date(timeIntervalSince1970: 1_700_000_000)
+            sample.heartRate .= heartRate
+        })
+    }
+
+    private func replaceStoredHeartRate(at storeURL: URL, with value: String) throws {
+        var database: OpaquePointer?
+        guard sqlite3_open_v2(storeURL.path, &database, SQLITE_OPEN_READWRITE, nil) == SQLITE_OK else {
+            throw sqliteError(database, message: "Failed to open seeded migration store")
+        }
+        defer { sqlite3_close(database) }
+
+        var statement: OpaquePointer?
+        let sql = "UPDATE ZWORKOUTHEARTRATESAMPLE SET ZHEARTRATE = ?"
+        guard sqlite3_prepare_v2(database, sql, -1, &statement, nil) == SQLITE_OK else {
+            throw sqliteError(database, message: "Failed to prepare heart-rate corruption statement")
+        }
+        defer { sqlite3_finalize(statement) }
+
+        let stepResult = value.withCString { valuePointer -> Int32 in
+            guard sqlite3_bind_text(statement, 1, valuePointer, -1, nil) == SQLITE_OK else {
+                return sqlite3_errcode(database)
+            }
+
+            return sqlite3_step(statement)
+        }
+
+        guard stepResult == SQLITE_DONE else {
+            throw sqliteError(database, message: "Failed to corrupt seeded heart-rate value")
+        }
+    }
+
+    private func assertMigratedHeartRates(
+        in storeURL: URL,
+        equal expectedHeartRates: [Int],
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        let migratedStack = DataStack(oRMigrationChain: OutRunV4.migrationChain, oRDataModel: OutRunV4.self)
+
+        try addStorage(
+            SQLiteStore(
+                fileURL: storeURL,
+                migrationMappingProviders: OutRunV4.migrationChain.compactMap { $0.mappingProvider },
+                localStorageOptions: .none
+            ),
+            to: migratedStack
+        )
+
+        let migratedSamples = try migratedStack.fetchAll(From<OutRunV4.WorkoutHeartRateDataSample>())
+        let heartRates = migratedSamples.map { $0._heartRate.value }
+
+        XCTAssertEqual(heartRates, expectedHeartRates, file: file, line: line)
+    }
+
+    private func sqliteError(_ database: OpaquePointer?, message: String) -> NSError {
+        let detail = database.flatMap { sqlite3_errmsg($0).map { String(cString: $0) } } ?? "unknown SQLite error"
+        return NSError(
+            domain: "MigrationTests.SQLite",
+            code: Int(sqlite3_errcode(database)),
+            userInfo: [NSLocalizedDescriptionKey: "\(message): \(detail)"]
+        )
+    }
+
+    private func addStorage(_ storage: SQLiteStore, to dataStack: DataStack) throws {
+        let storageExpectation = expectation(description: "Add SQLite storage")
+        var setupResult: SetupResult<SQLiteStore>?
+
+        _ = dataStack.addStorage(storage) { result in
+            setupResult = result
+            storageExpectation.fulfill()
+        }
+
+        wait(for: [storageExpectation], timeout: 10)
+
+        switch try XCTUnwrap(setupResult) {
+        case .success:
+            break
+        case .failure(let error):
+            throw error
         }
     }
 

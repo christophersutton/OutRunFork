@@ -29,6 +29,7 @@ struct ChangelogView: View {
                             .foregroundStyle(Color.orSecondary)
                             .imageScale(.large)
                     }
+                    .accessibilityLabel(Text(LS["Close"]))
                 }
 
                 Text("\(LS["ChangeLog"]) - \(Config.version)")

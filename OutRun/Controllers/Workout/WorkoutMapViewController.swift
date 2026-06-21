@@ -56,8 +56,10 @@ class WorkoutMapViewController: MapViewControllerWithContainerView {
                     title: title,
                     style: .default,
                     action: { action in
-                        self.mapView?.mapType = type
-                        button.setTitle(title.uppercased(), for: .normal)
+                        Task { @MainActor in
+                            self.mapView?.mapType = type
+                            button.setTitle(title.uppercased(), for: .normal)
+                        }
                     }
                 )
             }

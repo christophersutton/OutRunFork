@@ -39,6 +39,7 @@ struct WorkoutDetailView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button { dismiss() } label: { Image(systemName: "xmark") }
+                        .accessibilityLabel(Text(LS["Close"]))
                 }
                 if snapshot != nil {
                     ToolbarItem(placement: .navigationBarTrailing) { actionsMenu }
@@ -139,8 +140,7 @@ struct WorkoutDetailView: View {
     private func distanceSection(_ snapshot: WorkoutDetailSnapshot) -> some View {
         var tiles = [StatTileData(title: LS["Workout.Distance"], value: WorkoutStatFormat.distance(snapshot.distance))]
         if let steps = snapshot.steps {
-            let title = snapshot.workoutType == .cycling ? LS["Workout.Strokes"] : LS["Workout.Steps"]
-            tiles.append(StatTileData(title: title, value: WorkoutStatFormat.count(steps)))
+            tiles.append(StatTileData(title: LS["Workout.Steps"], value: WorkoutStatFormat.count(steps)))
         }
         if snapshot.hasRouteData {
             tiles.append(StatTileData(title: LS["WorkoutStats.AscendingAltitude"], value: WorkoutStatFormat.altitude(snapshot.ascend)))

@@ -46,6 +46,7 @@ class WorkoutCompletionActionHandler {
     /**
      Displays a dismissable view over the current `UIWindow` that gives the user options on what to do with the just recorded workout, saving it automatically after a certain time
      */
+    @MainActor
     public func display() {
         
         let banner = WorkoutCompletionBanner(handler: self)
@@ -67,12 +68,12 @@ class WorkoutCompletionActionHandler {
         
         DataManager.saveWorkout(object: self.snapshot) { (success, error, workout) in
             
-            let banner = TextBanner(text: LS["NewWorkoutCompletion.Save." + (success ? "Success" : "Error")])
-            banner.duration = 5
-            banner.show()
+            Task { @MainActor in
+                let banner = TextBanner(text: LS["NewWorkoutCompletion.Save." + (success ? "Success" : "Error")])
+                banner.duration = 5
+                banner.show()
 
-            guard success else { return }
-            DispatchQueue.main.async {
+                guard success else { return }
                 UIApplication.shared.topMostViewController?.dismiss(animated: true)
             }
             
@@ -83,6 +84,7 @@ class WorkoutCompletionActionHandler {
     /**
      Continues the workout if no other action was already performed and the builder is still active
      */
+    @MainActor
     public func continueWorkout() {
         
         guard !self.didPerformAction else {

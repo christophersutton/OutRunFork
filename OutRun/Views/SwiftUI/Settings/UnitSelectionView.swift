@@ -39,7 +39,7 @@ struct UnitSelectionView<UnitType: Unit>: View {
 
                 ForEach(preference.possibleValues, id: \.self) { unit in
                     row(
-                        label: MeasurementFormatter().string(from: unit),
+                        label: CustomMeasurementFormatting.string(forUnit: unit),
                         isSelected: selection == unit
                     ) {
                         selection = unit

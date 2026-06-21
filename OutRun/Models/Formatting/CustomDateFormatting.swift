@@ -22,7 +22,41 @@ import Foundation
 
 class CustomDateFormatting {
     
-    static var dayIDFormat = "yyyyMMdd"
+    static let dayIDFormat = "yyyyMMdd"
+
+    private static let formatterLock = NSLock()
+    private static let posixLocale = Locale(identifier: "en_US_POSIX")
+    private static let gregorianCalendar = Calendar(identifier: .gregorian)
+
+    private static let weekdayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        return formatter
+    }()
+
+    private static let mediumDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.doesRelativeDateFormatting = true
+        formatter.dateStyle = .medium
+        return formatter
+    }()
+
+    private static let timeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        return formatter
+    }()
+
+    private static let fullDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+    }()
+
+    private static let dayIdentifierFormatter = fixedDateFormatter(for: dayIDFormat)
+    private static let backupTimeCodeFormatter = fixedDateFormatter(for: "yyyyMMdd-HHmmss")
     
     static func dayString(forDate date: Date) -> String {
         if date.isSameDay() {
@@ -30,53 +64,43 @@ class CustomDateFormatting {
         } else if date.isYesterday() {
             return LS["Yesterday"]
         }
-        let dateFormatter = DateFormatter()
         
         if date.isLessThanAWeekAway() {
-            dateFormatter.dateFormat = "EEEE"
-            return dateFormatter.string(from: date)
+            return formatterLock.withLock { weekdayFormatter.string(from: date) }
         }
         
-        dateFormatter.doesRelativeDateFormatting = true
-        dateFormatter.dateStyle = .medium
-        return dateFormatter.string(from: date)
+        return formatterLock.withLock { mediumDateFormatter.string(from: date) }
     }
     
     static func dayString(forIdentifier dayIdentifier: String) -> String? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = dayIDFormat
-        guard let date = dateFormatter.date(from: dayIdentifier) else {
+        guard let date = formatterLock.withLock({ dayIdentifierFormatter.date(from: dayIdentifier) }) else {
             return nil
         }
         return dayString(forDate: date)
     }
     
     static func dayIdentifier(forDate date: Date) -> String {
-        string(for: dayIDFormat, date: date)
+        formatterLock.withLock { dayIdentifierFormatter.string(from: date) }
     }
     
     static func timeString(forDate date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = .none
-        dateFormatter.timeStyle = .short
-        return dateFormatter.string(from: date)
+        formatterLock.withLock { timeFormatter.string(from: date) }
     }
     
     static func backupTimeCode(forDate date: Date) -> String {
-        return string(for: "yyyyMMdd-HHmmss", date: date)
+        formatterLock.withLock { backupTimeCodeFormatter.string(from: date) }
     }
     
     static func fullDateString(forDate date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .short
-        return dateFormatter.string(from: date)
+        formatterLock.withLock { fullDateFormatter.string(from: date) }
     }
-    
-    private static func string(for dateFormat: String, date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = dateFormat
-        return dateFormatter.string(from: date)
+
+    private static func fixedDateFormatter(for dateFormat: String) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.locale = posixLocale
+        formatter.calendar = gregorianCalendar
+        formatter.dateFormat = dateFormat
+        return formatter
     }
     
 }

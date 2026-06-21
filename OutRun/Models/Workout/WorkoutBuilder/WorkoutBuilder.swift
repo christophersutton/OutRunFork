@@ -52,6 +52,10 @@ public class WorkoutBuilder: ApplicationStateObserver {
         self.prepareBindings()
         self.startObservingApplicationState()
     }
+
+    deinit {
+        self.stopObservingApplicationState()
+    }
     
     // MARK: - Bindings
     
@@ -100,7 +104,9 @@ public class WorkoutBuilder: ApplicationStateObserver {
                 
                 if let snapshot = self.createSnapshot() {
                     let actionHandler = WorkoutCompletionActionHandler(snapshot: snapshot, builder: self)
-                    actionHandler.display()
+                    Task { @MainActor in
+                        actionHandler.display()
+                    }
                 }
                 
                 self.reset()

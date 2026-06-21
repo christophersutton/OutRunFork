@@ -20,6 +20,7 @@
 
 import UIKit
 
+@MainActor
 class WorkoutBuilderTypeView: UIView {
     
     let typeLabel = UILabel(

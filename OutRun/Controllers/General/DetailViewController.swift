@@ -20,6 +20,7 @@
 
 import UIKit
 
+@MainActor
 class DetailViewController: UIViewController {
     
     var headline = "" {

@@ -9,7 +9,6 @@
 //
 
 import SwiftUI
-import MapKit
 
 // MARK: - Timeline gutter (continuous accent line + per-card ring)
 
@@ -60,6 +59,12 @@ struct WorkoutTimelineRow: View {
     let snapshot: WorkoutSnapshot
     let onTap: () -> Void
 
+    @Environment(\.displayScale) private var displayScale
+
+    @State private var routeImage: UIImage?
+    @State private var routeThumbnailSize: CGSize = .zero
+    @State private var requestedRouteThumbnailSize: CGSize?
+
     var body: some View {
         HStack(spacing: 0) {
             TimelineGutter(showRing: true)
@@ -87,12 +92,15 @@ struct WorkoutTimelineRow: View {
 
             Spacer(minLength: 12)
 
-            if snapshot.hasRouteData {
-                RouteThumbnail(workoutID: snapshot.id)
-                    .frame(width: Self.thumbnailWidth, height: 120)
+            if let routeImage {
+                Image(uiImage: routeImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: routeThumbnailSize.width, height: routeThumbnailSize.height)
+                    .clipped()
             }
         }
-        .frame(minHeight: snapshot.hasRouteData ? 120 : 0)
+        .frame(minHeight: routeImage == nil ? 0 : 120)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.orForeground)
         .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
@@ -102,9 +110,15 @@ struct WorkoutTimelineRow: View {
                     .strokeBorder(Color.orAccent.opacity(0.5), lineWidth: 4)
             }
         }
+        .onGeometryChange(for: CGSize.self) { proxy in
+            proxy.size
+        } action: { newSize in
+            let thumbnailWidth = max(newSize.width / 2, 0)
+            routeThumbnailSize = CGSize(width: thumbnailWidth, height: 120)
+            loadRouteImageIfNeeded()
+        }
+        .onAppear(perform: loadRouteImageIfNeeded)
     }
-
-    private static var thumbnailWidth: CGFloat { (UIScreen.main.bounds.width - 50) / 2 }
 
     /// Distance in the user's unit with a single decimal place (e.g. "5.2 km").
     static func distanceString(_ snapshot: WorkoutSnapshot) -> String {
@@ -122,6 +136,30 @@ struct WorkoutTimelineRow: View {
             type: .time,
             rounding: .wholeNumbers
         )
+    }
+
+    private func loadRouteImageIfNeeded() {
+        guard snapshot.hasRouteData else { return }
+
+        let requestedSize = routeThumbnailSize
+        guard requestedSize.width > 0, requestedSize.height > 0 else { return }
+        guard requestedRouteThumbnailSize != requestedSize else { return }
+        requestedRouteThumbnailSize = requestedSize
+
+        let request = WorkoutMapImageRequest(
+            workoutUUID: snapshot.id,
+            size: .list,
+            pointSize: requestedSize,
+            scale: displayScale
+        ) { success, image in
+            guard success else { return }
+            guard let image else { return }
+            DispatchQueue.main.async {
+                guard self.routeThumbnailSize == requestedSize else { return }
+                self.routeImage = image
+            }
+        }
+        WorkoutMapImageManager.execute(request)
     }
 }
 
@@ -151,40 +189,5 @@ enum WorkoutStatText {
             }
         }
         return text
-    }
-}
-
-// MARK: - Route thumbnail (async, cached, off the workout uuid)
-
-/// A static route preview rendered by the existing `WorkoutMapImageManager` (which resolves coordinates off
-/// the uuid and caches by uuid+size+appearance). No live `Workout` needed. The completion is funneled to the
-/// main queue; a late result for a torn-down row simply no-ops. (We avoid a continuation here because the
-/// manager's queue de-dups identical uuid+size requests by *removing* a pending one — which would leak a
-/// continuation that never resumes.)
-struct RouteThumbnail: View {
-    let workoutID: UUID
-
-    @State private var image: UIImage?
-
-    var body: some View {
-        ZStack {
-            Color.orBackground.opacity(0.5)
-            if let image {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-            }
-        }
-        .clipped()
-        .onAppear(perform: loadIfNeeded)
-    }
-
-    private func loadIfNeeded() {
-        guard image == nil else { return }
-        let request = WorkoutMapImageRequest(workoutUUID: workoutID, size: .list) { _, image in
-            guard let image else { return }
-            DispatchQueue.main.async { self.image = image }
-        }
-        WorkoutMapImageManager.execute(request)
     }
 }

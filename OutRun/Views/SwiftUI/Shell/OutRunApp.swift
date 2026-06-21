@@ -22,11 +22,10 @@ struct OutRunApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
 
-    /// Tracks whether the map-render queues are currently suspended. `WorkoutMapImageManager`'s
-    /// `suspend`/`resume` are raw, unbalanced `dispatch_suspend`/`dispatch_resume` calls (legacy callers
-    /// always paired them). Unlike UIKit's `applicationWillEnterForeground`, `scenePhase` becomes `.active`
-    /// on the initial launch too, so resuming unconditionally would over-resume the queues and trap — this
-    /// flag keeps the suspend/resume balanced.
+    /// Tracks whether map rendering has already been logically suspended for the current background
+    /// transition. Unlike UIKit's `applicationWillEnterForeground`, `scenePhase` becomes `.active` on the
+    /// initial launch too, so this flag avoids redundant scene-phase calls while the manager remains
+    /// idempotent on its own.
     @State private var renderSuspended = false
 
     var body: some Scene {

@@ -113,8 +113,6 @@
 "Workout.Race" = "Lopp";
 "Workout.Type.Unknown" = "Okänd";
 "Workout.Type.Hiking" = "Vandring";
-"Workout.Type.Skating" = "Skridskor";
-"Workout.Type.Cycling" = "Cykling";
 "Workout.Type.Walking" = "Promenad";
 "Workout.Type.Running" = "Löpning";
 "Workout.Type" = "Typ";
@@ -125,7 +123,6 @@
 "Workout.PauseDuration" = "Pausa Tid";
 "Workout.ActiveDuration" = "Aktiv Tid";
 "Workout.Duration" = "Tid";
-"Workout.Strokes" = "Pedaltramp";
 "Workout.Steps" = "Steg";
 "Workout.Distance" = "Distans";
 "Workout" = "Träning";
@@ -248,7 +245,7 @@
 "Setup.Feature.Lock.Title" = "Fokus på Integritet";
 "Setup.Feature.Chart.Message" = "Titta på detaljerad statistik som topphastighet och ditt genomsnittliga tempo efter att du avslutat träningen";
 "Setup.Feature.Chart.Title" = "Detaljerad statistik";
-"Setup.Feature.Route.Message" = "Spela in dina löppass, promenader eller cykelturer på telefonen, med största möjliga precision på din telefon.";
+"Setup.Feature.Route.Message" = "Spela in dina löppass, promenader eller vandringar på telefonen, med största möjliga precision på din telefon.";
 "Setup.Feature.Route.Title" = "Nogrann spårning";
 "Setup.StartButton" = "Kom igång";
 "Setup.Introduction" = "den löpapp som faktiskt bryr sig om din integritet, där du inte behöver skapa ett användarkonto eller tillåta att känsliga data förvaras på en server bortom din kontroll.\nMen mer om det senare, för låt oss nu komma igång.";

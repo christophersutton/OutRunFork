@@ -20,6 +20,7 @@
 
 import UIKit
 
+@MainActor
 class WorkoutActionView: UIView {
 
     let workout: Workout

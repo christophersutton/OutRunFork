@@ -23,6 +23,7 @@ import Foundation
 class PolicyManager {
     
     static let baseURL = "https://outrun.tadris.de/policies/"
+    private static let session = URLSession.shared
     
     static func query(for type: PolicyType, completion: @escaping (Bool, Error?, String?) -> Void) {
         
@@ -34,12 +35,7 @@ class PolicyManager {
         
         if let url = URL(string: baseURL + type.urlExtension) {
             
-            var request = URLRequest(url: url)
-            request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-            
-            let session = URLSession(configuration: URLSessionConfiguration.default)
-            
-            let task = session.dataTask(with: request as URLRequest) {
+            let task = session.dataTask(with: url) {
                 data, response, error in
                 
                 if let err = error {
@@ -60,7 +56,6 @@ class PolicyManager {
                 
             }
             task.resume()
-            session.finishTasksAndInvalidate()
         }
         
     }

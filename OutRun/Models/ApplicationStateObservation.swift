@@ -23,12 +23,28 @@ import Foundation
 struct ApplicationStateObservation {
     
     weak var observer: ApplicationStateObserver?
-    
-    static var observations: [ObjectIdentifier:ApplicationStateObservation] = [:]
+
+    private static let observationsLock = NSLock()
+    private static var _observations: [ObjectIdentifier:ApplicationStateObservation] = [:]
+
+    static var observations: [ObjectIdentifier:ApplicationStateObservation] {
+        get {
+            observationsLock.lock()
+            defer { observationsLock.unlock() }
+            return _observations
+        }
+        set {
+            observationsLock.lock()
+            defer { observationsLock.unlock() }
+            _observations = newValue
+        }
+    }
     
     static func addObserver(_ observer: ApplicationStateObserver) {
         let identifier = ObjectIdentifier(observer)
-        ApplicationStateObservation.observations.updateValue(
+        observationsLock.lock()
+        defer { observationsLock.unlock() }
+        _observations.updateValue(
             ApplicationStateObservation(observer: observer),
             forKey: identifier
         )
@@ -36,17 +52,27 @@ struct ApplicationStateObservation {
     
     static func removeObserver(_ observer: ApplicationStateObserver) {
         let identifier = ObjectIdentifier(observer)
-        ApplicationStateObservation.observations.removeValue(forKey: identifier)
+        observationsLock.lock()
+        defer { observationsLock.unlock() }
+        _observations.removeValue(forKey: identifier)
     }
     
     static func stateChanged(to state: ApplicationState) {
-        for (identifier, observation) in ApplicationStateObservation.observations {
+        var activeObservers: [ApplicationStateObserver] = []
+
+        observationsLock.lock()
+        for (identifier, observation) in _observations {
             
             guard let observer = observation.observer else {
-                ApplicationStateObservation.observations.removeValue(forKey: identifier)
+                _observations.removeValue(forKey: identifier)
                 continue
             }
-            
+
+            activeObservers.append(observer)
+        }
+        observationsLock.unlock()
+
+        for observer in activeObservers {
             observer.didUpdateApplicationState(to: state)
         }
     }

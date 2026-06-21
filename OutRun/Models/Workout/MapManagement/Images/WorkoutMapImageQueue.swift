@@ -31,26 +31,45 @@ class WorkoutMapImageQueue {
     
     func add(_ request: WorkoutMapImageRequest) {
         
-        // removing already existing identical requests
-        if let index = (request.highPriority ? highPriorityRequests : ordinaryRequests).firstIndex(of: request) {
-            switch request.highPriority {
-            case true:
-                highPriorityRequests.remove(at: index)
-            default:
-                ordinaryRequests.remove(at: index)
-            }
+        // Identical requests are already pending; keep the original so its completion can still fire.
+        if highPriorityRequests.contains(request) {
             return
         }
         
-        switch request.highPriority {
-        case true:
+        if request.highPriority {
+            if promote(request) {
+                return
+            }
             highPriorityRequests.append(request)
-        default:
+        } else if !ordinaryRequests.contains(request) {
             ordinaryRequests.append(request)
         }
         
     }
     
+    @discardableResult
+    func promote(_ request: WorkoutMapImageRequest, excluding excludedRequest: WorkoutMapImageRequest? = nil) -> Bool {
+        guard request.highPriority else { return false }
+        guard let index = ordinaryRequests.firstIndex(of: request) else { return false }
+        let pendingRequest = ordinaryRequests.remove(at: index)
+        if pendingRequest === excludedRequest {
+            ordinaryRequests.insert(pendingRequest, at: index)
+            return false
+        }
+        highPriorityRequests.append(
+            WorkoutMapImageRequest(
+                workoutUUID: pendingRequest.workoutUUID,
+                size: pendingRequest.size,
+                pointSize: pendingRequest.pointSize,
+                scale: pendingRequest.scale,
+                usesDarkAppearance: pendingRequest.usesDarkAppearance,
+                highPriority: true,
+                completion: pendingRequest.completion
+            )
+        )
+        return true
+    }
+
     func remove(_ request: WorkoutMapImageRequest) {
         
         switch request.highPriority {

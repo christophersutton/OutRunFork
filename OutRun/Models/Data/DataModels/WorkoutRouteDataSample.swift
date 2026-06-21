@@ -63,15 +63,15 @@ extension WorkoutRouteDataSample: TempValueConvertible {
     
     public var asTemp: TempWorkoutRouteDataSample {
         TempWorkoutRouteDataSample(
-            uuid: uuid,
-            timestamp: timestamp,
-            latitude: latitude,
-            longitude: longitude,
-            altitude: altitude,
-            horizontalAccuracy: horizontalAccuracy,
-            verticalAccuracy: verticalAccuracy,
-            speed: speed,
-            direction: direction
+            uuid: _uuid.value,
+            timestamp: _timestamp.value,
+            latitude: _latitude.value,
+            longitude: _longitude.value,
+            altitude: _altitude.value,
+            horizontalAccuracy: _horizontalAccuracy.value,
+            verticalAccuracy: _verticalAccuracy.value,
+            speed: _speed.value,
+            direction: _direction.value
         )
     }
     

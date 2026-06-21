@@ -202,9 +202,10 @@ public class ExportManager {
                 
                 do {
                     try root.outputToFile(saveAt: directoryUrl, fileName: fileName)
+                    try TemporaryExportFileProtection.protectExistingTemporaryExportFile(at: fullURL)
                     urls.append(fullURL)
                 } catch {
-                    print("[ExportManager] Failed to save GPX file")
+                    print("[ExportManager] Failed to save GPX file:", error.localizedDescription)
                 }
             }
             
