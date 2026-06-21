@@ -36,8 +36,8 @@ final class EditWorkoutState {
 
     @ObservationIgnored let mode: Mode
 
-    /// The workout types offered in the picker — running/walking/cycling, plus the existing type when it is
-    /// something else (e.g. an imported skating workout) so editing never silently reclassifies it.
+    /// The workout types offered in the picker, plus the existing type when needed so editing never
+    /// silently reclassifies it.
     @ObservationIgnored let availableTypes: [Workout.WorkoutType]
 
     var workoutType: Workout.WorkoutType
@@ -100,7 +100,7 @@ final class EditWorkoutState {
         self.isRace = seededRace
         self.comment = seededComment
 
-        var types: [Workout.WorkoutType] = [.running, .walking, .cycling]
+        var types = Workout.WorkoutType.supportedTypes
         if !types.contains(seededType) { types.append(seededType) }
         self.availableTypes = types
     }
@@ -131,9 +131,9 @@ final class EditWorkoutState {
         CustomMeasurementFormatting.string(forUnit: UserPreferences.distanceMeasurementType.safeValue, short: true)
     }
 
-    /// Label for the steps field, reactive to the selected type (matches the detail screen).
+    /// Label for the steps field.
     var stepsFieldTitle: String {
-        workoutType == .cycling ? LS["Workout.Strokes"] : LS["Workout.Steps"]
+        LS["Workout.Steps"]
     }
 
     /// Distance in the canonical standard unit (kilometers), parsed from the preferred-unit text field.

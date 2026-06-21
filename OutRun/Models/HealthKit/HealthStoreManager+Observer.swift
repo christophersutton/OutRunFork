@@ -91,16 +91,17 @@ extension HealthStoreManager {
         
         workoutObserverAnchor = anchor
         
-        let existingHealthUUIDs = DataManager.queryExistingHealthUUIDs()
-        
         if UserPreferences.automaticallyImportNewHealthWorkouts.value && !samples.isEmpty {
-            let workouts = samples.compactMap { $0 as? HKWorkout }
-                .filter { !existingHealthUUIDs.contains($0.uuid) }
-                .compactMap { createHealthWorkout(from: $0) }
-            
-            DataManager.saveWorkouts(objects: workouts) { _, error, _ in
-                guard let error = error else { return }
-                print("[HealthStoreManager+Observer] An error occured while trying to save new health workouts:", error.debugDescription)
+            DataManager.queryExistingHealthUUIDs { existingHealthUUIDs in
+                let hkWorkouts = samples.compactMap { $0 as? HKWorkout }
+                    .filter { !existingHealthUUIDs.contains($0.uuid) }
+
+                createHealthWorkouts(from: hkWorkouts) { workouts in
+                    DataManager.saveWorkouts(objects: workouts) { _, error, _ in
+                        guard let error = error else { return }
+                        print("[HealthStoreManager+Observer] An error occured while trying to save new health workouts:", error.debugDescription)
+                    }
+                }
             }
         }
         
@@ -115,7 +116,7 @@ extension HealthStoreManager {
     // MARK: - Weight Observer
     
     /// An optional UserPreference to save the anchor data to the weight observer.
-    private static let weightObserverAnchorData = UserPreference.Optional<Data>(key: "previousWorkoutAnchorData")
+    private static let weightObserverAnchorData = UserPreference.Optional<Data>(key: "previousWeightAnchorData")
     /// A wrapper for the weight observer anchor.
     private static var weightObserverAnchor: HKQueryAnchor? {
         get { getAnchor(from: weightObserverAnchorData) }
@@ -154,7 +155,7 @@ extension HealthStoreManager {
         
         HealthStoreManager.gainAuthorisation(for: [HealthType.Workout]) { authorisation, _ in
             guard authorisation && UserPreferences.synchronizeWorkoutsWithAppleHealth.value else { return }
-            let typePredicates = Workout.WorkoutType.allCases.map { HKQuery.predicateForWorkouts(with: $0.healthKitType) }
+            let typePredicates = Workout.WorkoutType.supportedTypes.map { HKQuery.predicateForWorkouts(with: $0.healthKitType) }
             let predicate = NSCompoundPredicate(orPredicateWithSubpredicates: typePredicates)
             
             executeAnchoredQuery(

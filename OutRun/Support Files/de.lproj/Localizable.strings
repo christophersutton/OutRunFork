@@ -74,7 +74,6 @@
 "Workout" = "Workout";
 "Workout.Distance" = "Entfernung";
 "Workout.Steps" = "Schritte";
-"Workout.Strokes" = "Pedalanschläge";
 "Workout.Duration" = "Dauer";
 "Workout.StartDate" = "Start Zeit";
 "Workout.CurrentSpeed" = "Akt. Geschw.";
@@ -86,8 +85,6 @@
 "Workout.Type" = "Typ";
 "Workout.Type.Running" = "Laufen";
 "Workout.Type.Walking" = "Gehen";
-"Workout.Type.Cycling" = "Radfahren";
-"Workout.Type.Skating" = "Skaten";
 "Workout.Type.Hiking" = "Wandern";
 "Workout.Type.Unknown" = "Unbekannt";
 "Workout.Race" = "Wettkampf";
@@ -216,7 +213,7 @@
 "Setup.Introduction" = "die Lauf-App, die sich wirklich für deine Privatsphäre interressiert, wo man keinen Account erstellen, geschweige denn sensible Daten weiter geben muss, die dann irgendwo im Nirgendwo auf einem Server liegen.\nAber davon später noch mehr, lass uns jetzt erstmal anfangen.";
 "Setup.StartButton" = "Los geht's";
 "Setup.Feature.Route.Title" = "Genaues Tracking";
-"Setup.Feature.Route.Message" = "Zeichne deine Lauf-, Geh- und Fahrradworkouts mit der auf deinem Handy größtmöglichen Genauigkeit auf.";
+"Setup.Feature.Route.Message" = "Zeichne deine Lauf-, Geh- und Wanderworkouts mit der auf deinem Handy größtmöglichen Genauigkeit auf.";
 "Setup.Feature.Chart.Title" = "Detaillierte Statistiken";
 "Setup.Feature.Chart.Message" = "Guck dir nach deinen Workouts detaillierte Statistiken, wie z.B. Höchstgeschwindigkeit oder Tempo, an.";
 "Setup.Feature.Lock.Title" = "Privatsphäre im Vordergrund";

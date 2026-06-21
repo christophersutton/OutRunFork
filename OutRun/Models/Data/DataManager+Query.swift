@@ -259,16 +259,25 @@ extension DataManager {
     
     /**
      Queries the uuids corresponding to HealthKit workouts imported from or saved to AppleHealth and associated with workouts saved in the app.
-     - note: This function should only be used on the main thread
+     - parameter completion: the closure being called on the main thread with the queried UUIDs
      */
-    public static func queryExistingHealthUUIDs() -> [UUID] {
-        threadSafeSyncReturn {
-            return (try? dataStack.queryAttributes(
+    public static func queryExistingHealthUUIDs(completion: @escaping ([UUID]) -> Void) {
+        let completion = safeClosure(from: completion)
+
+        dataStack.perform(asynchronous: { transaction -> [UUID] in
+            return (try? transaction.queryAttributes(
                 From<Workout>()
                     .select(NSDictionary.self, .attribute(\._healthKitUUID))
                     .where(\._healthKitUUID != nil))
-                        .compactMap { $0.first?.value as? UUID }
+                .compactMap { $0.first?.value as? UUID }
             ) ?? []
+        }) { result in
+            switch result {
+            case .success(let uuids):
+                completion(uuids)
+            case .failure:
+                completion([])
+            }
         }
     }
 }

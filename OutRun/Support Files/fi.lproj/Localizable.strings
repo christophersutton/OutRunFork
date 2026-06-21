@@ -106,7 +106,7 @@
 "Setup.Feature.Lock.Title" = "Yksityisyys Keskittynyt";
 "Setup.Feature.Chart.Message" = "Katso yksityiskohtaisia tilastoja, kuten huippunopeus ja keskimääräinen tahti harjoittelun jälkeen";
 "Setup.Feature.Chart.Title" = "Yksityiskohtaiset Tilastot";
-"Setup.Feature.Route.Message" = "Tallenna juoksu -, kävely-tai pyöräilyharjoitukset mahdollisimman tarkasti puhelimellasi.";
+"Setup.Feature.Route.Message" = "Tallenna juoksu-, kävely- tai patikointiharjoitukset mahdollisimman tarkasti puhelimellasi.";
 "Setup.Feature.Route.Title" = "Tarkka Seuranta";
 "Setup.StartButton" = "Mennään";
 "Setup.Introduction" = "käynnissä sovellus, joka todella välittää yksityisyyttä, jossa sinun ei tarvitse luoda käyttäjätiliä, tai antaa arkaluonteisia tietoja, jotka sitten sijaitsee palvelimella, keskellä ei mitään.\nMutta lisää siitä myöhemmin nyt aloitetaan.";
@@ -235,8 +235,6 @@
 "Workout.Race" = "Rotu";
 "Workout.Type.Unknown" = "Tuntematon";
 "Workout.Type.Hiking" = "Patikointi";
-"Workout.Type.Skating" = "Luistelu";
-"Workout.Type.Cycling" = "Pyöräily";
 "Workout.Type.Walking" = "Kävely";
 "Workout.Type.Running" = "Käynnissä";
 "Workout.Type" = "Tyyppi";
@@ -248,7 +246,6 @@
 "Workout.PauseDuration" = "Tauon Kesto";
 "Workout.ActiveDuration" = "Aktiivinen Kesto";
 "Workout.Duration" = "Kesto";
-"Workout.Strokes" = "Poljin Aivohalvauksia";
 "Workout.Steps" = "Vaihe";
 "Workout.Distance" = "Matka";
 "Workout" = "Harjoitus";

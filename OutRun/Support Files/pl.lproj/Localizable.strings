@@ -102,8 +102,6 @@
 "Workout.NewWorkout" = "Nowy Trening";
 "Workout.Type.Running" = "Bieganie";
 "Workout.Type.Walking" = "Chodzenie";
-"Workout.Type.Cycling" = "Kolarstwo";
-"Workout.Type.Skating" = "Łyżwiarstwo";
 "Workout.Type.Hiking" = "Turystyka piesza";
 "Workout.Type.Unknown" = "Nieznany";
 "Workout.Race" = "Wyścig";
@@ -203,7 +201,7 @@
 "HKImport.ImportAll.Error" = "Niektóre treningi zdrowia Apple nie mogą zostać dodane, nadal będą pojawiać się na liście, spróbuj ponownie później.";
 "Setup.StartButton" = "Chodźmy";
 "Setup.Feature.Route.Title" = "Dokładne Śledzenie";
-"Setup.Feature.Route.Message" = "Nagrywaj swoje treningi biegania, chodzenia lub jazdy na rowerze z najwyższą możliwą dokładnością w telefonie.";
+"Setup.Feature.Route.Message" = "Nagrywaj swoje treningi biegania, chodzenia lub turystyki pieszej z najwyższą możliwą dokładnością w telefonie.";
 "Setup.Feature.Chart.Title" = "Szczegółowe Statystyki";
 "Setup.Feature.Chart.Message" = "Spójrz na szczegółowe statystyki, takie jak prędkość maksymalna i średnie tempo po zakończeniu treningu";
 "Setup.Feature.Lock.Title" = "Polityka Prywatności";
@@ -233,7 +231,6 @@
 "Workout.PauseDuration" = "Czas Trwania Pauzy";
 "Workout.ActiveDuration" = "Aktywny Czas Trwania";
 "Workout.Duration" = "Czas trwania";
-"Workout.Strokes" = "Naciski Pedału";
 "Workout.Steps" = "Kroki";
 "Workout.Distance" = "Odległość";
 "Workout" = "Trening";

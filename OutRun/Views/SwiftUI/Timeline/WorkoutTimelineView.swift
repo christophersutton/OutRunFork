@@ -74,7 +74,8 @@ struct WorkoutTimelineView: View {
 
     @ViewBuilder
     private var content: some View {
-        if store.isLoaded && displayedSnapshots.isEmpty {
+        let snapshots = displayedSnapshots
+        if store.isLoaded && snapshots.isEmpty {
             ContentUnavailableView(LS["NoData.Message"], systemImage: "figure.run")
         } else {
             ScrollView {
@@ -87,7 +88,7 @@ struct WorkoutTimelineView: View {
                         .padding(.bottom, 12)
 
                     LazyVStack(spacing: 0) {
-                        ForEach(timelineItems) { item in
+                        ForEach(timelineItems(from: snapshots)) { item in
                             switch item {
                             case .header(_, let text):
                                 TimelineDayHeader(text: text)
@@ -116,7 +117,9 @@ struct WorkoutTimelineView: View {
         }
         switch sortField {
         case .date:
-            list.sort { sortDescending ? $0.startDate > $1.startDate : $0.startDate < $1.startDate }
+            if !sortDescending {
+                list.reverse()
+            }
         case .distance:
             list.sort { sortDescending ? $0.distance > $1.distance : $0.distance < $1.distance }
         }
@@ -131,9 +134,10 @@ struct WorkoutTimelineView: View {
     /// day label can legitimately recur non-contiguously once sorted by the absolute `startDate` — keying the
     /// `ForEach` header on the label would then produce duplicate ids (undefined behavior). We keep the legacy
     /// stored-local-day labels and just guarantee unique ids.
-    private var timelineItems: [TimelineItem] {
+    private func timelineItems(from displayedSnapshots: [WorkoutSnapshot]) -> [TimelineItem] {
         let showHeaders = (sortField == .date)
         var result: [TimelineItem] = []
+        result.reserveCapacity(displayedSnapshots.count * (showHeaders ? 2 : 1))
         var lastDayIdentifier: String?
         for snapshot in displayedSnapshots {
             if showHeaders, snapshot.dayIdentifier != lastDayIdentifier {

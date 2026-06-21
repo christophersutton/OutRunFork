@@ -12,7 +12,7 @@ import SwiftUI
 struct StandardWorkoutTypeView: View {
 
     /// The selectable workout types in display order.
-    private let types: [Workout.WorkoutType] = [.running, .walking, .hiking, .cycling, .skating]
+    private let types = Workout.WorkoutType.supportedTypes
 
     @State private var selection: Int
 

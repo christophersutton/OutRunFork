@@ -75,7 +75,7 @@
 "Setup.Feature.Lock.Message" = "Ne vous inquiétez pas pour vos données, toutes restent sur votre appareil aussi longtemps que vous le souhaitez.";
 "Setup.Feature.Lock.Title" = "Axé sur la confidentialité";
 "Setup.Feature.Chart.Title" = "Statistiques détaillées";
-"Setup.Feature.Route.Message" = "Enregistrez vos entraînements de course à pied, de marche ou de vélo avec la plus grande précision possible sur votre téléphone.";
+"Setup.Feature.Route.Message" = "Enregistrez vos entraînements de course à pied, de marche ou de randonnée avec la plus grande précision possible sur votre téléphone.";
 "Setup.Feature.Route.Title" = "Suivi précis";
 "Setup.StartButton" = "C'est parti";
 "Setup.Headline" = "bienvenue dans";
@@ -205,8 +205,6 @@
 "Workout.Type.Running" = "Course à pied";
 "Workout.Type.Unknown" = "Inconnu";
 "Workout.Type.Hiking" = "Randonnée";
-"Workout.Type.Skating" = "Planche à roulettes";
-"Workout.Type.Cycling" = "Vélo";
 "Workout.Type.Walking" = "Marche";
 "Workout.Type" = "Type";
 "Workout.NewWorkout" = "Nouvel entraînement";
@@ -217,7 +215,6 @@
 "Workout.PauseDuration" = "Durée des pauses";
 "Workout.ActiveDuration" = "Durée active";
 "Workout.Duration" = "Durée";
-"Workout.Strokes" = "Coups de pédale";
 "Workout.Steps" = "Pas";
 "Workout.Distance" = "Distance";
 "Workout" = "Entraînement";
