@@ -123,7 +123,8 @@ class NewWorkoutControllerActionButton: UIView {
         button.setTitle("...", for: .disabled)
         button.setTitleColor(.white, for: .normal)
         button.setTitleColor(.lightGray, for: .disabled)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .headline)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.layer.cornerRadius = 20
         button.addTarget(self, action: selector, for: .touchUpInside)
         return button

@@ -140,6 +140,7 @@
 		22DD1592280C5CC5002CDB45 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD1593280C5CC5002CDB45 /* PrivacyManifestTests.swift */; };
 		22DD1595280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD1594280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift */; };
 		22DD1597280C5CC7002CDB45 /* CloseButtonAccessibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD1596280C5CC7002CDB45 /* CloseButtonAccessibilityTests.swift */; };
+		22DD15B3280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD15B2280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift */; };
 		22DD1599280C5CC8002CDB45 /* MainActorIsolationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD1598280C5CC8002CDB45 /* MainActorIsolationTests.swift */; };
 		22DD15AB280C5CD0002CDB45 /* DebugViewTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD15AA280C5CD0002CDB45 /* DebugViewTaskTests.swift */; };
 		22DD15AE280C5CD1002CDB45 /* ApplicationStateObservationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD15AD280C5CD1002CDB45 /* ApplicationStateObservationTests.swift */; };
@@ -371,6 +372,7 @@
 		22DD1593280C5CC5002CDB45 /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
 		22DD1594280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBlockingQueryTests.swift; sourceTree = "<group>"; };
 		22DD1596280C5CC7002CDB45 /* CloseButtonAccessibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButtonAccessibilityTests.swift; sourceTree = "<group>"; };
+		22DD15B2280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicTypeFontShapeTests.swift; sourceTree = "<group>"; };
 		22DD1598280C5CC8002CDB45 /* MainActorIsolationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainActorIsolationTests.swift; sourceTree = "<group>"; };
 		22DD15AA280C5CD0002CDB45 /* DebugViewTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugViewTaskTests.swift; sourceTree = "<group>"; };
 		22DD15AD280C5CD1002CDB45 /* ApplicationStateObservationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationStateObservationTests.swift; sourceTree = "<group>"; };
@@ -980,6 +982,7 @@
 				22DD1594280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift */,
 				22DD1593280C5CC5002CDB45 /* PrivacyManifestTests.swift */,
 				22DD1596280C5CC7002CDB45 /* CloseButtonAccessibilityTests.swift */,
+				22DD15B2280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift */,
 				22DD1598280C5CC8002CDB45 /* MainActorIsolationTests.swift */,
 				22DD15AA280C5CD0002CDB45 /* DebugViewTaskTests.swift */,
 				22DD15AD280C5CD1002CDB45 /* ApplicationStateObservationTests.swift */,
@@ -1532,6 +1535,7 @@
 				22DD1595280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift in Sources */,
 				22DD1592280C5CC5002CDB45 /* PrivacyManifestTests.swift in Sources */,
 				22DD1597280C5CC7002CDB45 /* CloseButtonAccessibilityTests.swift in Sources */,
+				22DD15B3280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift in Sources */,
 				22DD1599280C5CC8002CDB45 /* MainActorIsolationTests.swift in Sources */,
 				22DD15AB280C5CD0002CDB45 /* DebugViewTaskTests.swift in Sources */,
 				22DD15AE280C5CD1002CDB45 /* ApplicationStateObservationTests.swift in Sources */,

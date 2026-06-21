@@ -155,7 +155,7 @@ private struct CustomTabBar: View {
                     .scaledToFit()
                     .frame(width: 23, height: 23)
                 Text(title)
-                    .font(.system(size: 10, weight: .medium))
+                    .font(.system(.caption2, weight: .medium))
             }
             .foregroundStyle(isSelected ? Color.orAccent : Color.orSecondary)
             .frame(width: 64)

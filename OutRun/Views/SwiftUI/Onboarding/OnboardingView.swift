@@ -66,7 +66,7 @@ struct OnboardingView: View {
             PageIndicator(count: OnboardingStep.allCases.count, current: step.rawValue)
             Spacer()
             Button(nextButtonTitle) { advance() }
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(.body, weight: .bold))
                 .foregroundStyle(nextEnabled ? Color.orAccent : Color.orSecondary)
                 .disabled(!nextEnabled)
         }
@@ -119,7 +119,7 @@ private struct WelcomeStep: View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
                 Text(LS["Setup.Headline"])
-                    .font(.system(size: 32, weight: .bold))
+                    .font(.system(.largeTitle, weight: .bold))
                     .foregroundStyle(Color.orPrimary)
                 Text(LS["OutRun"])
                     .font(Font.system(size: 42, weight: .heavy).lowercaseSmallCaps())
@@ -141,7 +141,7 @@ private struct WelcomeStep: View {
 
             Button(action: onStart) {
                 Text(LS["Setup.StartButton"].uppercased())
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(.body, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
@@ -169,10 +169,10 @@ private struct FeatureCard: View {
                 .foregroundStyle(Color.orAccent)
             VStack(alignment: .leading, spacing: 5) {
                 Text(title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(.subheadline, weight: .bold))
                     .foregroundStyle(Color.orPrimary)
                 Text(message)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(.subheadline, weight: .medium))
                     .foregroundStyle(Color.orSecondary)
             }
             Spacer(minLength: 0)
@@ -190,11 +190,11 @@ struct OnboardingStepHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(size: 26, weight: .heavy))
+                .font(.system(.title2, weight: .heavy))
                 .foregroundStyle(Color.orPrimary)
                 .fixedSize(horizontal: false, vertical: true)
             Text(message)
-                .font(.system(size: 15, weight: .medium))
+                .font(.system(.subheadline, weight: .medium))
                 .foregroundStyle(Color.orSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }

@@ -23,7 +23,7 @@ struct PolicyView: View {
                 } else {
                     ScrollView {
                         Text(text ?? LS["Error"])
-                            .font(.system(size: 14))
+                            .font(.body)
                             .foregroundStyle(Color.orPrimary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .textSelection(.enabled)

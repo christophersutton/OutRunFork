@@ -33,13 +33,13 @@ struct ChangelogView: View {
                 }
 
                 Text("\(LS["ChangeLog"]) - \(Config.version)")
-                    .font(.system(size: 24, weight: .heavy))
+                    .font(.system(.title2, weight: .heavy))
                     .foregroundStyle(Color.orAccent)
                     .lineLimit(1)
 
                 ScrollView {
                     Text(changelog)
-                        .font(.system(size: 14))
+                        .font(.body)
                         .foregroundStyle(Color.orPrimary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }

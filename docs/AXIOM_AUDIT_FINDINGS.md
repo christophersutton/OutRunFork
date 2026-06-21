@@ -127,28 +127,31 @@ Recommendation:
 
 ### Dynamic Type and Accessibility Debt Is Broad
 
-Status: Partially addressed 2026-06-21. Added explicit localized `LS["Close"]` accessibility labels to the icon-only dismiss buttons in workout detail, debug, policy, and changelog SwiftUI screens, and added `UnitTests/CloseButtonAccessibilityTests.swift` to keep those labels on the `Button` views.
+Status: Partially addressed 2026-06-21. Added explicit localized `LS["Close"]` accessibility labels to the icon-only dismiss buttons in workout detail, debug, policy, and changelog SwiftUI screens, and added `UnitTests/CloseButtonAccessibilityTests.swift` to keep those labels on the `Button` views. A follow-up Dynamic Type source-shape slice now converts curated audited text fonts in onboarding, timeline, workout detail, policy/changelog, shell loading/tab labels, and selected UIKit controls to semantic/preferred fonts.
 
 Validation:
 - Red: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-main-accessibility-red -only-testing:UnitTests/CloseButtonAccessibilityTests -resultBundlePath /tmp/outrun-main-accessibility-red.xcresult` failed with the expected 4 assertions for the unlabeled close buttons.
 - Green: the same selected test passed with 1 test and 0 failures after adding button-level labels.
 - Static: `plutil -lint OutRun.xcodeproj/project.pbxproj` and `git diff --check` passed for the touched accessibility/test/project files.
-- Adversarial review blocked the first test draft because it only checked for nearby labels, not labels applied to the `Button`. The merged test now requires button-level labeled snippets. Fixed font and Dynamic Type scaling issues remain open.
+- Adversarial review blocked the first test draft because it only checked for nearby labels, not labels applied to the `Button`. The merged test now requires button-level labeled snippets.
+- Dynamic Type red: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-dynamic-type-red -only-testing:UnitTests/DynamicTypeFontShapeTests` failed on 33 fixed text-font violations.
+- Dynamic Type green: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-dynamic-type-green -only-testing:UnitTests/DynamicTypeFontShapeTests` passed with 1 selected test and 0 failures.
+- Regression: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-dynamic-type-unittests -only-testing:UnitTests` passed with 47 tests and 0 failures.
 
-The SwiftUI replacement surfaces and legacy UIKit views use many fixed font sizes. This risks clipping, poor Large Content Size behavior, and inconsistent VoiceOver output.
+The SwiftUI replacement surfaces and legacy UIKit views had many fixed font sizes, risking clipping, poor Large Content Size behavior, and inconsistent VoiceOver output. This slice addresses the audited text-font matches but did not perform visual/manual VoiceOver validation.
 
 Evidence:
-- Fixed SwiftUI fonts appear in timeline rows: `OutRun/Views/SwiftUI/Timeline/WorkoutTimelineRow.swift:48` and `OutRun/Views/SwiftUI/Timeline/WorkoutTimelineRow.swift:80`.
-- Onboarding uses many fixed sizes: `OutRun/Views/SwiftUI/Onboarding/OnboardingView.swift:69`, `OutRun/Views/SwiftUI/Onboarding/OnboardingView.swift:122`, `OutRun/Views/SwiftUI/Onboarding/OnboardingView.swift:193`.
-- Workout detail uses fixed sizes: `OutRun/Views/SwiftUI/WorkoutDetail/WorkoutDetailView.swift:105`, `OutRun/Views/SwiftUI/WorkoutDetail/WorkoutDetailView.swift:110`, `OutRun/Views/SwiftUI/WorkoutDetail/WorkoutDetailView.swift:252`.
-- UIKit code uses fixed `UIFont.systemFont`: `OutRun/Controllers/General/DetailViewController.swift:32` and `OutRun/Views/Workout/NewWorkoutControllerActionButton.swift:125`.
+- Fixed: audited SwiftUI text fonts in onboarding, timeline, workout detail, policy/changelog, and shell surfaces now use semantic fonts such as `.body`, `.title2`, `.subheadline`, `.caption`, and `.caption2`.
+- Fixed: `OutRun/Controllers/General/DetailViewController.swift` now uses `UIFont.preferredFont(forTextStyle: .largeTitle)` and enables `adjustsFontForContentSizeCategory` on the headline label.
+- Fixed: `OutRun/Views/Workout/NewWorkoutControllerActionButton.swift` now uses `UIFont.preferredFont(forTextStyle: .headline)` and enables Dynamic Type adjustment on button title labels.
+- Fixed: `OutRun/Extensions/UIKit/UISegmentedControl.swift` now uses a preferred caption font for segmented title attributes.
+- Guarded: `UnitTests/DynamicTypeFontShapeTests.swift` scans the curated audited files for fixed text font APIs while explicitly allowlisting intentional brand/composite display text and symbol-only icon sizing.
 - Fixed previously: the icon-only dismiss buttons in `OutRun/Views/SwiftUI/WorkoutDetail/WorkoutDetailView.swift`, `OutRun/Views/SwiftUI/Debug/DebugView.swift`, `OutRun/Views/SwiftUI/PolicyView.swift`, and `OutRun/Views/SwiftUI/ChangelogView.swift` now carry explicit localized Close labels on the `Button` views.
 
 Recommendation:
-- Replace most fixed SwiftUI font sizes with semantic fonts or `.font(.system(..., relativeTo: ...))`.
-- Use `UIFontMetrics` or preferred fonts for UIKit labels/buttons.
+- Keep future text font additions on semantic SwiftUI fonts or UIKit preferred/scaled fonts.
 - Keep explicit labels on icon-only controls such as "Close" and "Expand map".
-- Run with extra-large Dynamic Type and VoiceOver after changes.
+- Run with extra-large Dynamic Type and VoiceOver after changes; this static source-shape slice does not prove every layout remains usable at accessibility sizes.
 
 ### Migration Testing Is Essentially Absent
 
@@ -159,8 +162,8 @@ Validation:
 - Green: the final selected audit run at `/tmp/outrun-audit-slices-green2.xcresult` passed with 14 selected tests and 0 failures, including all 4 `MigrationTests`.
 - Static: `rg -n "guard let heartRate|-> Int\\?|return nil|as! Double|unsafeRemoveAllPersistentStoresAndWait|SkipsMalformed|XCTAssertNil|ValidatesHeartRateBeforeCreatingDestinationObject" OutRun/Models/Data/DataModels/Versions/OutRunV4.swift UnitTests/MigrationTests.swift` found no stale migration patterns after repair.
 - V3 backup-event red: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-v3-backup-events-red-workspace -only-testing:UnitTests/MigrationTests/testTempV3BackupWorkoutEventConversionMatchesV3ToV4MigrationShape -resultBundlePath /tmp/outrun-v3-backup-events-red-workspace.xcresult` failed with the expected `fatalError()` and missing `eventType - 4` assertions.
-- V3 backup-event green: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-v3-backup-events-green -only-testing:UnitTests/MigrationTests/testTempV3BackupWorkoutEventConversionMatchesV3ToV4MigrationShape -only-testing:UnitTests/MigrationTests/testTempV3BackupWorkoutEventConversionMapsLegacyNonPauseEvents -resultBundlePath /tmp/outrun-v3-backup-events-green.xcresult` passed with 2 selected tests and 0 failures.
-- V3 backup-event subset: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-v3-backup-events-migrationtests -only-testing:UnitTests/MigrationTests -resultBundlePath /tmp/outrun-v3-backup-events-migrationtests.xcresult` passed with 6 selected tests and 0 failures.
+- V3 backup-event green: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-v3-backup-events-orchestrator2 -resultBundlePath /tmp/outrun-v3-backup-events-orchestrator2.xcresult -only-testing:UnitTests/MigrationTests/testTempV3BackupWorkoutEventConversionMatchesV3ToV4MigrationShape -only-testing:UnitTests/MigrationTests/testTempV3BackupWorkoutEventConversionMapsLegacyNonPauseEvents -only-testing:UnitTests/MigrationTests/testTempV3BackupWorkoutConversionKeepsPauseEventsOutOfWorkoutEvents` passed with 3 selected tests and 0 failures.
+- Combined audit regression: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-audit-slices-green16 -resultBundlePath /tmp/outrun-audit-slices-green16-v3-backup-events.xcresult -only-testing:UnitTests` passed with 46 tests and 0 failures.
 - Adversarial review rejected an earlier source-only implementation. The merged test now proves migration behavior by corrupting the raw SQLite `ZWORKOUTHEARTRATESAMPLE.ZHEARTRATE` value before opening through the V4 chain.
 
 The app has code-based CoreStore migrations and user health data. The current tests now cover the V3to4 -> V4 heart-rate conversion path, but broader historical migration coverage is still thin.
@@ -170,7 +173,7 @@ Evidence:
 - `UnitTests/MigrationTests.swift` covers supported `Double` and `NSNumber` conversion, unsupported `nil`/string helper inputs, and a malformed persisted SQLite value that now migrates to `[0]`.
 - `OutRun/Models/Data/DataModels/Versions/OutRunV4.swift` converts supported legacy values and defaults unsupported values to `0` without force-casting.
 - `OutRun/Models/Data/Temp/Versions/TempV3.swift` now converts V3 backup workout events using `eventType - 4`, so legacy values 4/5/6 become lap/marker/segment and higher values become `.unknown` instead of crashing.
-- `UnitTests/MigrationTests.swift` guards the V3 backup workout-event source shape and runtime conversion for 4, 5, 6, and an unknown high value.
+- `UnitTests/MigrationTests.swift` guards the V3 backup workout-event source shape, runtime conversion for 4, 5, 6, and an unknown high value, and the `Workout.asTemp` import path that excludes pause/resume values from `workoutEvents`.
 - Missing coverage remains for full V1/V2/V3 -> V4 migration fixtures and backup import versions V1 through V4 beyond this focused V3 workout-event slice.
 
 Recommendation:

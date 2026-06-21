@@ -52,7 +52,7 @@ struct WorkoutTimelineView: View {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button { showSortSheet = true } label: {
                             Text(sortField.label + (sortDescending ? " ↓" : " ↑"))
-                                .font(.system(size: 16, weight: .semibold))
+                                .font(.system(.body, weight: .semibold))
                         }
                     }
                 }

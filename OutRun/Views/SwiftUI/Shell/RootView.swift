@@ -205,7 +205,7 @@ private struct MigrationView: View {
             Color.orBackground.ignoresSafeArea()
             VStack(spacing: 10) {
                 Text(LS["Loading-DoNotClose"])
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(.body, weight: .bold))
                     .foregroundStyle(Color.orPrimary)
                     .multilineTextAlignment(.center)
                 ProgressView(value: progress)

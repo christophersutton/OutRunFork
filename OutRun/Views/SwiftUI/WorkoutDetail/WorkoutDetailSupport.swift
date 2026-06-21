@@ -95,11 +95,11 @@ struct StatTile: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(.caption, weight: .bold))
                 .foregroundStyle(Color.orSecondary)
                 .lineLimit(1)
             Text(value)
-                .font(.system(size: 24, weight: .heavy))
+                .font(.system(.title2, weight: .heavy))
                 .foregroundStyle(Color.orPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
@@ -147,7 +147,7 @@ struct StatSectionView<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(size: 22, weight: .heavy))
+                .font(.system(.title2, weight: .heavy))
                 .foregroundStyle(Color.orPrimary)
             content
         }

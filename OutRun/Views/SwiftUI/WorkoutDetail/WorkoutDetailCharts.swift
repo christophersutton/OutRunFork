@@ -28,7 +28,7 @@ struct WorkoutLineChartView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(unitSymbol.isEmpty ? title : "\(title) (\(unitSymbol))")
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(.subheadline, weight: .bold))
                 .foregroundStyle(Color.orSecondary)
 
             Chart {

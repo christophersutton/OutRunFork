@@ -30,8 +30,9 @@ extension UISegmentedControl {
             setBackgroundImage(tintColorImage, for: .selected, barMetrics: .default)
             setBackgroundImage(UIImage(color: tintColor.withAlphaComponent(0.2)), for: .highlighted, barMetrics: .default)
             setBackgroundImage(tintColorImage, for: [.highlighted, .selected], barMetrics: .default)
-            setTitleTextAttributes([.foregroundColor: tintColor as Any, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 13, weight: .regular)], for: .normal)
-            setTitleTextAttributes([.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 13, weight: .regular)], for: .selected)
+            let titleFont = UIFont.preferredFont(forTextStyle: .caption1)
+            setTitleTextAttributes([.foregroundColor: tintColor as Any, NSAttributedString.Key.font: titleFont], for: .normal)
+            setTitleTextAttributes([.foregroundColor: UIColor.white, NSAttributedString.Key.font: titleFont], for: .selected)
             setDividerImage(tintColorImage, forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
             layer.borderWidth = 1
             layer.borderColor = tintColor.cgColor

@@ -108,10 +108,10 @@ struct WorkoutDetailView: View {
                 .frame(width: 52)
             VStack(alignment: .leading, spacing: 2) {
                 Text(snapshot.workoutType.description)
-                    .font(.system(size: 26, weight: .heavy))
+                    .font(.system(.title2, weight: .heavy))
                     .foregroundStyle(Color.orPrimary)
                 Text(headerSubtitle(snapshot))
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(.subheadline, weight: .bold))
                     .foregroundStyle(Color.orSecondary)
             }
             Spacer(minLength: 0)
@@ -266,12 +266,12 @@ struct WorkoutDetailView: View {
             VStack(alignment: .leading, spacing: 8) {
                 if let comment = snapshot.comment, !comment.isEmpty {
                     Text(comment)
-                        .font(.system(size: 15))
+                        .font(.body)
                         .foregroundStyle(Color.orPrimary)
                 }
                 if snapshot.isUserModified {
                     Text(LS["Workout.IsUserModified.Text"])
-                        .font(.system(size: 13))
+                        .font(.caption)
                         .foregroundStyle(Color.orSecondary)
                 }
             }

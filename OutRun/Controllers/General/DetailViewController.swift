@@ -30,7 +30,8 @@ class DetailViewController: UIViewController {
     }
     
     let headlineLabel: UILabel = {
-        let label = UILabel(font: UIFont.systemFont(ofSize: 32, weight: .heavy).withLowerCaseSmallCaps)
+        let label = UILabel(font: UIFont.preferredFont(forTextStyle: .largeTitle).withLowerCaseSmallCaps)
+        label.adjustsFontForContentSizeCategory = true
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
         return label

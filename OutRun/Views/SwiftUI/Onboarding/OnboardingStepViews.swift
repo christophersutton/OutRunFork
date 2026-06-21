@@ -61,7 +61,7 @@ struct UserInfoStep: View {
 
                 HStack {
                     Text(LS["Setup.UserInfo.PreferredSystem"])
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(.body, weight: .semibold))
                         .foregroundStyle(Color.orPrimary)
                     Spacer()
                     Picker("", selection: $state.preferredMeasurementSystem) {
@@ -245,7 +245,7 @@ private struct OnboardingFieldRow: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(.body, weight: .semibold))
                 .foregroundStyle(Color.orPrimary)
             Spacer(minLength: 12)
             TextField(placeholder, text: $text)
@@ -267,7 +267,7 @@ private struct OnboardingToggleRow: View {
     var body: some View {
         Toggle(isOn: $isOn) {
             Text(title)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(.body, weight: .semibold))
                 .foregroundStyle(Color.orPrimary)
         }
         .tint(Color.orAccent)
@@ -284,7 +284,7 @@ private struct OnboardingLinkToggleRow: View {
         HStack {
             Button(action: link) {
                 Text(title)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(.body, weight: .semibold))
                     .foregroundStyle(Color.orAccent)
                     .underline()
             }
@@ -308,10 +308,10 @@ private struct OnboardingPermissionRow: View {
             Button(action: info) {
                 HStack(spacing: 6) {
                     Text(title)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(.body, weight: .semibold))
                         .foregroundStyle(Color.orPrimary)
                     Image(systemName: "info.circle")
-                        .font(.system(size: 14))
+                        .font(.caption)
                         .foregroundStyle(Color.orSecondary)
                 }
             }
@@ -324,7 +324,7 @@ private struct OnboardingPermissionRow: View {
                         Text(LS["Grant"].uppercased())
                     }
                 }
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(.caption, weight: .bold))
                 .foregroundStyle(.white)
                 .frame(minWidth: 64)
                 .frame(height: 32)

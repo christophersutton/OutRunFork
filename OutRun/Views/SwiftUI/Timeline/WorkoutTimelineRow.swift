@@ -45,7 +45,7 @@ struct TimelineDayHeader: View {
         HStack(spacing: 0) {
             TimelineGutter()
             Text(text)
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(.body, weight: .bold))
                 .foregroundStyle(Color.orSecondary)
             Spacer(minLength: 0)
         }
@@ -80,7 +80,7 @@ struct WorkoutTimelineRow: View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(snapshot.workoutType.description.uppercased())
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(.subheadline, weight: .bold))
                     .foregroundStyle(Color.orSecondary)
                 WorkoutStatText.bigStat(Self.distanceString(snapshot), size: 36)
                     .foregroundStyle(Color.orPrimary)
