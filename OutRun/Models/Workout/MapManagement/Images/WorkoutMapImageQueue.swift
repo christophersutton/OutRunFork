@@ -31,14 +31,8 @@ class WorkoutMapImageQueue {
     
     func add(_ request: WorkoutMapImageRequest) {
         
-        // removing already existing identical requests
-        if let index = (request.highPriority ? highPriorityRequests : ordinaryRequests).firstIndex(of: request) {
-            switch request.highPriority {
-            case true:
-                highPriorityRequests.remove(at: index)
-            default:
-                ordinaryRequests.remove(at: index)
-            }
+        // Identical requests are already pending; keep the original so its completion can still fire.
+        if (request.highPriority ? highPriorityRequests : ordinaryRequests).contains(request) {
             return
         }
         

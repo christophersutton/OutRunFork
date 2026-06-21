@@ -32,8 +32,8 @@ struct WorkoutTimelineSortSheet: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    /// The workout types the legacy filter offered (note: no `.unknown`).
-    private static let filterableTypes: [Workout.WorkoutType] = [.running, .walking, .hiking, .cycling, .skating]
+    /// The workout types offered by this fork (note: no `.unknown`).
+    private static let filterableTypes = Workout.WorkoutType.supportedTypes
 
     var body: some View {
         NavigationStack {

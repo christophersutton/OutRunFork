@@ -35,7 +35,6 @@ class HealthStoreManager {
         static let Workout = HKObjectType.workoutType()
         static let ActiveEnergyBurned = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
         static let DistanceWalkingRunning = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!
-        static let DistanceCycling = HKObjectType.quantityType(forIdentifier: .distanceCycling)!
         static let Route = HKObjectType.seriesType(forIdentifier: HKWorkoutRouteTypeIdentifier)!
         static let BodyMass = HKObjectType.quantityType(forIdentifier: .bodyMass)!
         static let HeartRate = HKObjectType.quantityType(forIdentifier: .heartRate)!
@@ -46,7 +45,6 @@ class HealthStoreManager {
             HealthType.Workout,
             HealthType.ActiveEnergyBurned,
             HealthType.DistanceWalkingRunning,
-            HealthType.DistanceCycling,
             HealthType.Route,
             HealthType.BodyMass,
             HealthType.HeartRate,

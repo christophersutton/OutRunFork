@@ -79,8 +79,6 @@ extension Workout.WorkoutType {
         switch self {
         case .running: return "figure.run"
         case .walking: return "figure.walk"
-        case .cycling: return "figure.outdoor.cycle"
-        case .skating: return "figure.skating"
         case .hiking:  return "figure.hiking"
         case .unknown: return "figure.mixed.cardio"
         }
