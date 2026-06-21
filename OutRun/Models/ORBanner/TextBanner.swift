@@ -35,7 +35,7 @@ class TextBanner: ORBaseBanner {
             let label = UILabel(
                 text: text,
                 textColor: .primaryColor,
-                font: .systemFont(ofSize: 16, weight: .semibold),
+                font: .preferredFont(forTextStyle: .body, weight: .semibold),
                 numberOfLines: 0
             )
             

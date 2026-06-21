@@ -29,7 +29,7 @@ class WorkoutCompletionBanner: ORBaseBanner {
     private let titleLabel: UILabel = UILabel(
         text: LS["NewWorkoutCompletion.Title"],
         textColor: .primaryColor,
-        font: .systemFont(ofSize: 24, weight: .bold),
+        font: .preferredFont(forTextStyle: .title2, weight: .bold),
         numberOfLines: 1
     )
     
@@ -39,7 +39,8 @@ class WorkoutCompletionBanner: ORBaseBanner {
         
         button.setTitle(LS["Save"], for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .body, weight: .bold)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.backgroundColor = .accentColor
         button.layer.cornerRadius = 10
         
@@ -53,7 +54,8 @@ class WorkoutCompletionBanner: ORBaseBanner {
         
         button.setTitle(LS["Continue"], for: .normal)
         button.setTitleColor(.gray, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .body, weight: .bold)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.backgroundColor = .foregroundColor
         button.layer.cornerRadius = 10
         
@@ -67,7 +69,8 @@ class WorkoutCompletionBanner: ORBaseBanner {
         
         button.setTitle(LS["Discard"], for: .normal)
         button.setTitleColor(.gray, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .body, weight: .bold)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.backgroundColor = .foregroundColor
         button.layer.cornerRadius = 10
         

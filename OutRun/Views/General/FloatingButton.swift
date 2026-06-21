@@ -38,7 +38,8 @@ class FloatingButton: UIButton {
             make.left.right.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10))
             make.height.equalTo(30)
         })
-        self.titleLabel?.font = .systemFont(ofSize: 12, weight: .bold)
+        self.titleLabel?.font = .preferredFont(forTextStyle: .caption2, weight: .bold)
+        self.titleLabel?.adjustsFontForContentSizeCategory = true
         self.setTitleColor(.secondaryColor, for: .normal)
         
         self.addTarget(self, action: #selector(performAction), for: .touchUpInside)

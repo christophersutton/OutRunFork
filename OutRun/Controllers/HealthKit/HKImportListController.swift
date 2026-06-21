@@ -31,7 +31,7 @@ class HKImportListController: UITableViewController {
     let noDataLabel = UILabel(
         text: LS["NoData.Message"],
         textColor: .secondaryColor,
-        font: .systemFont(ofSize: 16, weight: .bold),
+        font: .preferredFont(forTextStyle: .body, weight: .bold),
         textAlignment: .center
     )
     

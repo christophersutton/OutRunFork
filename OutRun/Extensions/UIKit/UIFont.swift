@@ -21,7 +21,16 @@
 import UIKit
 
 extension UIFont {
-    
+
+    static func preferredFont(forTextStyle textStyle: UIFont.TextStyle, weight: UIFont.Weight) -> UIFont {
+        let descriptor = UIFontDescriptor
+            .preferredFontDescriptor(withTextStyle: textStyle)
+            .addingAttributes([
+                .traits: [UIFontDescriptor.TraitKey.weight: weight]
+            ])
+        return UIFont(descriptor: descriptor, size: 0)
+    }
+
     private func addingAttributes(_ attributes: [UIFontDescriptor.AttributeName:Any] = [:]) -> UIFont {
         return UIFont(descriptor: fontDescriptor.addingAttributes(attributes), size: pointSize)
     }

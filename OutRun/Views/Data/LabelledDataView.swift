@@ -26,12 +26,12 @@ class LabelledDataView: UIView, SmallStatView {
     fileprivate let titleLabel = UILabel(
         text: "",
         textColor: .secondaryColor,
-        font: .systemFont(ofSize: 14, weight: .bold)
+        font: .preferredFont(forTextStyle: .caption1, weight: .bold)
     )
     
     fileprivate let dataLabel = UILabel(
         text: "--",
-        font: .systemFont(ofSize: 25, weight: .heavy)
+        font: .preferredFont(forTextStyle: .title2, weight: .heavy)
     )
     
     init(title: String = "") {

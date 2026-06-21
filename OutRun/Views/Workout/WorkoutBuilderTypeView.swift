@@ -25,7 +25,7 @@ class WorkoutBuilderTypeView: UIView {
     
     let typeLabel = UILabel(
         textColor: .secondaryColor,
-        font: .systemFont(ofSize: 12, weight: .bold)
+        font: .preferredFont(forTextStyle: .caption2, weight: .bold)
     )
     
     init(type: Workout.WorkoutType) {

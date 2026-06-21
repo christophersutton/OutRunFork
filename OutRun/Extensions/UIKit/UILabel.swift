@@ -32,6 +32,7 @@ extension UILabel {
         
         if let lFont = font {
             self.font = lFont
+            self.adjustsFontForContentSizeCategory = true
         }
         
         if let lNumber = numberOfLines {

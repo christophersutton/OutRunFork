@@ -37,7 +37,7 @@ class WorkoutBuilderReadinessIndicationView: UIView {
     
     let statusLabel = UILabel(
         textColor: .secondaryColor,
-        font: .systemFont(ofSize: 12, weight: .bold)
+        font: .preferredFont(forTextStyle: .caption2, weight: .bold)
     )
     
     init(status: WorkoutBuilder.Status = .waiting) {

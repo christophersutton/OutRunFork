@@ -30,7 +30,7 @@ class LoadingView: UIView {
         loadingIndicator.startAnimating()
         self.addSubview(loadingIndicator)
         
-        let label = UILabel(text: LS["Loading"], textColor: .secondaryColor, font: .systemFont(ofSize: 14, weight: .medium), textAlignment: .center)
+        let label = UILabel(text: LS["Loading"], textColor: .secondaryColor, font: .preferredFont(forTextStyle: .caption1, weight: .medium), textAlignment: .center)
         self.addSubview(label)
         
         loadingIndicator.snp.makeConstraints { (make) in

@@ -82,9 +82,9 @@ struct WorkoutTimelineRow: View {
                 Text(snapshot.workoutType.description.uppercased())
                     .font(.system(.subheadline, weight: .bold))
                     .foregroundStyle(Color.orSecondary)
-                WorkoutStatText.bigStat(Self.distanceString(snapshot), size: 36)
+                WorkoutStatText.bigStat(Self.distanceString(snapshot), style: .largeTitle)
                     .foregroundStyle(Color.orPrimary)
-                WorkoutStatText.bigStat(Self.durationString(snapshot), size: 24)
+                WorkoutStatText.bigStat(Self.durationString(snapshot), style: .title2)
                     .foregroundStyle(Color.orSecondary)
             }
             .padding(.leading, 20)
@@ -173,8 +173,8 @@ enum WorkoutStatText {
     /// no-break/narrow space, e.g. fr_FR's U+202F, still split correctly) and treats a token as numeric if it
     /// contains any digit (so grouped numbers like "1,234" render upright). This is a deliberate improvement over
     /// the legacy split-on-ASCII-space + `NumberFormatter` parse, which lost the styling in those locales.
-    static func bigStat(_ string: String, size: CGFloat) -> Text {
-        let base = Font.system(size: size, weight: .bold)
+    static func bigStat(_ string: String, style: Font.TextStyle) -> Text {
+        let base = Font.system(style, weight: .bold)
         let smallCaps = base.lowercaseSmallCaps()
         let tokens = string.split(whereSeparator: \.isWhitespace).map(String.init)
 

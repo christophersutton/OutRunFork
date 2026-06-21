@@ -34,24 +34,24 @@ class HKImportObjectCell: UITableViewCell {
     
     let dateLabel = UILabel(
         textColor: .secondaryColor,
-        font: .systemFont(ofSize: 14, weight: .bold)
+        font: .preferredFont(forTextStyle: .caption1, weight: .bold)
     )
     
-    let timeLabel = UILabel(font: .systemFont(ofSize: 22, weight: .heavy))
+    let timeLabel = UILabel(font: .preferredFont(forTextStyle: .title3, weight: .heavy))
     
     let typeLabel = UILabel(
         textColor: .secondaryColor,
-        font: .systemFont(ofSize: 14, weight: .bold),
+        font: .preferredFont(forTextStyle: .caption1, weight: .bold),
         textAlignment: .right
     )
     
     let distanceLabel = UILabel(
-        font: .systemFont(ofSize: 22, weight: .heavy),
+        font: .preferredFont(forTextStyle: .title3, weight: .heavy),
         textAlignment: .right
     )
     
     let durationLabel = UILabel(
-        font: .systemFont(ofSize: 22, weight: .heavy),
+        font: .preferredFont(forTextStyle: .title3, weight: .heavy),
         textAlignment: .right
     )
     
