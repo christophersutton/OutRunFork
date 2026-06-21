@@ -62,6 +62,70 @@ final class MigrationTests: XCTestCase {
         )
     }
 
+    func testTempV3BackupWorkoutEventConversionMatchesV3ToV4MigrationShape() throws {
+        let tempV3Source = try tempV3Source()
+
+        XCTAssertFalse(
+            tempV3Source.contains("fatalError()"),
+            "TempV3 backup workout-event conversion must not crash on legacy event values that the CoreStore V3to4 migration imports."
+        )
+        XCTAssertTrue(
+            tempV3Source.contains("eventType - 4"),
+            "TempV3 backup workout-event conversion must map legacy non-pause event types with eventType - 4, matching OutRunV4 V3to4 migration semantics."
+        )
+    }
+
+    func testTempV3BackupWorkoutEventConversionMapsLegacyNonPauseEvents() {
+        let timestamp = Date(timeIntervalSince1970: 1_700_000_000)
+
+        XCTAssertEqual(TempV3.WorkoutEvent(uuid: nil, eventType: 4, startDate: timestamp, endDate: timestamp).asTemp.eventType, .lap)
+        XCTAssertEqual(TempV3.WorkoutEvent(uuid: nil, eventType: 5, startDate: timestamp, endDate: timestamp).asTemp.eventType, .marker)
+        XCTAssertEqual(TempV3.WorkoutEvent(uuid: nil, eventType: 6, startDate: timestamp, endDate: timestamp).asTemp.eventType, .segment)
+        XCTAssertEqual(TempV3.WorkoutEvent(uuid: nil, eventType: 99, startDate: timestamp, endDate: timestamp).asTemp.eventType, .unknown)
+    }
+
+    func testTempV3BackupWorkoutConversionKeepsPauseEventsOutOfWorkoutEvents() {
+        let start = Date(timeIntervalSince1970: 1_700_000_000)
+        let end = start.addingTimeInterval(60)
+        let pauseStart = start.addingTimeInterval(10)
+        let pauseEnd = start.addingTimeInterval(20)
+        let lapDate = start.addingTimeInterval(30)
+
+        let workout = TempV3.Workout(
+            uuid: nil,
+            workoutType: Workout.WorkoutType.running.rawValue,
+            startDate: start,
+            endDate: end,
+            distance: 100,
+            steps: nil,
+            isRace: false,
+            isUserModified: false,
+            comment: nil,
+            burnedEnergy: nil,
+            healthKitUUID: nil,
+            workoutEvents: [
+                TempV3.WorkoutEvent(uuid: nil, eventType: 0, startDate: pauseStart, endDate: pauseStart),
+                TempV3.WorkoutEvent(uuid: nil, eventType: 2, startDate: pauseEnd, endDate: pauseEnd),
+                TempV3.WorkoutEvent(uuid: nil, eventType: 4, startDate: lapDate, endDate: lapDate)
+            ],
+            locations: [],
+            heartRates: []
+        )
+
+        let converted = workout.asTemp
+
+        XCTAssertEqual(converted.pauses.count, 1)
+        XCTAssertEqual(converted.pauses.first?.pauseType, .manual)
+        XCTAssertEqual(converted.workoutEvents.map(\.eventType), [.lap])
+    }
+
+    private func tempV3Source() throws -> String {
+        let unitTestsDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        let repositoryRoot = unitTestsDirectory.deletingLastPathComponent()
+        let tempV3SourceURL = repositoryRoot.appendingPathComponent("OutRun/Models/Data/Temp/Versions/TempV3.swift")
+        return try String(contentsOf: tempV3SourceURL, encoding: .utf8)
+    }
+
     private func withTemporaryStoreURL(_ body: (URL) throws -> Void) throws {
         let storeRoot = FileManager.default.temporaryDirectory
             .appendingPathComponent("OutRunMigrationTests", isDirectory: true)

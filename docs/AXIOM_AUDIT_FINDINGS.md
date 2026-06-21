@@ -101,7 +101,7 @@ Validation:
 - Backup/export DTO green: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' -only-testing:UnitTests/CoreStoreTempConversionThreadingTests -resultBundlePath /tmp/outrun-corestore-asTemp-green2.xcresult` passed with 1 selected test and 0 failures after the conversions switched to raw `_x.value` reads.
 - Adversarial backup-version red: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-corestore-asTemp-orchestrator -resultBundlePath /tmp/outrun-backup-version-red1.xcresult -only-testing:UnitTests/CoreStoreTempConversionThreadingTests/testCurrentBackupEncodingUsesV4VersionCode` failed because current backup JSON encoded `"version": "V3"`.
 - Orchestrator green: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-corestore-asTemp-orchestrator -resultBundlePath /tmp/outrun-corestore-asTemp-orchestrator2.xcresult -only-testing:UnitTests/CoreStoreTempConversionThreadingTests` passed with 2 selected tests and 0 failures after `BackupV4` switched to `BackupV4.versionCode`.
-- Combined audit regression: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' -only-testing:UnitTests -resultBundlePath /tmp/outrun-audit-slices-green13-with-corestore-asTemp.xcresult` passed with 42 tests and 0 failures before the backup-version guard was added; rerun the combined audit pack after this V4 tag fix before merging the full audit batch.
+- Combined audit regression: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-audit-slices-green14 -resultBundlePath /tmp/outrun-audit-slices-green14-corestore-backup.xcresult -only-testing:UnitTests` passed with 43 tests and 0 failures after the backup/export DTO guard and V4 backup-version fix.
 - Static: `rg -n "DataManager\\.queryExistingHealthUUIDs\\(\\)|threadSafeSyncReturn|\\.wait\\(\\)" OutRun/Models/Data/DataManager+Query.swift OutRun/Models/HealthKit/HealthStoreManager+Observer.swift OutRun/Models/HealthKit/HealthStoreManager+Query.swift` found no production-source matches; `plutil -lint OutRun.xcodeproj/project.pbxproj` and `git diff --check` passed for the touched files.
 - Adversarial review found one merge blocker in the subagent patch: `HKSampleQuery` had lost `sampleType: HealthType.Workout`. The merged version restores `sampleType` and keeps the existing attribute-only CoreStore query shape inside asynchronous transaction work.
 
@@ -118,7 +118,7 @@ Evidence:
 - Backup/export DTO conversion now bypasses those public getters: `OutRun/Models/Data/DataModels/Workout.swift`, `Event.swift`, `WorkoutPause.swift`, `WorkoutEvent.swift`, `WorkoutRouteDataSample.swift`, and `WorkoutHeartRateDataSample.swift` read raw `_x.value` storage inside their `asTemp` implementations.
 - `OutRun/Models/Data/Backup/Backup.swift` now writes `BackupV4.versionCode` for current backups, matching the `typealias Backup = BackupV4` export schema.
 - `UnitTests/CoreStoreTempConversionThreadingTests.swift` guards the backup/export conversion path by rejecting public getter tokens in those six `asTemp` bodies while requiring raw `.value` reads, and by asserting current backup JSON advertises version `V4`.
-- `OutRun/Models/Data/DataManager+Query.swift:264` says `queryExistingHealthUUIDs()` should only be used on the main thread, then calls `threadSafeSyncReturn`.
+- Fixed previously: `DataManager.queryExistingHealthUUIDs(completion:)` now uses asynchronous CoreStore attribute queries instead of the old main-thread-only `threadSafeSyncReturn` path.
 
 Recommendation:
 - Keep the value-snapshot pattern introduced for timeline/detail and expand it.
@@ -152,12 +152,15 @@ Recommendation:
 
 ### Migration Testing Is Essentially Absent
 
-Status: Partially addressed 2026-06-21. Replaced the template `UnitTests/MigrationTests.swift` content with fixture-backed CoreStore migration coverage for the V3to4 -> V4 heart-rate conversion. `OutRunV4` no longer force-casts legacy `heartRate` values; malformed or unsupported persisted values now migrate to the required V4 `Int` field as `0` instead of crashing or silently dropping the destination row. Full historical V1/V2/V3 chain coverage and backup import version coverage remain open.
+Status: Partially addressed 2026-06-21. Replaced the template `UnitTests/MigrationTests.swift` content with fixture-backed CoreStore migration coverage for the V3to4 -> V4 heart-rate conversion. `OutRunV4` no longer force-casts legacy `heartRate` values; malformed or unsupported persisted values now migrate to the required V4 `Int` field as `0` instead of crashing or silently dropping the destination row. A focused V3 backup-import fix now maps legacy non-pause workout events with the same `eventType - 4` semantics as the CoreStore V3to4 migration instead of crashing. Full historical V1/V2/V3 chain coverage and broader backup import version coverage remain open.
 
 Validation:
 - Red: the migration slice initially failed against the force-cast/guard regression class; after a stale overwrite was detected, static checks again exposed the old `guard let heartRate`, optional helper result, and `return nil` patterns before repair.
 - Green: the final selected audit run at `/tmp/outrun-audit-slices-green2.xcresult` passed with 14 selected tests and 0 failures, including all 4 `MigrationTests`.
 - Static: `rg -n "guard let heartRate|-> Int\\?|return nil|as! Double|unsafeRemoveAllPersistentStoresAndWait|SkipsMalformed|XCTAssertNil|ValidatesHeartRateBeforeCreatingDestinationObject" OutRun/Models/Data/DataModels/Versions/OutRunV4.swift UnitTests/MigrationTests.swift` found no stale migration patterns after repair.
+- V3 backup-event red: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-v3-backup-events-red-workspace -only-testing:UnitTests/MigrationTests/testTempV3BackupWorkoutEventConversionMatchesV3ToV4MigrationShape -resultBundlePath /tmp/outrun-v3-backup-events-red-workspace.xcresult` failed with the expected `fatalError()` and missing `eventType - 4` assertions.
+- V3 backup-event green: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-v3-backup-events-green -only-testing:UnitTests/MigrationTests/testTempV3BackupWorkoutEventConversionMatchesV3ToV4MigrationShape -only-testing:UnitTests/MigrationTests/testTempV3BackupWorkoutEventConversionMapsLegacyNonPauseEvents -resultBundlePath /tmp/outrun-v3-backup-events-green.xcresult` passed with 2 selected tests and 0 failures.
+- V3 backup-event subset: `xcodebuild test -workspace OutRun.xcworkspace -scheme OutRun -destination 'platform=iOS Simulator,id=D6C217FB-9E68-4CA2-B9FC-A5202C44A667' -derivedDataPath /tmp/outrun-v3-backup-events-migrationtests -only-testing:UnitTests/MigrationTests -resultBundlePath /tmp/outrun-v3-backup-events-migrationtests.xcresult` passed with 6 selected tests and 0 failures.
 - Adversarial review rejected an earlier source-only implementation. The merged test now proves migration behavior by corrupting the raw SQLite `ZWORKOUTHEARTRATESAMPLE.ZHEARTRATE` value before opening through the V4 chain.
 
 The app has code-based CoreStore migrations and user health data. The current tests now cover the V3to4 -> V4 heart-rate conversion path, but broader historical migration coverage is still thin.
@@ -166,7 +169,9 @@ Evidence:
 - `UnitTests/MigrationTests.swift` now seeds a real V3to4 CoreStore SQLite store, opens it through the V4 migration chain, and asserts migrated heart-rate samples.
 - `UnitTests/MigrationTests.swift` covers supported `Double` and `NSNumber` conversion, unsupported `nil`/string helper inputs, and a malformed persisted SQLite value that now migrates to `[0]`.
 - `OutRun/Models/Data/DataModels/Versions/OutRunV4.swift` converts supported legacy values and defaults unsupported values to `0` without force-casting.
-- Missing coverage remains for full V1/V2/V3 -> V4 migration fixtures and backup import versions V1 through V4.
+- `OutRun/Models/Data/Temp/Versions/TempV3.swift` now converts V3 backup workout events using `eventType - 4`, so legacy values 4/5/6 become lap/marker/segment and higher values become `.unknown` instead of crashing.
+- `UnitTests/MigrationTests.swift` guards the V3 backup workout-event source shape and runtime conversion for 4, 5, 6, and an unknown high value.
+- Missing coverage remains for full V1/V2/V3 -> V4 migration fixtures and backup import versions V1 through V4 beyond this focused V3 workout-event slice.
 
 Recommendation:
 - Extend the fixture-backed migration tests to V1 -> V4 and intermediate historical versions, not only V3to4 -> V4.

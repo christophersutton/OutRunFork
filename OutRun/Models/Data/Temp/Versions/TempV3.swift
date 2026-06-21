@@ -66,7 +66,7 @@ public enum TempV3 {
                 pauses: pauseObjects.map { (start: $0.start, end: $0.end) }
             )
             
-            let events = workoutEvents.filter { $0.eventType > 3 }.map { $0.asTemp }
+            let events = workoutEvents.filter { $0.eventType >= 4 }.map { $0.asTemp }
             
             return TempWorkout(
                 uuid: uuid,
@@ -102,15 +102,9 @@ public enum TempV3 {
         public let endDate: Date
         
         public var asTemp: TempWorkoutEvent {
-            
-            if eventType > 3 {
-                print("Conversion from TempV3.WorkoutEvent to TempWorkoutEvent invalid: eventType too high")
-                fatalError()
-            }
-            
             return TempWorkoutEvent(
                 uuid: uuid,
-                eventType: .init(rawValue: eventType - 3),
+                eventType: .init(rawValue: eventType - 4),
                 timestamp: startDate
             )
         }
