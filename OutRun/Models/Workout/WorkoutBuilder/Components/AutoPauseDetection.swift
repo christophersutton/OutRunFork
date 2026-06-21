@@ -56,7 +56,7 @@ public class AutoPauseDetection: WorkoutBuilderComponent {
         return { [weak self] value in
             guard let self else { return }
             let (location, workoutType) = value
-            guard !(self.currentStatus == .paused), self.currentStatus.isActiveStatus, location.speed >= 0, ![.walking, .hiking].contains(workoutType) else { return }
+            guard !(self.currentStatus == .paused), self.currentStatus.isActiveStatus, location.speed >= 0, workoutType == .running else { return }
             
             // looking for end date
             ifStatement: if self.currentPredictedStartDate != nil {

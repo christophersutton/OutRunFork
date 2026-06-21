@@ -32,6 +32,7 @@ enum WorkoutMapImageManager {
         }
     }
     private static var requestQueue = WorkoutMapImageQueue()
+    private static var requestCompletions = [String: [(Bool, UIImage?) -> Void]]()
     private static let processQueue = DispatchQueue(label: "processQueue", qos: .userInitiated)
     private static let snapshotQueue = DispatchQueue(label: "snapshotQueue")
     
@@ -39,13 +40,47 @@ enum WorkoutMapImageManager {
     ///
     /// - Parameter request: An instance of WorkoutMapImageRequest indicating the type of image being requested
     public static func execute(_ request: WorkoutMapImageRequest) {
-        
-        if let id = request.cacheIdentifier(), let image = CustomImageCache.mapImageCache.getMapImage(for: id) {
-            request.completion(true, image)
+
+        guard let id = request.cacheIdentifier() else {
+            DispatchQueue.main.async {
+                request.completion(false, nil)
+            }
             return
         }
-        
-        requestQueue.add(request)
+
+        processQueue.async {
+            if let image = CustomImageCache.mapImageCache.getMapImage(for: id) {
+                DispatchQueue.main.async {
+                    request.completion(true, image)
+                }
+                return
+            }
+
+            DispatchQueue.main.async {
+                enqueueUncached(request, cacheIdentifier: id)
+            }
+        }
+    }
+
+    private static func enqueueUncached(_ request: WorkoutMapImageRequest, cacheIdentifier: String) {
+
+        if requestCompletions[cacheIdentifier] != nil {
+            requestCompletions[cacheIdentifier]?.append(request.completion)
+            return
+        }
+
+        requestCompletions[cacheIdentifier] = [request.completion]
+        let queuedRequest = WorkoutMapImageRequest(
+            workoutUUID: request.workoutUUID,
+            size: request.size,
+            highPriority: request.highPriority,
+            completion: { success, image in
+                let completions = requestCompletions.removeValue(forKey: cacheIdentifier) ?? []
+                completions.forEach { $0(success, image) }
+            }
+        )
+
+        requestQueue.add(queuedRequest)
         if internalStatus == .idle {
             executeNextInQueue()
         }
@@ -105,6 +140,7 @@ enum WorkoutMapImageManager {
                         }
                         
                         let route = MKPolyline(coordinates: coordinates, count: coordinates.count)
+                        let renderCoordinates = simplifiedCoordinates(coordinates, for: request.size)
                         
                         let mapSnapshotOptions = MKMapSnapshotter.Options()
                         mapSnapshotOptions.region = MKCoordinateRegion(route.boundingMapRect.insetBy(dx: route.boundingMapRect.width * -0.1, dy: route.boundingMapRect.height * -0.1))
@@ -120,25 +156,27 @@ enum WorkoutMapImageManager {
                         snapshotter.start(with: snapshotQueue, completionHandler: { snapshot, error in
                             if error == nil, let snapshot = snapshot {
                                 let image = snapshot.image
-                                
-                                UIGraphicsBeginImageContextWithOptions(request.size.rawSize, true, 0)
-                                image.draw(at: CGPoint.zero)
-                                
-                                let context = UIGraphicsGetCurrentContext()
-                                context!.setLineWidth(3.0)
-                                context!.setLineCap(.round)
-                                context!.setStrokeColor(UIColor.accentColor.cgColor)
-                                context!.move(to: snapshot.point(for: coordinates[0]))
-                                for i in 0...(coordinates.count - 1) {
-                                    context!.addLine(to: snapshot.point(for: coordinates[i]))
-                                    context!.move(to: snapshot.point(for: coordinates[i]))
+                                let format = UIGraphicsImageRendererFormat()
+                                format.scale = image.scale
+                                format.opaque = true
+
+                                let renderer = UIGraphicsImageRenderer(size: request.size.rawSize, format: format)
+                                let resultImage = renderer.image { rendererContext in
+                                    image.draw(at: CGPoint.zero)
+
+                                    let context = rendererContext.cgContext
+                                    context.setLineWidth(3.0)
+                                    context.setLineCap(.round)
+                                    context.setStrokeColor(UIColor.accentColor.cgColor)
+                                    context.move(to: snapshot.point(for: renderCoordinates[0]))
+                                    for coordinate in renderCoordinates.dropFirst() {
+                                        context.addLine(to: snapshot.point(for: coordinate))
+                                    }
+                                    context.strokePath()
                                 }
-                                context!.strokePath()
-                                let resultImage = UIGraphicsGetImageFromCurrentImageContext()
-                                UIGraphicsEndImageContext()
                                 
-                                if let image = resultImage, let id = request.cacheIdentifier(forDarkAppearance: imageUsesDarkMode) {
-                                    CustomImageCache.mapImageCache.set(mapImage: image, for: id)
+                                if let id = request.cacheIdentifier(forDarkAppearance: imageUsesDarkMode) {
+                                    CustomImageCache.mapImageCache.set(mapImage: resultImage, for: id)
                                 }
                                 
                                 DispatchQueue.main.async {
@@ -162,6 +200,25 @@ enum WorkoutMapImageManager {
             }
         )
         
+    }
+
+    private static func simplifiedCoordinates(_ coordinates: [CLLocationCoordinate2D], for size: WorkoutMapImageSize) -> [CLLocationCoordinate2D] {
+        let maximumCount: Int
+        switch size {
+        case .list:
+            maximumCount = 700
+        case .stats:
+            maximumCount = 1_500
+        }
+
+        guard coordinates.count > maximumCount, maximumCount > 2 else {
+            return coordinates
+        }
+
+        let stride = Double(coordinates.count - 1) / Double(maximumCount - 1)
+        return (0..<maximumCount).map { index in
+            coordinates[Int((Double(index) * stride).rounded())]
+        }
     }
     
     private enum Status {

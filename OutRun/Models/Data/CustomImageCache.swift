@@ -44,7 +44,7 @@ class CustomImageCache {
         let diskConfig = DiskConfig(
             name: "MapImageCache",
             expiry: .never,
-            maxSize: 5000000
+            maxSize: 50_000_000
         )
         
         let memoryConfig = MemoryConfig(

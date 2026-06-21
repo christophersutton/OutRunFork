@@ -35,7 +35,6 @@ class HealthStoreManager {
         static let Workout = HKObjectType.workoutType()
         static let ActiveEnergyBurned = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
         static let DistanceWalkingRunning = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!
-        static let DistanceCycling = HKObjectType.quantityType(forIdentifier: .distanceCycling)!
         static let Route = HKObjectType.seriesType(forIdentifier: HKWorkoutRouteTypeIdentifier)!
         static let BodyMass = HKObjectType.quantityType(forIdentifier: .bodyMass)!
         static let HeartRate = HKObjectType.quantityType(forIdentifier: .heartRate)!
@@ -46,7 +45,6 @@ class HealthStoreManager {
             HealthType.Workout,
             HealthType.ActiveEnergyBurned,
             HealthType.DistanceWalkingRunning,
-            HealthType.DistanceCycling,
             HealthType.Route,
             HealthType.BodyMass,
             HealthType.HeartRate,
@@ -285,24 +283,20 @@ class HealthStoreManager {
                 let assosicationPredicate = HKQuery.predicateForObjects(from: healthWorkout)
                 
                 let sampleTypesToDelete = HealthType.allImplementedTypes.filter { $0 != HealthType.Workout }
-                let dispatchGroup = DispatchGroup()
-                var deleteCount = 0
+                let deletionGroup = DispatchGroup()
                 
-                dispatchGroup.enter()
                 sampleTypesToDelete.forEach { type in
+                    deletionGroup.enter()
                     HealthStoreManager.healthStore.deleteObjects(of: type, predicate: assosicationPredicate) { _, _, _ in
-                        deleteCount += 1
-                        if deleteCount == sampleTypesToDelete.count {
-                            dispatchGroup.leave()
-                        }
+                        deletionGroup.leave()
                     }
                 }
                 
-                dispatchGroup.wait()
-                
-                HealthStoreManager.healthStore.delete(healthWorkout) { success, error in
-                    guard success else { completion(.healthKitError(error: error)); return }
-                    completion(nil)
+                deletionGroup.notify(queue: .global(qos: .userInitiated)) {
+                    HealthStoreManager.healthStore.delete(healthWorkout) { success, error in
+                        guard success else { completion(.healthKitError(error: error)); return }
+                        completion(nil)
+                    }
                 }
             }
         }
@@ -518,7 +512,29 @@ class HealthStoreManager {
      Creates a `HealthWorkout` from an `HKWorkout` and queries additional data required to form the object.
      - returns: the finished `HealthWorkout`
      */
-    static func createHealthWorkout(from hkWorkout: HKWorkout) -> HealthWorkout? {
+    static func createHealthWorkouts(from hkWorkouts: [HKWorkout], completion: @escaping (_ healthWorkouts: [HealthWorkout]) -> Void) {
+        guard !hkWorkouts.isEmpty else { completion([]); return }
+
+        let conversionGroup = DispatchGroup()
+        let resultQueue = DispatchQueue(label: "com.tifraedrich.OutRun.HealthStoreManager.healthWorkouts")
+        var healthWorkouts = Array<HealthWorkout?>(repeating: nil, count: hkWorkouts.count)
+
+        for (index, hkWorkout) in hkWorkouts.enumerated() {
+            conversionGroup.enter()
+            createHealthWorkout(from: hkWorkout) { healthWorkout in
+                resultQueue.async {
+                    healthWorkouts[index] = healthWorkout
+                    conversionGroup.leave()
+                }
+            }
+        }
+
+        conversionGroup.notify(queue: resultQueue) {
+            completion(healthWorkouts.compactMap { $0 })
+        }
+    }
+
+    static func createHealthWorkout(from hkWorkout: HKWorkout, completion: @escaping (_ healthWorkout: HealthWorkout?) -> Void) {
         let stepsMapper: (Int?, HKQuantity, DateInterval) -> Int = { lastValue, quantity, _ in
             lastValue ?? 0 + Int(quantity.doubleValue(for: .count()))
         }
@@ -532,16 +548,43 @@ class HealthStoreManager {
             return values
         }
         
-        let steps: Int? = queryAnchoredHealthSeriesData(of: HealthType.StepCount, attachedTo: hkWorkout, transform: stepsMapper)
-        let routeData: [CLLocation] = queryAnchoredWorkoutRoute(attachedTo: hkWorkout)
-        let heartRates: [TempWorkoutHeartRateDataSample] = queryAnchoredHealthSeriesData(
-            of: HealthType.HeartRate,  attachedTo: hkWorkout, transform: heartRateMapper) ?? []
-        
-        return HealthWorkout(
-            hkWorkout,
-            steps: steps,
-            route: routeData,
-            heartRates: heartRates
-        )
+        let conversionGroup = DispatchGroup()
+        let resultQueue = DispatchQueue(label: "com.tifraedrich.OutRun.HealthStoreManager.healthWorkout")
+        var steps: Int?
+        var routeData = [CLLocation]()
+        var heartRates = [TempWorkoutHeartRateDataSample]()
+
+        conversionGroup.enter()
+        queryAnchoredHealthSeriesData(of: HealthType.StepCount, attachedTo: hkWorkout, transform: stepsMapper) { queriedSteps in
+            resultQueue.async {
+                steps = queriedSteps
+                conversionGroup.leave()
+            }
+        }
+
+        conversionGroup.enter()
+        queryAnchoredWorkoutRoute(attachedTo: hkWorkout) { queriedRouteData in
+            resultQueue.async {
+                routeData = queriedRouteData
+                conversionGroup.leave()
+            }
+        }
+
+        conversionGroup.enter()
+        queryAnchoredHealthSeriesData(of: HealthType.HeartRate, attachedTo: hkWorkout, transform: heartRateMapper) { queriedHeartRates in
+            resultQueue.async {
+                heartRates = queriedHeartRates ?? []
+                conversionGroup.leave()
+            }
+        }
+
+        conversionGroup.notify(queue: resultQueue) {
+            completion(HealthWorkout(
+                hkWorkout,
+                steps: steps,
+                route: routeData,
+                heartRates: heartRates
+            ))
+        }
     }
 }

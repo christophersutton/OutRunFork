@@ -35,6 +35,7 @@ final class RootRouter {
     var changelogText: String?
 
     @ObservationIgnored private var didBoot = false
+    @ObservationIgnored private var didScheduleHealthObservers = false
     @ObservationIgnored private var resetObserver: NSObjectProtocol?
 
     deinit {
@@ -93,10 +94,21 @@ final class RootRouter {
     private func finishBoot() {
         if UserPreferences.isSetUp.value {
             phase = .main
-            HealthStoreManager.setupObservers()
+            scheduleHealthObserverSetup()
             runPostLaunch()
         } else {
             phase = .onboarding
+        }
+    }
+
+    private func scheduleHealthObserverSetup() {
+        guard !didScheduleHealthObservers else { return }
+        didScheduleHealthObservers = true
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            guard UserPreferences.isSetUp.value else { return }
+            HealthStoreManager.setupObservers()
         }
     }
 

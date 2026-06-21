@@ -12,7 +12,6 @@
 "Workout.PauseDuration" = "Čas přestávek";
 "Workout.Duration" = "Čas";
 "Workout.ActiveDuration" = "Čas strávený v pohybu";
-"Workout.Strokes" = "Záběry pedálů";
 "Workout.Steps" = "Kroky";
 "Workout.Distance" = "Vzdálenost";
 "Workout" = "Trénink";
@@ -191,7 +190,7 @@
 "Setup.Feature.Lock.Title" = "Důraz na soukromí";
 "Setup.Feature.Chart.Message" = "Po skončení Vašeho tréninku si zobrazte podrobné statistiky, jako je maximální rychlost nebo průměrné tempo";
 "Setup.Feature.Chart.Title" = "Podrobné statistiky";
-"Setup.Feature.Route.Message" = "Nahrávejte svůj běh, chůzi nebo jízdu na kole s nejvyšší přesností, jakou Váš telefon dokáže.";
+"Setup.Feature.Route.Message" = "Nahrávejte svůj běh, chůzi nebo turistiku s nejvyšší přesností, jakou Váš telefon dokáže.";
 "Setup.Feature.Route.Title" = "Přesné stopování";
 "Setup.StartButton" = "Začít";
 "Setup.Introduction" = "tréninková aplikace, které záleží na Vašem soukromí – není třeba se nikam registrovat ani odesílat citlivá data na něčí servery.\nO tom ale později, teď se pusťme do práce.";
@@ -254,8 +253,6 @@
 "Settings.SyncAll.Error" = "Při synchronizaci všech tréninků do Apple Zdraví došlo k chybě, některé tréninky nemusely být synchronizovány.";
 "Workout.Type.Unknown" = "Neznámý";
 "Workout.Type.Hiking" = "Turistika";
-"Workout.Type.Skating" = "Bruslení";
-"Workout.Type.Cycling" = "Jízda na kole";
 "Workout.Type.Walking" = "Chůze";
 "Workout.Type.Running" = "Běh";
 "Workout.Type" = "Druh";
