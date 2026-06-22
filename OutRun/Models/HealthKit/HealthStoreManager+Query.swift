@@ -85,11 +85,9 @@ extension HealthStoreManager {
      Searches the health store for an object with the provided type and uuid.
      - returns: a boolean indicating whether the objects exists of not
      */
-    static func objectExists(of type: HKSampleType, for uuid: UUID) -> Bool {
+    static func objectExists(of type: HKSampleType, for uuid: UUID, completion: @escaping (_ objectExists: Bool) -> Void) {
         
-        var objectExists = false
-        let dispatchGroup = DispatchGroup()
-        dispatchGroup.enter()
+        let completion = safeClosure(from: completion)
         
         let predicate = HKQuery.predicateForObject(with: uuid)
         let query = HKSampleQuery(
@@ -98,14 +96,10 @@ extension HealthStoreManager {
             limit: 1,
             sortDescriptors: nil
         ) { (query, samples, error) in
-            objectExists = !(samples?.isEmpty ?? true)
-            dispatchGroup.leave()
+            completion(!(samples?.isEmpty ?? true))
         }
         
         HealthStoreManager.healthStore.execute(query)
-        dispatchGroup.wait()
-        
-        return objectExists
     }
     
     /**
@@ -136,8 +130,9 @@ extension HealthStoreManager {
                     return
                 }
                 
-                let healthWorkouts = hkWorkouts.compactMap(createHealthWorkout)
-                completion(nil, healthWorkouts)
+                createHealthWorkouts(from: hkWorkouts) { healthWorkouts in
+                    completion(nil, healthWorkouts)
+                }
             }
             
             HealthStoreManager.healthStore.execute(query)
@@ -153,31 +148,36 @@ extension HealthStoreManager {
      - parameter quantity: the current quantity for extracting the wanted data
      - parameter dateInterval: the quantity's date interval
      */
-    static func queryAnchoredHealthSeriesData<ReturnType>(of type: HKQuantityType, attachedTo healthWorkout: HKWorkout, transform: @escaping (_ lastValue: ReturnType?, _ quantity: HKQuantity, _ dateInterval: DateInterval) -> ReturnType?) -> ReturnType? {
+    static func queryAnchoredHealthSeriesData<ReturnType>(of type: HKQuantityType, attachedTo healthWorkout: HKWorkout, transform: @escaping (_ lastValue: ReturnType?, _ quantity: HKQuantity, _ dateInterval: DateInterval) -> ReturnType?, completion: @escaping (_ value: ReturnType?) -> Void) {
         
         var lastValue: ReturnType?
-        let dispatchGroup = DispatchGroup()
-        dispatchGroup.enter()
+        var didComplete = false
+        let resultQueue = DispatchQueue(label: "com.tifraedrich.OutRun.HealthStoreManager.anchoredHealthSeriesData")
         
         gainAuthorisation(for: [type]) { authorisation, _ in
-            guard authorisation else { dispatchGroup.leave(); return }
+            guard authorisation else { completion(nil); return }
             
             let predicate = HKAnchoredObjectQuery.predicateForObjects(from: healthWorkout)
             let query = HKQuantitySeriesSampleQuery(quantityType: type, predicate: predicate) { query, quantity, dateInterval, _, done, error in
-                guard error == nil, let quantity = quantity, let dateInterval = dateInterval, let tranformedValue = transform(lastValue, quantity, dateInterval) else { return }
+                resultQueue.async {
+                    guard !didComplete else { return }
                 
-                lastValue = tranformedValue
+                    if error == nil,
+                       let quantity = quantity,
+                       let dateInterval = dateInterval,
+                       let tranformedValue = transform(lastValue, quantity, dateInterval) {
+                        lastValue = tranformedValue
+                    }
                 
-                guard done else { return }
-                HealthStoreManager.healthStore.stop(query)
-                dispatchGroup.leave()
+                    guard done || error != nil else { return }
+                    didComplete = true
+                    HealthStoreManager.healthStore.stop(query)
+                    completion(lastValue)
+                }
             }
             
             HealthStoreManager.healthStore.execute(query)
         }
-        
-        dispatchGroup.wait()
-        return lastValue
     }
     
     /**
@@ -185,37 +185,39 @@ extension HealthStoreManager {
      - parameter healthRoute: the health workout the route is associated with
      - returns: the location data of the queried health workout
      */
-    static func queryAnchoredWorkoutRoute(attachedTo healthWorkout: HKWorkout) -> [CLLocation] {
+    static func queryAnchoredWorkoutRoute(attachedTo healthWorkout: HKWorkout, completion: @escaping (_ routeData: [CLLocation]) -> Void) {
         
         var routeData = [CLLocation]()
-        let dispatchGroup = DispatchGroup()
-        dispatchGroup.enter()
+        var didComplete = false
+        let routeDataQueue = DispatchQueue(label: "com.tifraedrich.OutRun.HealthStoreManager.workoutRouteData")
         
         gainAuthorisation(for: [HealthType.Route]) { authorisation, _ in
-            guard authorisation else { dispatchGroup.leave(); return }
+            guard authorisation else { completion([]); return }
             
             queryHealthObjects(
                 of: HealthType.Route,
                 attachedTo: healthWorkout
             ) { routes, error in
-                guard let route = routes?.first as? HKWorkoutRoute else { dispatchGroup.leave(); return }
+                guard let route = routes?.first as? HKWorkoutRoute else { completion([]); return }
                 
                 let query = HKWorkoutRouteQuery(route: route) { query, locations, done, error in
-                    guard let locations = locations else { dispatchGroup.leave(); return }
+                    routeDataQueue.async {
+                        guard !didComplete else { return }
                     
-                    routeData.append(contentsOf: locations)
+                        if let locations = locations {
+                            routeData.append(contentsOf: locations)
+                        }
                     
-                    guard done else { return }
-                    HealthStoreManager.healthStore.stop(query)
-                    dispatchGroup.leave()
+                        guard done || error != nil || locations == nil else { return }
+                        didComplete = true
+                        HealthStoreManager.healthStore.stop(query)
+                        completion(routeData)
+                    }
                 }
                 
                 HealthStoreManager.healthStore.execute(query)
             }
         }
-        
-        dispatchGroup.wait()
-        return routeData
     }
     
     /**

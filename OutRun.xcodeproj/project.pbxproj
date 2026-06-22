@@ -137,6 +137,7 @@
 		22DBFBE3234939F100DE6E92 /* UserPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DBFBE2234939F100DE6E92 /* UserPreference.swift */; };
 		22DD158C280C5BB4002CDB45 /* MigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD158B280C5BB4002CDB45 /* MigrationTests.swift */; };
 		22DD1592280C5CC5002CDB45 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD1593280C5CC5002CDB45 /* PrivacyManifestTests.swift */; };
+		22DD1595280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD1594280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift */; };
 		22E5056E25C96A7800DC9AC1 /* HKWorkoutEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E5056D25C96A7800DC9AC1 /* HKWorkoutEvent.swift */; };
 		22E5F415266689ED00D4B985 /* HealthStoreManager+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E5F414266689ED00D4B985 /* HealthStoreManager+Error.swift */; };
 		22E8969A23E6E6E40074D2BB /* Temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E8969923E6E6E40074D2BB /* Temp.swift */; };
@@ -354,6 +355,7 @@
 		22DD1589280C5BB4002CDB45 /* UnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		22DD158B280C5BB4002CDB45 /* MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationTests.swift; sourceTree = "<group>"; };
 		22DD1593280C5CC5002CDB45 /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
+		22DD1594280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBlockingQueryTests.swift; sourceTree = "<group>"; };
 		22E5056D25C96A7800DC9AC1 /* HKWorkoutEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HKWorkoutEvent.swift; sourceTree = "<group>"; };
 		22E5F414266689ED00D4B985 /* HealthStoreManager+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthStoreManager+Error.swift"; sourceTree = "<group>"; };
 		22E8969923E6E6E40074D2BB /* Temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temp.swift; sourceTree = "<group>"; };
@@ -948,6 +950,7 @@
 			isa = PBXGroup;
 			children = (
 				22DD158B280C5BB4002CDB45 /* MigrationTests.swift */,
+				22DD1594280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift */,
 				22DD1593280C5CC5002CDB45 /* PrivacyManifestTests.swift */,
 			);
 			path = UnitTests;
@@ -1486,6 +1489,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				22DD158C280C5BB4002CDB45 /* MigrationTests.swift in Sources */,
+				22DD1595280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift in Sources */,
 				22DD1592280C5CC5002CDB45 /* PrivacyManifestTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
