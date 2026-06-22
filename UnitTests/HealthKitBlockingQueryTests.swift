@@ -22,6 +22,42 @@ import XCTest
 
 final class HealthKitBlockingQueryTests: XCTestCase {
 
+    func testHealthUUIDQueryPathDoesNotUseSynchronousMainHops() throws {
+        let unitTestsDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        let repositoryRoot = unitTestsDirectory.deletingLastPathComponent()
+
+        let dataManagerURL = repositoryRoot.appendingPathComponent("OutRun/Models/Data/DataManager+Query.swift")
+        let dataManagerSource = try String(contentsOf: dataManagerURL)
+        let healthUUIDQuery = try XCTUnwrap(
+            dataManagerSource.range(of: "public static func queryExistingHealthUUIDs")
+        )
+        let healthUUIDQuerySource = String(dataManagerSource[healthUUIDQuery.lowerBound...])
+
+        XCTAssertFalse(
+            healthUUIDQuerySource.contains("threadSafeSyncReturn"),
+            "DataManager.queryExistingHealthUUIDs must use asynchronous CoreStore work, not a synchronous main-thread hop."
+        )
+        XCTAssertFalse(
+            healthUUIDQuerySource.contains(".wait()"),
+            "DataManager.queryExistingHealthUUIDs must not block while querying CoreStore."
+        )
+
+        let healthKitCallSites = [
+            "OutRun/Models/HealthKit/HealthStoreManager+Observer.swift",
+            "OutRun/Models/HealthKit/HealthStoreManager+Query.swift"
+        ]
+
+        for sourceFile in healthKitCallSites {
+            let fileURL = repositoryRoot.appendingPathComponent(sourceFile)
+            let source = try String(contentsOf: fileURL)
+
+            XCTAssertFalse(
+                source.contains("DataManager.queryExistingHealthUUIDs()"),
+                "\(sourceFile) must not synchronously query existing HealthKit UUIDs."
+            )
+        }
+    }
+
     func testHealthKitManagersDoNotSynchronouslyWaitForQueries() throws {
         let unitTestsDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
         let repositoryRoot = unitTestsDirectory.deletingLastPathComponent()

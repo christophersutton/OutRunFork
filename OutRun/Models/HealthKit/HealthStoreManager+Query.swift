@@ -113,29 +113,31 @@ extension HealthStoreManager {
         gainAuthorisation(for: [HealthType.Workout]) { authorisation, _ in
             guard authorisation else { completion(.insufficientAuthorisation, []); return }
             
-            let unsyncedWorkouts = NSCompoundPredicate(notPredicateWithSubpredicate: HKQuery.predicateForObjects(with: Set(DataManager.queryExistingHealthUUIDs())))
-            let supportedTypes = NSCompoundPredicate(orPredicateWithSubpredicates: Workout.WorkoutType.supportedTypes.map { HKQuery.predicateForWorkouts(with: $0.healthKitType) })
-            let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [unsyncedWorkouts, supportedTypes])
-            
-            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-            
-            let query = HKSampleQuery(
-                sampleType: HealthType.Workout,
-                predicate: predicate,
-                limit: HKObjectQueryNoLimit,
-                sortDescriptors: [sortDescriptor]
-            ) { (_, samples, error) in
-                guard let hkWorkouts = samples?.compactMap({ $0 as? HKWorkout }) else {
-                    completion(.healthKitError(error: error), [])
-                    return
-                }
+            DataManager.queryExistingHealthUUIDs { existingHealthUUIDs in
+                let unsyncedWorkouts = NSCompoundPredicate(notPredicateWithSubpredicate: HKQuery.predicateForObjects(with: Set(existingHealthUUIDs)))
+                let supportedTypes = NSCompoundPredicate(orPredicateWithSubpredicates: Workout.WorkoutType.supportedTypes.map { HKQuery.predicateForWorkouts(with: $0.healthKitType) })
+                let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [unsyncedWorkouts, supportedTypes])
                 
-                createHealthWorkouts(from: hkWorkouts) { healthWorkouts in
-                    completion(nil, healthWorkouts)
+                let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+
+                let query = HKSampleQuery(
+                    sampleType: HealthType.Workout,
+                    predicate: predicate,
+                    limit: HKObjectQueryNoLimit,
+                    sortDescriptors: [sortDescriptor]
+                ) { (_, samples, error) in
+                    guard let hkWorkouts = samples?.compactMap({ $0 as? HKWorkout }) else {
+                        completion(.healthKitError(error: error), [])
+                        return
+                    }
+
+                    createHealthWorkouts(from: hkWorkouts) { healthWorkouts in
+                        completion(nil, healthWorkouts)
+                    }
                 }
+
+                HealthStoreManager.healthStore.execute(query)
             }
-            
-            HealthStoreManager.healthStore.execute(query)
         }
     }
     
