@@ -41,6 +41,7 @@ struct PolicyView: View {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(Color.orSecondary)
                     }
+                    .accessibilityLabel(Text(LS["Close"]))
                 }
             }
         }

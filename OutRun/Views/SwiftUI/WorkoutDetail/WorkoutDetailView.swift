@@ -39,6 +39,7 @@ struct WorkoutDetailView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button { dismiss() } label: { Image(systemName: "xmark") }
+                        .accessibilityLabel(Text(LS["Close"]))
                 }
                 if snapshot != nil {
                     ToolbarItem(placement: .navigationBarTrailing) { actionsMenu }

@@ -69,6 +69,7 @@ struct DebugView: View {
                     } label: {
                         Image(systemName: "xmark")
                     }
+                    .accessibilityLabel(Text(LS["Close"]))
                     .tint(Color.orAccent)
                 }
             }
