@@ -74,7 +74,8 @@ public enum OutRunV4: ORDataModel {
                     
                     let destinationObject = createDestinationObject()
                     
-                    destinationObject["heartRate"] = Int(sourceObject["heartRate"] as! Double)
+                    let legacyHeartRate = sourceObject["heartRate"] as? Double
+                    destinationObject["heartRate"] = legacyHeartRate.map(Int.init) ?? 0
                     
                     destinationObject.enumerateAttributes { (attribute, sourceAttribute) in
                         if let sourceAttribute = sourceAttribute, sourceAttribute.coreStoreDumpString != "heartRate" {
