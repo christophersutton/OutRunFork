@@ -20,29 +20,43 @@
 
 import XCTest
 
-class MigrationTests: XCTestCase {
+final class MigrationTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testV3ToV4HeartRateMigrationAvoidsForceCastAndPreservesDoubleConversion() throws {
+        let outRunV4Source = try sourceContents(at: "OutRun/Models/Data/DataModels/Versions/OutRunV4.swift")
+
+        XCTAssertFalse(
+            outRunV4Source.contains("sourceObject[\"heartRate\"] as! Double"),
+            "The V3to4 -> V4 heart-rate migration must not force-cast legacy values."
+        )
+        XCTAssertTrue(
+            outRunV4Source.contains("sourceObject[\"heartRate\"] as? Double"),
+            "The migration should safely accept valid legacy Double heart-rate values."
+        )
+        XCTAssertTrue(
+            outRunV4Source.contains("destinationObject[\"heartRate\"] = Int(heartRate)"),
+            "Valid legacy Double heart-rate values should still migrate to the V4 Int field."
+        )
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    func testMigrationTestsAreNotXcodeTemplatePlaceholders() throws {
+        let migrationTestsSource = try sourceContents(at: "UnitTests/MigrationTests.swift")
+
+        let templateFunctionalTestName = "func test" + "Example()"
+        let templatePerformanceTestName = "func test" + "PerformanceExample()"
+        let templateFunctionalComment = "This is an example of a " + "functional test case"
+
+        XCTAssertFalse(migrationTestsSource.contains(templateFunctionalTestName))
+        XCTAssertFalse(migrationTestsSource.contains(templatePerformanceTestName))
+        XCTAssertFalse(migrationTestsSource.contains(templateFunctionalComment))
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
-        }
+    private func sourceContents(at relativePath: String) throws -> String {
+        let repositoryRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let fileURL = repositoryRoot.appendingPathComponent(relativePath)
+        return try String(contentsOf: fileURL, encoding: .utf8)
     }
 
 }
