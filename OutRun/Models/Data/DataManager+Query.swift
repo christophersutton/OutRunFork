@@ -233,6 +233,36 @@ extension DataManager {
         }
     }
 
+    // MARK: - Workout Edit Snapshot
+
+    /**
+     Asynchronously builds an immutable, value-type `WorkoutEditSnapshot` for the SwiftUI edit-workout form.
+     The snapshot is built entirely on the CoreStore transaction queue using raw `_x.value` accessors.
+     - parameter id: the `UUID` of the workout to snapshot
+     - returns: the snapshot, or `nil` if the workout could not be found or the transaction failed
+     */
+    public static func workoutEditSnapshot(for id: UUID?) async -> WorkoutEditSnapshot? {
+
+        await withCheckedContinuation { continuation in
+
+            dataStack.perform(asynchronous: { (transaction) -> WorkoutEditSnapshot? in
+
+                guard let workout: Workout = queryObject(from: id, transaction: transaction) else {
+                    return nil
+                }
+                return WorkoutEditSnapshot(workout)
+
+            }) { (result) in
+                switch result {
+                case .success(let snapshot):
+                    continuation.resume(returning: snapshot)
+                case .failure:
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+    }
+
     // MARK: - Backup
     
     /**

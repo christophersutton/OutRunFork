@@ -18,6 +18,7 @@ struct EditWorkoutForm: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var state: EditWorkoutState
+    @State private var isLoadingEditSnapshot: Bool
     @State private var showDurationWheels = false
     @FocusState private var keyboardFocused: Bool
 
@@ -30,14 +31,26 @@ struct EditWorkoutForm: View {
 
     init(mode: EditWorkoutState.Mode, onSaved: @escaping (UUID) -> Void) {
         _state = State(initialValue: EditWorkoutState(mode: mode))
+        if case .edit = mode {
+            _isLoadingEditSnapshot = State(initialValue: true)
+        } else {
+            _isLoadingEditSnapshot = State(initialValue: false)
+        }
         self.onSaved = onSaved
     }
 
     var body: some View {
         NavigationStack {
-            Form {
-                infoSection
-                commentSection
+            Group {
+                if isLoadingEditSnapshot {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    Form {
+                        infoSection
+                        commentSection
+                    }
+                }
             }
             .navigationTitle(state.title)
             .navigationBarTitleDisplayMode(.inline)
@@ -47,7 +60,7 @@ struct EditWorkoutForm: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(LS["Save"]) { save() }
-                        .disabled(!state.isValid)
+                        .disabled(isLoadingEditSnapshot || !state.isValid)
                 }
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
@@ -65,6 +78,9 @@ struct EditWorkoutForm: View {
             } message: {
                 Text(state.errorMessage ?? "")
             }
+            .task {
+                await loadEditSnapshotIfNeeded()
+            }
             // Apple Health sync failed but the workout was saved: tell the user, then finalize on dismiss.
             .alert(
                 LS["Error"],
@@ -79,6 +95,20 @@ struct EditWorkoutForm: View {
                 Text(failure.message)
             }
         }
+    }
+
+    // MARK: Snapshot loading
+
+    private func loadEditSnapshotIfNeeded() async {
+        guard isLoadingEditSnapshot else { return }
+        guard case .edit(let id) = state.mode else {
+            isLoadingEditSnapshot = false
+            return
+        }
+
+        let snapshot = await DataManager.workoutEditSnapshot(for: id)
+        state.apply(snapshot: snapshot)
+        isLoadingEditSnapshot = false
     }
 
     // MARK: Sections

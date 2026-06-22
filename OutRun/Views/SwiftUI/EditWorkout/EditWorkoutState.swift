@@ -38,7 +38,7 @@ final class EditWorkoutState {
 
     /// The workout types offered in the picker, plus the existing type when needed so editing never
     /// silently reclassifies it.
-    @ObservationIgnored let availableTypes: [Workout.WorkoutType]
+    var availableTypes: [Workout.WorkoutType]
 
     var workoutType: Workout.WorkoutType
 
@@ -64,45 +64,46 @@ final class EditWorkoutState {
     init(mode: Mode) {
         self.mode = mode
 
-        // Defaults (create mode).
-        var seededType = Workout.WorkoutType.running
-        var seededDistanceText = ""
-        var seededStepsText = ""
-        var seededStart = Date()
-        var seededDuration: TimeInterval = 0
-        var seededRace = false
-        var seededComment = ""
+        self.workoutType = Workout.WorkoutType.running
+        self.distanceText = ""
+        self.stepsText = ""
+        self.startDate = Date()
+        self.durationHours = 0
+        self.durationMinutes = 0
+        self.durationSeconds = 0
+        self.isRace = false
+        self.comment = ""
+        self.availableTypes = Workout.WorkoutType.supportedTypes
 
-        if case .edit(let id) = mode, let workout: Workout = DataManager.queryObject(from: id) {
-            // Reading these accessors is safe here: the object is main-context and we are on the main actor.
-            seededType = workout.workoutType
+        let snapshot: WorkoutEditSnapshot? = nil
+        apply(snapshot: snapshot)
+    }
 
-            let preferredDistance = UserPreferences.distanceMeasurementType.convert(fromValue: workout.distance / 1000, toPrefered: true)
-            seededDistanceText = Self.editableString(from: preferredDistance, fractionDigits: 2)
+    func apply(snapshot: WorkoutEditSnapshot?) {
+        guard let snapshot else { return }
 
-            if let steps = workout.steps {
-                seededStepsText = Self.editableString(from: Double(steps), fractionDigits: 0)
-            }
+        workoutType = snapshot.workoutType
 
-            seededStart = workout.startDate
-            seededDuration = max(0, workout.endDate.timeIntervalSince(workout.startDate))   // fixed sign
-            seededRace = workout.isRace
-            seededComment = workout.comment ?? ""
+        let preferredDistance = UserPreferences.distanceMeasurementType.convert(fromValue: snapshot.distance / 1000, toPrefered: true)
+        distanceText = Self.editableString(from: preferredDistance, fractionDigits: 2)
+
+        if let steps = snapshot.steps {
+            stepsText = Self.editableString(from: Double(steps), fractionDigits: 0)
+        } else {
+            stepsText = ""
         }
 
-        self.workoutType = seededType
-        self.distanceText = seededDistanceText
-        self.stepsText = seededStepsText
-        self.startDate = seededStart
-        self.durationHours = Int(seededDuration) / 3600
-        self.durationMinutes = (Int(seededDuration) % 3600) / 60
-        self.durationSeconds = Int(seededDuration) % 60
-        self.isRace = seededRace
-        self.comment = seededComment
+        startDate = snapshot.startDate
+        let seededDuration = max(0, snapshot.endDate.timeIntervalSince(snapshot.startDate))
+        durationHours = Int(seededDuration) / 3600
+        durationMinutes = (Int(seededDuration) % 3600) / 60
+        durationSeconds = Int(seededDuration) % 60
+        isRace = snapshot.isRace
+        comment = snapshot.comment ?? ""
 
         var types = Workout.WorkoutType.supportedTypes
-        if !types.contains(seededType) { types.append(seededType) }
-        self.availableTypes = types
+        if !types.contains(snapshot.workoutType) { types.append(snapshot.workoutType) }
+        availableTypes = types
     }
 
     /// Formats a seed value for an editable text field: locale-correct decimal separator but **no** grouping
