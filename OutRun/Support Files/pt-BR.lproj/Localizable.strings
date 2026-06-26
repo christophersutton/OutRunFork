@@ -8,7 +8,7 @@
 "Changelog" = "Lista de mudanças";
 "ShareManager.GPXError" = "O aplicativo falhou ao criar um arquivo GPX, por favor contate o suporte.";
 "ShareManager.BackupError" = "O aplicativo falhou ao criar um backup, por favor contate o suporte.";
-"WorkoutShareAlert.OutRunBackup" = "Backup do OutRun";
+"WorkoutShareAlert.OutRunBackup" = "Backup do Move: Feet";
 "WorkoutShareAlert.GPXExport" = "Arquivo GPX";
 "WorkoutShareAlert.Message" = "Por favor escolha entre as opções abaixo como exportar seu exercício. Se você acha que alguma opção esteja faltando, sinta-se à vontade para nos contatar e sugeri-la.";
 "WorkoutShareAlert.Title" = "Exportar seu exercício";
@@ -21,7 +21,7 @@
 "EditWorkoutController.Info" = "Informações";
 "EditWorkoutController.EditWorkout" = "Editar exercício";
 "EditWorkoutController.NewWorkout" = "Novo exercício";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Não foi possível alterar o exercício no Saúde. É possível que o exercício não tenha sido adicionado ao Saúde pelo OutRun, o que significa que não podemos modificá-lo. A versão antiga ainda está presente no aplicativo Saúde, mas a referência foi removida deste aplicativo. Se você quiser adicionar o novo exercício ao Saúde você terá que fazê-lo manualmente.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Não foi possível alterar o exercício no Saúde. É possível que o exercício não tenha sido adicionado ao Saúde pelo Move: Feet, o que significa que não podemos modificá-lo. A versão antiga ainda está presente no aplicativo Saúde, mas a referência foi removida deste aplicativo. Se você quiser adicionar o novo exercício ao Saúde você terá que fazê-lo manualmente.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Falha ao adicionar o exercício ao Saúde";
 "EditWorkoutController.SaveWorkout.Error" = "Falha ao adicionar exercício, por favor tente novamente.";
 "Yesterday" = "Ontem";
@@ -127,7 +127,7 @@
 "Settings.ImportBackupData.Success" = "Os exercícios únicos de seu backup foram importados, exercícios que já existem neste aplicativo foram deixados de lado.";
 "Settings.ImportBackupData" = "Importar dados de backup";
 "Settings.CreateBackup" = "Criar backup";
-"Settings.DataPreferences.Message" = "Backups no OutRun, provavelmente diferente da maioria dos aplicativos, são apenas arquivos que você não precisa de ferramentas especiais para inserir no aplicativo ou transferir para outro dispositivo. Eles permanecem no dispositivo(a não ser que você os salve na nuvem).\n\nAo criar um backup você receberá um arquivo '.orbup' que você pode compartilhar com qualquer outro aplicativo que você quiser. Esteja avisado que os dados dentro do arquivo não são criptografados. Mandá-lo a alguém ou fazer o upload a um serviço pode comprometer a segurança, tenha isto em mente.\n\nPara importar um backup selecione um arquivo '.orbup' de onde quer que você tenha salvado antes, o aplicativo irá então importar todos os exercícios contidos no backup, certificando-se automaticamente de que não há duplicatas.";
+"Settings.DataPreferences.Message" = "Backups no Move: Feet, provavelmente diferente da maioria dos aplicativos, são apenas arquivos que você não precisa de ferramentas especiais para inserir no aplicativo ou transferir para outro dispositivo. Eles permanecem no dispositivo(a não ser que você os salve na nuvem).\n\nAo criar um backup você receberá um arquivo '.orbup' que você pode compartilhar com qualquer outro aplicativo que você quiser. Esteja avisado que os dados dentro do arquivo não são criptografados. Mandá-lo a alguém ou fazer o upload a um serviço pode comprometer a segurança, tenha isto em mente.\n\nPara importar um backup selecione um arquivo '.orbup' de onde quer que você tenha salvado antes, o aplicativo irá então importar todos os exercícios contidos no backup, certificando-se automaticamente de que não há duplicatas.";
 "Settings.DataPreferences" = "Preferências de dados";
 "Settings.SyncAll.AllSyncedAlready" = "Parece que todos os exercícios já estão sincronizados.";
 "Settings.SyncAll.Error" = "Houve um erro ao tentar sincronizar todos os exercícios não sincronizados com o Saúde, alguns exercícios talvez não tenham sido sincronizados.";
@@ -260,6 +260,6 @@
 "Continue" = "Continuar";
 "Save" = "Salvar";
 "Cancel" = "Cancelar";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Configurações";
 "TabBar.Timeline" = "Linha do tempo";

@@ -38,7 +38,7 @@
 "Continue" = "Jatka";
 "Save" = "Tallenna";
 "Cancel" = "Peruuta";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Asetus";
 "TabBar.Timeline" = "Aikajana";
 "NewWorkoutViewController.Recenter" = "Uudelleen Keskus";
@@ -51,7 +51,7 @@
 "Changelog" = "Muutosloki";
 "ShareManager.GPXError" = "Sovellus ei onnistunut luomaan GPX-tiedostoa, ota yhteyttä tukeen.";
 "ShareManager.BackupError" = "Sovellus ei luonut varmuuskopiota, ota yhteyttä tukeen.";
-"WorkoutShareAlert.OutRunBackup" = "OutRun Varmuuskopiointi";
+"WorkoutShareAlert.OutRunBackup" = "Move: Feet Varmuuskopiointi";
 "WorkoutShareAlert.GPXExport" = "GPX-tiedosto";
 "WorkoutShareAlert.Message" = "Valitse, miten voit viedä harjoituksen alla olevista vaihtoehdoista. Jos sinusta tuntuu, että vaihtoehto puuttuu, ota rohkeasti yhteyttä ja ehdota sitä.";
 "WorkoutShareAlert.Title" = "Vie Harjoitus";
@@ -63,7 +63,7 @@
 "EditWorkoutController.Custom" = "Mukautettu";
 "EditWorkoutController.EditWorkout" = "Muokkaa Harjoitusta";
 "EditWorkoutController.NewWorkout" = "Uusi Harjoitus";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Ei voinut muuttaa harjoittelua Apple Health. On mahdollista, että harjoitusta ei lisätty Apple Health by OutRun, eli emme voi muuttaa sitä. Vanha esimerkki on edelleen läsnä Terveys-sovelluksessa, mutta viittaus poistettiin tästä sovelluksesta. Jos haluat lisätä uuden harjoituksen Apple Health, sinun on tehtävä se manuaalisesti.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Ei voinut muuttaa harjoittelua Apple Health. On mahdollista, että harjoitusta ei lisätty Apple Health by Move: Feet, eli emme voi muuttaa sitä. Vanha esimerkki on edelleen läsnä Terveys-sovelluksessa, mutta viittaus poistettiin tästä sovelluksesta. Jos haluat lisätä uuden harjoituksen Apple Health, sinun on tehtävä se manuaalisesti.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Harjoituksen lisääminen epäonnistui Apple Health";
 "EditWorkoutController.SaveWorkout.Error" = "Ei lisätä harjoitus, yritä uudelleen.";
 "Yesterday" = "Eilen";
@@ -129,7 +129,7 @@
 "Settings.Email" = "Sähköposti";
 "Settings.PrivacyPolicy" = "tietosuojakäytäntö";
 "Settings.TermsOfService" = "käyttöehdot";
-"Settings.DataPreferences.Message" = "Varmuuskopiot OutRun, luultavasti toisin kuin useimmissa muissa sovelluksissa, ovat vain tiedostoja, että sinun ei tarvitse erikoistyökaluja lisätä sovelluksen tai siirtää toiseen laitteeseen. Ne pysyvät myös paikallisina (ellet tallenna niitä pilveen).\n\nKun luot varmuuskopion sinulle esitetään '.orbup-tiedosto, jonka voit jakaa mihin tahansa muuhun sovellukseen. Olla tietoinen siitä, että tiedot sisällä että tiedosto ei ole salattu, vaikka, lähettää sen jollekulle, tai lataamalla sen palvelun, voivat vaarantaa yksityisyytesi, joten pitäkää se mielessä.\n\nJos haluat tuoda varmuuskopion, valitse vain a'.orbup-tiedosto mistä tahansa olet aiemmin tallentanut sen, sovellus tuo sitten kaikki varmuuskopion sisältämät harjoitukset varmistaen, että kaksoiskappaleita ei ole automaattisesti.";
+"Settings.DataPreferences.Message" = "Varmuuskopiot Move: Feet, luultavasti toisin kuin useimmissa muissa sovelluksissa, ovat vain tiedostoja, että sinun ei tarvitse erikoistyökaluja lisätä sovelluksen tai siirtää toiseen laitteeseen. Ne pysyvät myös paikallisina (ellet tallenna niitä pilveen).\n\nKun luot varmuuskopion sinulle esitetään '.orbup-tiedosto, jonka voit jakaa mihin tahansa muuhun sovellukseen. Olla tietoinen siitä, että tiedot sisällä että tiedosto ei ole salattu, vaikka, lähettää sen jollekulle, tai lataamalla sen palvelun, voivat vaarantaa yksityisyytesi, joten pitäkää se mielessä.\n\nJos haluat tuoda varmuuskopion, valitse vain a'.orbup-tiedosto mistä tahansa olet aiemmin tallentanut sen, sovellus tuo sitten kaikki varmuuskopion sisältämät harjoitukset varmistaen, että kaksoiskappaleita ei ole automaattisesti.";
 "Settings.Support" = "Tukee";
 "Settings.RecordingPreferences.Message" = "Jos koet minkäänlaista kaatuu tai vastaavaa käyttäytymistä tallennuksen aikana harjoitus, sinun pitäisi yrittää kääntää 'Näytä kartta' pois, koska useimmat näistä kaatuu tiedossa, Jos liittyvät kartan piirustus liikaa valtaa.\n\nJos \"Display Pace\" on käytössä sen sijaan, että näytetään nopeus, vauhti näkyy. Olisi Näyttää Liikkuvan Nopeus on nopeus tai vauhti näkyvät ovat keskimäärin viimeisen kilometrin, jos ei nykyinen nopeus tai koko vauhti näkyvät.";
 "Settings.DisplayRollingSpeed" = "Näytön Valssausnopeus";

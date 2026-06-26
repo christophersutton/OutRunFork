@@ -125,14 +125,14 @@
 "Continue" = "Pokračovat";
 "Save" = "Uložit";
 "Cancel" = "Zrušit";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Nastavení";
 "TabBar.Timeline" = "Časová osa";
 "Settings.DisplayRollingSpeed" = "Zobrazovat aktuální rychlost";
 "Changelog" = "Novinky";
 "ShareManager.GPXError" = "Aplikaci se nepodařilo vytvořit soubor GPX, kontaktujte prosím podporu.";
 "ShareManager.BackupError" = "Aplikaci se nepodařilo vytvořit zálohu, kontaktujte prosím podporu.";
-"WorkoutShareAlert.OutRunBackup" = "Záloha OutRun";
+"WorkoutShareAlert.OutRunBackup" = "Záloha Move: Feet";
 "WorkoutShareAlert.GPXExport" = "Soubor GPX";
 "WorkoutShareAlert.Message" = "Vyberte metodu exportu níže. Pokud máte pocit, že zde nějaká položka chybí, můžete nám napsat a navrhnout ji.";
 "WorkoutShareAlert.Title" = "Exportovat trénink";
@@ -145,7 +145,7 @@
 "EditWorkoutController.Info" = "Info";
 "EditWorkoutController.EditWorkout" = "Upravit trénink";
 "EditWorkoutController.NewWorkout" = "Nový trénink";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Změna tréninku v Apple Zdraví se nezdařila. Je možné, že záznam nevznikl v aplikaci OutRun, v takovém případě ho nemůžeme měnit. Záznam zůstal v Apple Zdraví nezměněn, ale už není propojený s aplikací OutRun. Jestli chcete nový trénink přidat do Apple Zdraví, musíte to udělat ručně.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Změna tréninku v Apple Zdraví se nezdařila. Je možné, že záznam nevznikl v aplikaci Move: Feet, v takovém případě ho nemůžeme měnit. Záznam zůstal v Apple Zdraví nezměněn, ale už není propojený s aplikací Move: Feet. Jestli chcete nový trénink přidat do Apple Zdraví, musíte to udělat ručně.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Přidávání tréninku do Apple Zdraví se nezdařilo";
 "EditWorkoutController.SaveWorkout.Error" = "Přidávání tréninku se nezdařilo, zkuste to prosím znovu.";
 "Yesterday" = "Včera";
@@ -163,7 +163,7 @@
 "Setup.Permission.AppleHealth.Message" = "Protože chcete synchronizovat své tréninky a hmotnost data do Apple Zdraví, potřebujeme povolení číst a zapisovat do těchto kategorií.";
 "Setup.Permission.AppleHealth" = "Přístup ke Zdraví";
 "Setup.Permission.Location.Error" = "Zdá se, že jste neudělili povolení zaznamenat vaší polohu. Vězte prosím, že to je nutné pro správné fungování aplikace. Chcete-li toto nastavení změnit, je potřeba přejít do nastavení telefonu a oprávnění udělit. Poté stiskněte tlačítko znovu. Chcete otevřít nastavení?";
-"Setup.Permission.Location.Restricted.Message" = "Aktuálně má OutRun přístup k poloze pouze v době, kdy je tato aplikace otevřená. Pro sledování cvičení je vhodné poskytnout přístup k poloze na pozadí, takže váš telefon nemusí být zapnutý s aplikací otevřenou po celou dobu. Chcete-li nám poskytnout \"vždy\" přístup k vaší poloze, musíte otevřít nastavení telefonu a změnit jej ručně.";
+"Setup.Permission.Location.Restricted.Message" = "Aktuálně má Move: Feet přístup k poloze pouze v době, kdy je tato aplikace otevřená. Pro sledování cvičení je vhodné poskytnout přístup k poloze na pozadí, takže váš telefon nemusí být zapnutý s aplikací otevřenou po celou dobu. Chcete-li nám poskytnout \"vždy\" přístup k vaší poloze, musíte otevřít nastavení telefonu a změnit jej ručně.";
 "Settings.DisplayPace" = "Zobrazovat tempo";
 "Settings.StandardWorkoutType.Message" = "Zvolený typ tréninku bude výchozím pro novou nahrávku. Stále si můžete vybrat jiný dlouhým stiskem tlačítka „plus“ nebo ťuknutím na štítek na nahrávací obrazovce";
 "Setup.Permission.Location.Restricted.Title" = "Omezený přístup k poloze";
@@ -247,7 +247,7 @@
 "Settings.ImportBackupData.Success" = "Nové tréninky byly importovány. Ty, které už v databázi jsou jsme vynechali.";
 "Settings.ImportBackupData" = "Importovat data ze zálohy";
 "Settings.CreateBackup" = "Vytvořit zálohu";
-"Settings.DataPreferences.Message" = "Zálohy aplikace OutRun, na rozdíl od jiných aplikací, jsou jednoduše soubory. Pro jejich vložení do aplikace nebo přenos do jiného zařízení nepotřebujete speciální nástroje. Zůstávají také lokálně ve vašem zařízení (pokud je nenahrajete na cloud).\n\nPři vytváření zálohy se zobrazí soubor '.orbup', který můžete sdílet s jakoukoli aplikací chcete. Buďte ale obezřetní – data uvnitř tohoto souboru nejsou šifrována, jejich odesláním nebo nahráním do jiné služby můžete ohrozit své soukromí, mějte to prosím na paměti.\n\nChcete-li importovat zálohu, stačí vybrat soubor '.orbup' z místa, kde jste ji dříve uložili, aplikace pak importuje všechny tréninky obsažené v záloze a sama se postará o to, aby nevznikly duplikáty.";
+"Settings.DataPreferences.Message" = "Zálohy aplikace Move: Feet, na rozdíl od jiných aplikací, jsou jednoduše soubory. Pro jejich vložení do aplikace nebo přenos do jiného zařízení nepotřebujete speciální nástroje. Zůstávají také lokálně ve vašem zařízení (pokud je nenahrajete na cloud).\n\nPři vytváření zálohy se zobrazí soubor '.orbup', který můžete sdílet s jakoukoli aplikací chcete. Buďte ale obezřetní – data uvnitř tohoto souboru nejsou šifrována, jejich odesláním nebo nahráním do jiné služby můžete ohrozit své soukromí, mějte to prosím na paměti.\n\nChcete-li importovat zálohu, stačí vybrat soubor '.orbup' z místa, kde jste ji dříve uložili, aplikace pak importuje všechny tréninky obsažené v záloze a sama se postará o to, aby nevznikly duplikáty.";
 "Settings.DataPreferences" = "Předvolby dat";
 "Settings.SyncAll.AllSyncedAlready" = "Zdá se, že vše je už synchronizováno.";
 "Settings.SyncAll.Error" = "Při synchronizaci všech tréninků do Apple Zdraví došlo k chybě, některé tréninky nemusely být synchronizovány.";

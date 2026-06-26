@@ -26,7 +26,8 @@ _None right now._
 ## Port to Wavelength
 
 - **Finalize legal / contact / attribution** — replace OutRun/Tadris terms, privacy, and contact links with real Wavelength values; finalize license/source-publication wording.
-  - **AGPL is copyleft** — the Wavelength port must itself stay AGPL-licensed and source-available (network use triggers the source-disclosure obligation). Not just an attribution line.
+  - **GPLv3-or-later is copyleft (NOT AGPL).** OutRun is licensed GPL-3.0-or-later — every file header says so. The Move: Feet port must stay GPLv3-or-later and ship its complete corresponding source to anyone who receives the binary. It is *distribution of the binary* that triggers source disclosure — **not** network use (that AGPL trigger does not apply here). Not just an attribution line. Full analysis: `docs/MOVEFEET_FORK_AUDIT.md`.
+  - **App Store legal gate** — a third-party GPLv3 fork conflicts with Apple's terms (the 2011 VLC precedent). Plan: email Tim Fraedrich for a GPLv3 §7 App Store distribution exception; timebox ~3–4 weeks; differentiate the app; proceed as a documented risk-accepted decision if no reply.
 
 ## Done
 

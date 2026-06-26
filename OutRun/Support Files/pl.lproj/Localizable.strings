@@ -1,6 +1,6 @@
 
 
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Ustawienia";
 "TabBar.Timeline" = "Oś czasu";
 "Next" = "Następny";
@@ -60,7 +60,7 @@
 "Settings.ImportBackupData.Success" = "Zaimportowano unikalne treningi z kopii zapasowej, a treningi, które już istnieją w tej bazie danych aplikacji, zostały pominięte.";
 "Settings.ImportBackupData" = "Importuj Dane Kopii Zapasowej";
 "Settings.CreateBackup" = "Utwórz Kopię Zapasową";
-"Settings.DataPreferences.Message" = "Kopie zapasowe w OutRun, prawdopodobnie w przeciwieństwie do większości innych aplikacji, to tylko pliki, których nie potrzebujesz specjalnych narzędzi do wstawiania do aplikacji lub przenoszenia na inne urządzenie. Pozostają również lokalne (chyba że zapiszesz je w chmurze).\n\nPodczas tworzenia kopii zapasowej zostanie wyświetlony znak '.plik orbup, który możesz udostępnić dowolnej innej aplikacji, którą chcesz. Pamiętaj jednak, że dane w tym pliku nie są szyfrowane, wysłanie ich do kogoś lub przesłanie do usługi może naruszyć Twoją prywatność, więc pamiętaj o tym.\n\nAby zaimportować kopię zapasową wystarczy wybrać'.plik orbup z miejsca, gdzie wcześniej go zapisałeś, aplikacja zaimportuje wszystkie treningi zawarte w kopii zapasowej, upewniając się, że nie ma automatycznie duplikatów.";
+"Settings.DataPreferences.Message" = "Kopie zapasowe w Move: Feet, prawdopodobnie w przeciwieństwie do większości innych aplikacji, to tylko pliki, których nie potrzebujesz specjalnych narzędzi do wstawiania do aplikacji lub przenoszenia na inne urządzenie. Pozostają również lokalne (chyba że zapiszesz je w chmurze).\n\nPodczas tworzenia kopii zapasowej zostanie wyświetlony znak '.plik orbup, który możesz udostępnić dowolnej innej aplikacji, którą chcesz. Pamiętaj jednak, że dane w tym pliku nie są szyfrowane, wysłanie ich do kogoś lub przesłanie do usługi może naruszyć Twoją prywatność, więc pamiętaj o tym.\n\nAby zaimportować kopię zapasową wystarczy wybrać'.plik orbup z miejsca, gdzie wcześniej go zapisałeś, aplikacja zaimportuje wszystkie treningi zawarte w kopii zapasowej, upewniając się, że nie ma automatycznie duplikatów.";
 "Settings.AppVersion" = "Aplikacja Wersja";
 "Settings.AppInfo" = "Aplikacja Info";
 "NewWorkoutViewController.Recenter" = "Ostatnio";
@@ -94,7 +94,7 @@
 "Setup.Permission.Motion" = "Dostęp do wniosku";
 "EditWorkoutController.Info" = "Informacja";
 "MapView.MapType.Hybrid" = "Hybryda";
-"WorkoutShareAlert.OutRunBackup" = "OutRun Kopia";
+"WorkoutShareAlert.OutRunBackup" = "Move: Feet Kopia";
 "Changelog" = "Czangielog";
 "Workout.StartDate" = "Data Rozpoczęcia";
 "Workout.CurrentSpeed" = "Aktualna Prędkość";
@@ -215,7 +215,7 @@
 "Yesterday" = "Wczoraj";
 "EditWorkoutController.SaveWorkout.Error" = "Nie udało się dodać treningu, spróbuj ponownie.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Nie udało się dodać treningu do Apple Health";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Nie można zmienić treningu w Apple Health. Możliwe, że trening nie został dodany do Apple Health przez OutRun, co oznacza, że nie możemy go modyfikować. Stara instancja jest nadal obecna w aplikacji zdrowie, ale odniesienie zostało usunięte z tej aplikacji. Jeśli chcesz dodać nowy trening do Apple Health, musisz to zrobić ręcznie.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Nie można zmienić treningu w Apple Health. Możliwe, że trening nie został dodany do Apple Health przez Move: Feet, co oznacza, że nie możemy go modyfikować. Stara instancja jest nadal obecna w aplikacji zdrowie, ale odniesienie zostało usunięte z tej aplikacji. Jeśli chcesz dodać nowy trening do Apple Health, musisz to zrobić ręcznie.";
 "EditWorkoutController.NewWorkout" = "Nowy Trening";
 "EditWorkoutController.EditWorkout" = "Edytuj Trening";
 "EditWorkoutController.Custom" = "Niestandardowe";

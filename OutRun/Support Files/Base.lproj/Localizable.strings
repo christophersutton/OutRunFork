@@ -20,7 +20,7 @@
 
 "TabBar.Timeline" = "Timeline";
 "TabBar.Settings" = "Settings";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "Cancel" = "Cancel";
 "Error" = "Error";
 "Save" = "Save";
@@ -158,7 +158,7 @@
 "Settings.SyncAll.Error" = "There was an error while trying to sync all unsynced workouts with Apple Health, some workouts may have not been synced.";
 "Settings.SyncAll.AllSyncedAlready" = "It appears that all workouts are already synced.";
 "Settings.DataPreferences" = "Data Preferences";
-"Settings.DataPreferences.Message" = "Backups in OutRun, probably unlike in most other apps, are just files, that you do not need special tools to insert into the app or transfer to another device. They also stay local (unless you save them in the cloud).\n\nWhen creating a backup you will be presented with a '.orbup' file that you can share to whatever other app you want to. Be aware, that the data inside of that file is not encrypted though, sending it to someone or uploading it to a service can compromise your privacy, so please keep that in mind.\n\nTo import a backup just select a '.orbup' file from wherever you previously saved it, the app will then import all the workouts contained in the backup, making sure there are no duplicates automatically.";
+"Settings.DataPreferences.Message" = "Backups in Move: Feet, probably unlike in most other apps, are just files, that you do not need special tools to insert into the app or transfer to another device. They also stay local (unless you save them in the cloud).\n\nWhen creating a backup you will be presented with a '.orbup' file that you can share to whatever other app you want to. Be aware, that the data inside of that file is not encrypted though, sending it to someone or uploading it to a service can compromise your privacy, so please keep that in mind.\n\nTo import a backup just select a '.orbup' file from wherever you previously saved it, the app will then import all the workouts contained in the backup, making sure there are no duplicates automatically.";
 "Settings.CreateBackup" = "Create Backup";
 "Settings.ImportBackupData" = "Import Backup Data";
 "Settings.ImportBackupData.Success" = "The unique workouts from your backup were imported, workouts that already exist in this apps data base were left out.";
@@ -267,7 +267,7 @@
 "Yesterday" = "Yesterday";
 "EditWorkoutController.SaveWorkout.Error" = "Failed to add workout, please try again.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Failed to add workout to Apple Health";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Could not alter workout in Apple Health. It is possible that the workout was not added to Apple Health by OutRun, which means we cannot modify it. The old instance is still present in the Health app, but the reference was removed from this app. If you want to add the new workout to Apple Health you have to do that manually.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Could not alter workout in Apple Health. It is possible that the workout was not added to Apple Health by Move: Feet, which means we cannot modify it. The old instance is still present in the Health app, but the reference was removed from this app. If you want to add the new workout to Apple Health you have to do that manually.";
 "EditWorkoutController.NewWorkout" = "New Workout";
 "EditWorkoutController.EditWorkout" = "Edit Workout";
 "EditWorkoutController.Info" = "Info";
@@ -280,7 +280,7 @@
 "WorkoutShareAlert.Title" = "Export Your Workout";
 "WorkoutShareAlert.Message" = "Please choose how to export your workout from the options below. If you feel like an option is missing feel free to reach out and suggest it.";
 "WorkoutShareAlert.GPXExport" = "GPX File";
-"WorkoutShareAlert.OutRunBackup" = "OutRun Backup";
+"WorkoutShareAlert.OutRunBackup" = "Move: Feet Backup";
 "ExportManager.BackupError" = "The app failed to create a backup, please contact the support.";
 "ExportManager.GPXError" = "The app failed to create a GPX file, please contact the support.";
 "Changelog" = "Changelog";

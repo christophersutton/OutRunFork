@@ -15,7 +15,7 @@
 "Okay" = "Va Bene";
 "ShareManager.GPXError" = "L'applicazione non è riuscita a creare un file GPX, si prega di contattare il supporto.";
 "ShareManager.BackupError" = "L'applicazione non è riuscita a creare un backup, si prega di contattare il supporto.";
-"WorkoutShareAlert.OutRunBackup" = "Backup OutRun";
+"WorkoutShareAlert.OutRunBackup" = "Backup Move: Feet";
 "WorkoutShareAlert.GPXExport" = "File GPX";
 "WorkoutShareAlert.Message" = "Scegliete come esportare il vostro allenamento tra le opzioni sottostanti. Se vi sembra che manchi un'opzione, sentitevi liberi di contattarla e suggerirla.";
 "WorkoutShareAlert.Title" = "Esporta il tuo allenamento";
@@ -27,7 +27,7 @@
 "EditWorkoutController.Custom" = "Personalizzato";
 "EditWorkoutController.EditWorkout" = "Modifica Allenamento";
 "EditWorkoutController.NewWorkout" = "Nuovo allenamento";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Non poteva alterare l'allenamento in Apple Health. È possibile che l'allenamento non sia stato aggiunto ad Apple Health da OutRun, il che significa che non possiamo modificarlo. La vecchia istanza è ancora presente nell'applicazione Health, ma il riferimento è stato rimosso da questa applicazione. Se volete aggiungere il nuovo allenamento ad Apple Health dovete farlo manualmente.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Non poteva alterare l'allenamento in Apple Health. È possibile che l'allenamento non sia stato aggiunto ad Apple Health da Move: Feet, il che significa che non possiamo modificarlo. La vecchia istanza è ancora presente nell'applicazione Health, ma il riferimento è stato rimosso da questa applicazione. Se volete aggiungere il nuovo allenamento ad Apple Health dovete farlo manualmente.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Non è stato possibile aggiungere l'allenamento alla Apple Health";
 "EditWorkoutController.SaveWorkout.Error" = "Non è stato possibile aggiungere l'allenamento, riprovare.";
 "Yesterday" = "Ieri";
@@ -127,7 +127,7 @@
 "Settings.ImportBackupData.Success" = "Gli allenamenti univoci dal vostro backup sono stati importati, gli allenamenti già presenti nel database di questa applicazione sono stati scartati.";
 "Settings.ImportBackupData" = "Importare i dati di backup";
 "Settings.CreateBackup" = "Crea Backup";
-"Settings.DataPreferences.Message" = "I backup in OutRun, probabilmente a differenza della maggior parte delle altre app, sono solo file, che non necessitano di strumenti speciali da inserire nell'app o da trasferire su un altro dispositivo. Rimangono anche locali (a meno che non li salviate nel cloud).\n\nDurante la creazione di un backup vi verrà presentato un file '.orbup' che potrete condividere con qualsiasi altra app vogliate. Siate consapevoli del fatto che i dati all'interno di quel file non sono criptati, tuttavia, inviarli a qualcuno o caricarli su un servizio può compromettere la vostra privacy, quindi vi preghiamo di tenerlo presente.\n\nPer importare un backup è sufficiente selezionare un file '.orbup' dal punto in cui è stato precedentemente salvato, l'app importerà quindi tutti gli allenamenti contenuti nel backup, assicurandosi che non ci siano automaticamente dei duplicati.";
+"Settings.DataPreferences.Message" = "I backup in Move: Feet, probabilmente a differenza della maggior parte delle altre app, sono solo file, che non necessitano di strumenti speciali da inserire nell'app o da trasferire su un altro dispositivo. Rimangono anche locali (a meno che non li salviate nel cloud).\n\nDurante la creazione di un backup vi verrà presentato un file '.orbup' che potrete condividere con qualsiasi altra app vogliate. Siate consapevoli del fatto che i dati all'interno di quel file non sono criptati, tuttavia, inviarli a qualcuno o caricarli su un servizio può compromettere la vostra privacy, quindi vi preghiamo di tenerlo presente.\n\nPer importare un backup è sufficiente selezionare un file '.orbup' dal punto in cui è stato precedentemente salvato, l'app importerà quindi tutti gli allenamenti contenuti nel backup, assicurandosi che non ci siano automaticamente dei duplicati.";
 "Settings.DataPreferences" = "Preferenze dati";
 "Settings.SyncAll.AllSyncedAlready" = "Sembra che tutti gli allenamenti siano già sincronizzati.";
 "Settings.SyncAll.Error" = "C'è stato un errore mentre si cercava di sincronizzare tutti gli allenamenti non sincronizzati con Apple Health, alcuni allenamenti potrebbero non essere stati sincronizzati.";
@@ -256,7 +256,7 @@
 "Continue" = "Continua";
 "Save" = "Salva";
 "Cancel" = "Annulla";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Impostazioni";
 "TabBar.Timeline" = "Cronologia";
 "Settings.Contribution.Translators" = "Traduttrici";

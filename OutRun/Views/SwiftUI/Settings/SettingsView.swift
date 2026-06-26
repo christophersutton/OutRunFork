@@ -439,11 +439,11 @@ struct SettingsView: View {
             }
 
             Button {
-                if let url = URL(string: "mailto:outrun@tadris.de?subject=OutRun") {
+                if let url = URL(string: "mailto:support@wavelength.computer?subject=Move:%20Feet") {
                     UIApplication.shared.open(url)
                 }
             } label: {
-                detailRow(LS["Settings.Email"], "outrun@tadris.de")
+                detailRow(LS["Settings.Email"], "support@wavelength.computer")
             }
         } header: {
             Text(LS["Settings.Support"])

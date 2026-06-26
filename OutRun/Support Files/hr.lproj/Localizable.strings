@@ -21,7 +21,7 @@
 "Settings.ImportBackupData.Success" = "Uvezeni su jedinstveni treninzi iz tvoje sigurnosne kopije. Treninzi koji već postoje u bazi podataka ovog programa su izostavljeni.";
 "Setup.Feature.Lock.Title" = "Privatnost aktivna";
 "Workout.Type.Hiking" = "Planinarenje";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Nije bilo moguće promijeniti trening u Appleovom programu „Zdravlje”. Možda „OutRun” nije dodao trening u Appleov program „Zdravlje”, što znači da se trening ne može mijenjati. Stara instanca i dalje je postoji u Appleovom programu „Zdravlje”, ali referenca je uklonjena iz ovog programa. Ako želiš dodati novi trening u Appleov program „Zdravlje”, to moraš učiniti ručno.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Nije bilo moguće promijeniti trening u Appleovom programu „Zdravlje”. Možda „Move: Feet” nije dodao trening u Appleov program „Zdravlje”, što znači da se trening ne može mijenjati. Stara instanca i dalje je postoji u Appleovom programu „Zdravlje”, ali referenca je uklonjena iz ovog programa. Ako želiš dodati novi trening u Appleov program „Zdravlje”, to moraš učiniti ručno.";
 "Settings.ImportFromAppleHealth" = "Uvezi iz Appleovog programa „Zdravlje”";
 "TabBar.Timeline" = "Vremenska crta";
 "NewWorkoutCompletion.Continue.Error" = "Nažalost nije bilo moguće nastaviti tvoj trening.";
@@ -161,7 +161,7 @@
 "NewWorkoutViewController.Discard.Title" = "Odbaci";
 "Workout.Type" = "Vrsta";
 "Settings.GPSAccuracy.LastResort" = "Krajnji slučaj";
-"Settings.DataPreferences.Message" = "Sigurnosne kopije programa „OutRun” su datoteke, za koje nisu potrebni posebni alati za umetanje u program ili za prijenos na druge uređaje. Datoteke ostaju na lokalnom uređaju (osim ako se ne spremaju u oblak).\n\nPrilikom stvaranja sigurnosne kopije prikazat će se „.orbup”-datoteka, koja se može dijeliti s bilo kojim drugim programom. Podaci unutar te datoteke nisu šifrirani. Slanje ili prijenos tih podataka može ugroziti tvoju privatnost.\n\nZa uvoz sigurnosne kopije, jednostavno odaberi „.orbup”-datoteku s prethodno spremljenog mjesta. Program će zatim uvesti sve treninge sadržane u sigurnosnoj kopiji, automatski isključujući duplikate.";
+"Settings.DataPreferences.Message" = "Sigurnosne kopije programa „Move: Feet” su datoteke, za koje nisu potrebni posebni alati za umetanje u program ili za prijenos na druge uređaje. Datoteke ostaju na lokalnom uređaju (osim ako se ne spremaju u oblak).\n\nPrilikom stvaranja sigurnosne kopije prikazat će se „.orbup”-datoteka, koja se može dijeliti s bilo kojim drugim programom. Podaci unutar te datoteke nisu šifrirani. Slanje ili prijenos tih podataka može ugroziti tvoju privatnost.\n\nZa uvoz sigurnosne kopije, jednostavno odaberi „.orbup”-datoteku s prethodno spremljenog mjesta. Program će zatim uvesti sve treninge sadržane u sigurnosnoj kopiji, automatski isključujući duplikate.";
 "Settings.GPSAccuracy.Standard" = "Standardna";
 "NewWorkoutViewController.WorkoutBuilder.Error" = "Došlo je do greške u logici za izradu treninga.";
 "Setup.Permission.AppleHealth.Message" = "Budući da želiš da tvoje treninge/težinu spremamo u Appleov program „Zdravlje”, trebamo dozvolu za čitanje i pisanje u vezi sa sinkroniziranim kategorijama.";
@@ -206,7 +206,7 @@
 "MapView.MapTypeAlert.Title" = "Vrsta karte";
 "WorkoutDeletion.Title" = "Izbrisati trening?";
 "Setup.Introduction" = "program za trčanje koji se brine o tvojoj privatnosti, za koji ne trebaš korisnički račun niti odavati osjetljive podatke, koji se zatim nalaze na poslužitelju usred ničega.\nAli više o tome kasnije. Za sada, započnimo.";
-"WorkoutShareAlert.OutRunBackup" = "Sigurnosna kopija od „OutRun”";
+"WorkoutShareAlert.OutRunBackup" = "Sigurnosna kopija od „Move: Feet”";
 "HKImport.ImportAll.Alert.Message" = "Želiš li uvesti sve treninge Appleovog programa „Zdravlje” u „OutRun”? To može potrajati.";
 "MapView.MapTypeAlert.Message" = "Odaberi vrstu karte koju želiš prikazati.";
 "Settings.GPSAccuracy.Acceptable" = "Prihvatljiva";
@@ -237,7 +237,7 @@
 "Settings.Weight" = "Težina";
 "Setup.Permission.Motion.Error" = "Program nema dozvole za pristup podacima senzora koji se odnose na kretanje i kondiciju. Aktiviraj pristup tim podacima (npr. koraci) u postavkama iOS-a. Želiš li otvoriti postavke?";
 "NoDataAvailable" = "Nema podataka";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "Workout.Steps" = "Koraci";
 "Settings.GPSAccuracy.Text" = "Pri primanju GPS signala, oni se šalju s određenom točnošću kako bi se utvrdilo, jesu li podaci prikladni za upotrebu. Ovisno o načinu postavljanja ovog filtra, snimljeni treninzi će se razlikovati u kvaliteti.\n\nU idealnom slučaju, filtar bi trebao ostati na „Standardna”, ali ako se pojave komplikacije s tvojim podacima (npr. ako su previše netočni ili se sve filtrira), možeš probati jedan drugi.";
 "Workout.CurrentSpeed" = "Trenutačna brzina";

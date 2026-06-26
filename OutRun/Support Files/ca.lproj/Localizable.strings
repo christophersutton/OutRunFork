@@ -107,7 +107,7 @@
 "Continue" = "Continuar";
 "Save" = "Desar";
 "Cancel" = "Cancel·lar";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Configuració";
 "TabBar.Timeline" = "Cronologia";
 "Setup.UserInfo.Username" = "Nom d'usuari";
@@ -115,7 +115,7 @@
 "Changelog" = "Registre de canvis";
 "ShareManager.GPXError" = "L'aplicació no ha pogut crear un fitxer GPX; poseu-vos en contacte amb el servei d'assistència.";
 "ShareManager.BackupError" = "L'aplicació no ha pogut crear una còpia de seguretat; poseu-vos en contacte amb el servei d'assistència.";
-"WorkoutShareAlert.OutRunBackup" = "Còpia de seguretat OutRun";
+"WorkoutShareAlert.OutRunBackup" = "Còpia de seguretat Move: Feet";
 "WorkoutShareAlert.GPXExport" = "Fitxer GPX";
 "WorkoutShareAlert.Message" = "Seleccioneu com exportar l'entrenament de les opcions següents. Si creieu que falta una opció, no dubteu a posar-vos en contacte i suggerir-la.";
 "WorkoutShareAlert.Title" = "Exporteu el vostre entrenament";
@@ -128,7 +128,7 @@
 "EditWorkoutController.Info" = "Informació";
 "EditWorkoutController.EditWorkout" = "Edita l'entrenament";
 "EditWorkoutController.NewWorkout" = "Nou entrenament";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "No s'ha pogut alterar l'entrenament a Salut d'Apple. És possible que OutRun no hagi afegit l'entrenament a Salut d'Apple, cosa que significa que no el podem modificar. L'antiga instància encara és present a l'aplicació Salut d'Apple, però la referència s'ha suprimit d'aquesta aplicació. Si voleu afegir el nou entrenament a Salut d'Apple, heu de fer-ho manualment.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "No s'ha pogut alterar l'entrenament a Salut d'Apple. És possible que Move: Feet no hagi afegit l'entrenament a Salut d'Apple, cosa que significa que no el podem modificar. L'antiga instància encara és present a l'aplicació Salut d'Apple, però la referència s'ha suprimit d'aquesta aplicació. Si voleu afegir el nou entrenament a Salut d'Apple, heu de fer-ho manualment.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "No s'ha pogut afegir l'entrenament a Salut d'Apple";
 "EditWorkoutController.SaveWorkout.Error" = "No s'ha pogut afegir l'entrenament; torneu-ho a provar.";
 "Yesterday" = "Ahir";
@@ -229,7 +229,7 @@
 "Settings.ImportBackupData.Success" = "Es van importar els entrenaments únics de la vostra còpia de seguretat; els entrenaments que ja existeixen en aquesta base de dades d'aplicacions es van deixar de banda.";
 "Settings.ImportBackupData" = "Importa dades de còpia de seguretat";
 "Settings.CreateBackup" = "Crea una còpia de seguretat";
-"Settings.DataPreferences.Message" = "Les còpies de seguretat d’OutRun, probablement a diferència de la majoria d’altres aplicacions, són només fitxers que no necessiten eines especials per inserir-les a l’aplicació ni transferir-les a un altre dispositiu. També es mantenen locals (tret que els deseu al núvol).\n\nEn crear una còpia de seguretat, se us presentarà un fitxer \".orbup\" que podeu compartir amb qualsevol altra aplicació que vulgueu. Tingueu en compte que, tot i que les dades d’aquest fitxer no estan encriptades, enviar-les a algú o penjar-les a un servei poden comprometre la vostra privadesa, així que tingueu-ho en compte.\n\nPer importar una còpia de seguretat, només cal que seleccioneu un fitxer \".orbup\" des de qualsevol lloc on la hàgiu desat prèviament. L'aplicació importarà tots els entrenaments que conté la còpia de seguretat i assegureu-vos que no hi hagi duplicats automàticament.";
+"Settings.DataPreferences.Message" = "Les còpies de seguretat d’Move: Feet, probablement a diferència de la majoria d’altres aplicacions, són només fitxers que no necessiten eines especials per inserir-les a l’aplicació ni transferir-les a un altre dispositiu. També es mantenen locals (tret que els deseu al núvol).\n\nEn crear una còpia de seguretat, se us presentarà un fitxer \".orbup\" que podeu compartir amb qualsevol altra aplicació que vulgueu. Tingueu en compte que, tot i que les dades d’aquest fitxer no estan encriptades, enviar-les a algú o penjar-les a un servei poden comprometre la vostra privadesa, així que tingueu-ho en compte.\n\nPer importar una còpia de seguretat, només cal que seleccioneu un fitxer \".orbup\" des de qualsevol lloc on la hàgiu desat prèviament. L'aplicació importarà tots els entrenaments que conté la còpia de seguretat i assegureu-vos que no hi hagi duplicats automàticament.";
 "Settings.DataPreferences" = "Preferències de dades";
 "Settings.SyncAll.AllSyncedAlready" = "Pareix que tots els entrenaments ja estan sincronitzats.";
 "Settings.SyncAll.Error" = "S'ha produït un error en intentar sincronitzar tots els entrenaments no sincronitzats amb Salut d'Apple; és possible que alguns entrenaments no s'hagin sincronitzat.";

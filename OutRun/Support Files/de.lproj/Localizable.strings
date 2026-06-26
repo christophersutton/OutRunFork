@@ -20,7 +20,7 @@
 
 "TabBar.Timeline" = "Verlauf";
 "TabBar.Settings" = "Einstellungen";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "Cancel" = "Abbrechen";
 "Save" = "Speichern";
 "Continue" = "Fortfahren";
@@ -153,7 +153,7 @@
 "Settings.SyncAll.Error" = "Es gab einen Fehler beim Versuch alle vorher noch nicht synchronisierten Workouts in Apple Health zu speichern, manche wurden vielleicht nicht synchonisiert.";
 "Settings.SyncAll.AllSyncedAlready" = "Es scheint so als wären alle Workouts bereits synchonisiert.";
 "Settings.DataPreferences" = "Dateneinstellungen";
-"Settings.DataPreferences.Message" = "Backups in OutRun funktionieren etwas anders, als in den meisten anderen Apps. Es sind nämlich einfache Dateien, für die man keine speziellen Tools zum Laden oder Transferieren braucht. Diese Dateien bleiben außerdem auch lokal (außer man speichert sie in einer Cloud)\n\nBeim Erstellen eines Backups bekommst du eine '.orbup'-Datei, die du dann mit allen anderen Apps und dem Dateimanager teilen kannst. Dabei solltest du beachten, dass die Daten in der Datei nicht verschlüsselt sind, die Datei also nur mit Leuten und Diensten geteilt werden sollte, denen du vertraust.\n\nDas Importieren ist genau so einfach. Wähle einfach eine '.orbup'-Datei aus und die App wird alle darin gespeicherten Workouts importieren.";
+"Settings.DataPreferences.Message" = "Backups in Move: Feet funktionieren etwas anders, als in den meisten anderen Apps. Es sind nämlich einfache Dateien, für die man keine speziellen Tools zum Laden oder Transferieren braucht. Diese Dateien bleiben außerdem auch lokal (außer man speichert sie in einer Cloud)\n\nBeim Erstellen eines Backups bekommst du eine '.orbup'-Datei, die du dann mit allen anderen Apps und dem Dateimanager teilen kannst. Dabei solltest du beachten, dass die Daten in der Datei nicht verschlüsselt sind, die Datei also nur mit Leuten und Diensten geteilt werden sollte, denen du vertraust.\n\nDas Importieren ist genau so einfach. Wähle einfach eine '.orbup'-Datei aus und die App wird alle darin gespeicherten Workouts importieren.";
 "Settings.CreateBackup" = "Backup erstellen";
 "Settings.ImportBackupData" = "Backupdaten importieren";
 "Settings.ImportBackupData.Success" = "Alle vorher nicht vorhandenen Workouts aus deinem Backup wurden erfolgreich importiert, schon vorhandene wurden ignoriert.";
@@ -256,7 +256,7 @@
 "Yesterday" = "Gestern";
 "EditWorkoutController.SaveWorkout.Error" = "Das Workout konnte nicht gespeichert werden, bitte versuche es später erneut.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Das Workout konnte nicht zu Apple Health hinzugefügt werden.";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Konnte das Workout nicht verändern. Es ist möglich, dass das Workout nicht von OutRun zu Apple Health hinzugefügt wurde, dann können wir es dort nicht bearbeiten. Das alte Workout ist immer noch in der Health-App gespeichert, aber nicht mehr in dieser App verknüpft. Wenn die veränderte Version in Apple Health gespeichert werden soll, muss dies manuell durchgeführt werden.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Konnte das Workout nicht verändern. Es ist möglich, dass das Workout nicht von Move: Feet zu Apple Health hinzugefügt wurde, dann können wir es dort nicht bearbeiten. Das alte Workout ist immer noch in der Health-App gespeichert, aber nicht mehr in dieser App verknüpft. Wenn die veränderte Version in Apple Health gespeichert werden soll, muss dies manuell durchgeführt werden.";
 "EditWorkoutController.NewWorkout" = "Neues Workout";
 "EditWorkoutController.EditWorkout" = "Bearbeiten";
 "EditWorkoutController.Info" = "Info";
@@ -269,7 +269,7 @@
 "Changelog" = "Änderungen";
 "ExportManager.GPXError" = "Die App konnte keine GPX-Datei erstellen, bitte kontaktiere den Support.";
 "ExportManager.BackupError" = "Die App konnte kein Backup erstellen, bitte kontaktiere den Support.";
-"WorkoutShareAlert.OutRunBackup" = "OutRun-Backup";
+"WorkoutShareAlert.OutRunBackup" = "Move: Feet-Backup";
 "WorkoutShareAlert.GPXExport" = "GPX-Datei";
 "WorkoutShareAlert.Message" = "Bitte wähle aus den folgenden Optionen, wie dein Workout exportiert werden soll. Solltest du eine Export-Option vermissen, melde dich doch und schlage diese vor.";
 "WorkoutShareAlert.Title" = "Exportiere dein Workout";

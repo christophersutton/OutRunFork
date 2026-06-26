@@ -39,7 +39,7 @@
 "Continue" = "Doorgaan";
 "Save" = "Opslaan";
 "Cancel" = "Annuleren";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Instellingen";
 "TabBar.Timeline" = "Tijdlijn";
 "NewWorkoutViewController.Discard.Message" = "Weet je zeker dat je de training wil verwijderen? De gegevens kunnen niet worden teruggehaald.";
@@ -145,7 +145,7 @@
 "EditWorkoutController.Info" = "Informatie";
 "ShareManager.GPXError" = "De app heeft geen GPX-bestand aangemaakt, neem contact met ons op.";
 "ShareManager.BackupError" = "De app heeft geen backup gemaakt, neem contact met ons op.";
-"WorkoutShareAlert.OutRunBackup" = "OutRun-backup";
+"WorkoutShareAlert.OutRunBackup" = "Move: Feet-backup";
 "WorkoutShareAlert.GPXExport" = "GPX-bestand";
 "WorkoutShareAlert.Message" = "Kies een van de onderstaande opties om de training te exporteren. Mocht je een optie missen, voel je dan vrij deze aan ons door te geven.";
 "WorkoutShareAlert.Title" = "Exporteer je training";
@@ -157,7 +157,7 @@
 "EditWorkoutController.Custom" = "Aangepast";
 "EditWorkoutController.EditWorkout" = "Training bewerken";
 "EditWorkoutController.NewWorkout" = "Nieuwe training";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Kon de training in Apple Gezondheid niet veranderen. Het is mogelijk dat de training niet door OutRun is toegevoegd aan Apple Gezondheid, wat betekent dat we deze niet kunnen wijzigen. Het oude exemplaar is nog steeds aanwezig in de Gezondheid-app, maar de verwijzing is uit deze app verwijderd. Als je de nieuwe training wilt toevoegen aan Apple Gezondheid moet je dat handmatig doen.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Kon de training in Apple Gezondheid niet veranderen. Het is mogelijk dat de training niet door Move: Feet is toegevoegd aan Apple Gezondheid, wat betekent dat we deze niet kunnen wijzigen. Het oude exemplaar is nog steeds aanwezig in de Gezondheid-app, maar de verwijzing is uit deze app verwijderd. Als je de nieuwe training wilt toevoegen aan Apple Gezondheid moet je dat handmatig doen.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Geen training toegevoegd aan Apple Gezondheid";
 "EditWorkoutController.SaveWorkout.Error" = "Heb je geen training toegevoegd, probeer het dan nog eens.";
 "Yesterday" = "Gisteren";
@@ -252,7 +252,7 @@
 "Settings.DeleteAll.AppleHealth.Message" = "Wil je de trainingen die zijn opgenomen in de Apple Gezondheid-app bewaren of wil je die ook verwijderen?";
 "Settings.DeleteAll.AppleHealth.Title" = "Trainingen uit Apple Gezondheid verwijderen?";
 "Settings.DeleteAll.Confirmation.Message" = "Weet je zeker dat je alle gegevens die door deze app zijn opgeslagen wilt verwijderen? Dit omvat alle trainingen die je hebt opgenomen en alle instellingen. Er kunnen geen trainingsgegevens worden hersteld als er geen backup wordt gemaakt in Apple Gezondheid en je instellingen gaan permanent verloren.";
-"Settings.DataPreferences.Message" = "Backups in OutRun zijn gewoon bestanden; dit in tegenstelling tot de meeste andere apps. Je hebt geen speciale tools nodig om ze in de app te importeren of over te zetten op een ander apparaat. Ze blijven ook lokaal, tenzij je ze in de cloud opslaat.\n\nBij het maken van een backup krijg je een ‘.orbup’-bestand, dat je kunt delen met welke andere app je maar wilt. Wees je ervan bewust, dat de gegevens in dat bestand niet versleuteld zijn: het sturen naar iemand of het uploaden naar een dienst kan je privacy in gevaar brengen.\n\nOm een backup te importeren, selecteer je een ‘.orbup’-bestand van waar je deze eerder hebt opgeslagen. De app zal dan alle trainingen in de backup importeren, waarbij er automatisch voor gezorgd wordt dat er geen duplicaten zijn.";
+"Settings.DataPreferences.Message" = "Backups in Move: Feet zijn gewoon bestanden; dit in tegenstelling tot de meeste andere apps. Je hebt geen speciale tools nodig om ze in de app te importeren of over te zetten op een ander apparaat. Ze blijven ook lokaal, tenzij je ze in de cloud opslaat.\n\nBij het maken van een backup krijg je een ‘.orbup’-bestand, dat je kunt delen met welke andere app je maar wilt. Wees je ervan bewust, dat de gegevens in dat bestand niet versleuteld zijn: het sturen naar iemand of het uploaden naar een dienst kan je privacy in gevaar brengen.\n\nOm een backup te importeren, selecteer je een ‘.orbup’-bestand van waar je deze eerder hebt opgeslagen. De app zal dan alle trainingen in de backup importeren, waarbij er automatisch voor gezorgd wordt dat er geen duplicaten zijn.";
 "Settings.DataPreferences" = "Gegevensvoorkeuren";
 "Settings.SyncAll.AllSyncedAlready" = "Het lijkt erop dat alle trainingen al gesynchroniseerd zijn.";
 "Settings.SyncAll.Error" = "Er ging iets mis bij het synchroniseren van de ongesynchroniseerde trainingen met Apple Gezondheid. Sommige trainingen zijn misschien niet gesynchroniseerd.";

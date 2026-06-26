@@ -174,7 +174,7 @@ public class ExportManager {
             for workout in workouts {
                 
                 let metadata = GPXMetadata()
-                metadata.desc = "This GPX-File was created by OutRun"
+                metadata.desc = "This GPX-File was created by Move: Feet"
                 metadata.time = Date()
                 
                 let trackPoints = workout.routeData.map { (sample) -> GPXTrackPoint in
@@ -192,7 +192,7 @@ public class ExportManager {
                 let track = GPXTrack()
                 track.add(trackSegment: trackSegement)
                 
-                let root = GPXRoot(creator: "OutRun")
+                let root = GPXRoot(creator: "Move: Feet")
                 root.metadata = metadata
                 root.add(track: track)
                 

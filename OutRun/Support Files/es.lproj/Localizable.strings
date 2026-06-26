@@ -22,7 +22,7 @@
 "Changelog" = "Registro de cambios";
 "ShareManager.GPXError" = "La aplicación no pudo crear un archivo GPX, por favor póngase en contacto con el soporte técnico.";
 "ShareManager.BackupError" = "La aplicación no pudo crear una copia de seguridad, por favor póngase en contacto con el soporte técnico.";
-"WorkoutShareAlert.OutRunBackup" = "Copia de seguridad de OutRun";
+"WorkoutShareAlert.OutRunBackup" = "Copia de seguridad de Move: Feet";
 "WorkoutShareAlert.GPXExport" = "Archivo GPX";
 "WorkoutShareAlert.Message" = "Por favor, elija cómo exportar su entrenamiento. Si le gustara alguna opción adicional, no dude en comunicarse y sugerirlo.";
 "WorkoutShareAlert.Title" = "Exporta tu entrenamiento";
@@ -35,7 +35,7 @@
 "EditWorkoutController.Info" = "Información";
 "EditWorkoutController.EditWorkout" = "Editar entrenamiento";
 "EditWorkoutController.NewWorkout" = "Nuevo entrenamiento";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "No se pudo alterar el entrenamiento en Salud de Apple. Es posible que OutRun no haya agregado el entrenamiento a Salud de Apple, lo que significa que no podemos modificarlo. La instancia anterior todavía está presente en la aplicación Salud de Apple, pero la referencia se eliminó de esta aplicación. Si desea agregar el nuevo entrenamiento a Salud de Apple, debe hacerlo manualmente.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "No se pudo alterar el entrenamiento en Salud de Apple. Es posible que Move: Feet no haya agregado el entrenamiento a Salud de Apple, lo que significa que no podemos modificarlo. La instancia anterior todavía está presente en la aplicación Salud de Apple, pero la referencia se eliminó de esta aplicación. Si desea agregar el nuevo entrenamiento a Salud de Apple, debe hacerlo manualmente.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "No se pudo agregar entrenamiento a Salud de Apple";
 "EditWorkoutController.SaveWorkout.Error" = "No se pudo agregar el entrenamiento, por favor inténtelo de nuevo.";
 "Yesterday" = "Ayer";
@@ -138,7 +138,7 @@
 "Settings.ImportBackupData.Success" = "Se importaron los entrenamientos únicos de su copia de seguridad, los entrenamientos que ya existen en esta base de datos de aplicaciones se dejaron fuera.";
 "Settings.ImportBackupData" = "Importar datos de copia de seguridad";
 "Settings.CreateBackup" = "Crear una copia de seguridad";
-"Settings.DataPreferences.Message" = "Las copias de seguridad en OutRun, probablemente a diferencia de la mayoría de las otras aplicaciones, son solo archivos, que no necesita herramientas especiales para insertar en la aplicación o transferir a otro dispositivo. También permanecen locales (a menos que los guarde en la nube).\n\nAl crear una copia de seguridad, se le presentará un archivo '.orbup' que puede compartir con cualquier otra aplicación que desee. Sin embargo, tenga en cuenta que los datos dentro de ese archivo no están encriptados, enviarlos a alguien o subirlos a un servicio puede comprometer su privacidad, así que téngalo en cuenta.\n\nPara importar una copia de seguridad, simplemente seleccione un archivo '.orbup' desde donde lo guardó anteriormente, la aplicación importará todos los entrenamientos contenidos en la copia de seguridad, asegurándose de que no haya duplicados automáticamente.";
+"Settings.DataPreferences.Message" = "Las copias de seguridad en Move: Feet, probablemente a diferencia de la mayoría de las otras aplicaciones, son solo archivos, que no necesita herramientas especiales para insertar en la aplicación o transferir a otro dispositivo. También permanecen locales (a menos que los guarde en la nube).\n\nAl crear una copia de seguridad, se le presentará un archivo '.orbup' que puede compartir con cualquier otra aplicación que desee. Sin embargo, tenga en cuenta que los datos dentro de ese archivo no están encriptados, enviarlos a alguien o subirlos a un servicio puede comprometer su privacidad, así que téngalo en cuenta.\n\nPara importar una copia de seguridad, simplemente seleccione un archivo '.orbup' desde donde lo guardó anteriormente, la aplicación importará todos los entrenamientos contenidos en la copia de seguridad, asegurándose de que no haya duplicados automáticamente.";
 "Settings.DataPreferences" = "Preferencias de datos";
 "Settings.SyncAll.AllSyncedAlready" = "Parece que todos los entrenamientos ya están sincronizados.";
 "Settings.SyncAll.Error" = "Se produjo un error al intentar sincronizar todos los entrenamientos no sincronizados con Salud de Apple. Es posible que algunos entrenamientos no se hayan sincronizado.";
@@ -273,7 +273,7 @@
 "Continue" = "Seguir";
 "Save" = "Guardar";
 "Cancel" = "Cancelar";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Ajustes";
 "TabBar.Timeline" = "Cronología";
 "Settings.Contribution.Translators" = "Traductores";

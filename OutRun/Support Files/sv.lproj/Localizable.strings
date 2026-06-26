@@ -43,7 +43,7 @@
 "Settings.ImportBackupData.Success" = "De unika träningspassen från din säkerhetskopia importerades, träningspass som redan fanns i denna apps databas utelämnades.";
 "Settings.ImportBackupData" = "Importera Säkerhetskopierad Data";
 "Settings.CreateBackup" = "Skapa säkerhetskopia";
-"Settings.DataPreferences.Message" = "Säkerhetskopior i OutRun, till skillnad från i de flesta andra program, är bara filer, vilket innebär att du inte behöver specialverktyg för att lägga till dem i appen eller överföra dem till en annan enhet. De är också lokala (om du inte sparar dem i molnet).\n\nNär du skapar en säkerhetskopia kommer du att finna en'.orbup ' fil som du kan dela till vilken annan app du vill. Var medveten om, att data inuti den filen inte är krypterad, om du skickar den till någon eller laddar upp den till en annan tjänst kan detta äventyra din integritet, så håll det i åtanke.\n\nFör att importera en säkerhetskopia, välj bara en'.orbup ' fil från dina tidigare sparade filer, sedan kommer appen att importera alla träningspass som finns i säkerhetskopian och automatiskt se till att det inte finns några dubbletter.";
+"Settings.DataPreferences.Message" = "Säkerhetskopior i Move: Feet, till skillnad från i de flesta andra program, är bara filer, vilket innebär att du inte behöver specialverktyg för att lägga till dem i appen eller överföra dem till en annan enhet. De är också lokala (om du inte sparar dem i molnet).\n\nNär du skapar en säkerhetskopia kommer du att finna en'.orbup ' fil som du kan dela till vilken annan app du vill. Var medveten om, att data inuti den filen inte är krypterad, om du skickar den till någon eller laddar upp den till en annan tjänst kan detta äventyra din integritet, så håll det i åtanke.\n\nFör att importera en säkerhetskopia, välj bara en'.orbup ' fil från dina tidigare sparade filer, sedan kommer appen att importera alla träningspass som finns i säkerhetskopian och automatiskt se till att det inte finns några dubbletter.";
 "Settings.DataPreferences" = "Datainställningar";
 "Settings.SyncAll.AllSyncedAlready" = "Det verkar som om alla träningspass redan har synkroniserats.";
 "Settings.SyncAll.Error" = "Det uppstod ett fel när du försökte synkronisera alla icke-synkroniserade träningspass med Apple Hälsa, vissa träningspass kanske inte har synkroniserats.";
@@ -53,7 +53,7 @@
 "Settings.AutoImportHealthWorkouts" = "Importera träningspass automatiskt";
 "Settings.SynchronizeWeightWithAppleHealth" = "Synkronisera vikt";
 "Settings.SynchronizeWorkoutsWithAppleHealth" = "Synkronisera träningspass";
-"Settings.AppleHealthPreferences.Message" = "Om synkroniseringsalternativen är aktiverade försöker appen synkronisera med Apple Hälsa, så ny data från OutRun automatiskt sparas även i Hälsoappen, och om vikten i Hälsoappen ändras blir den automatiskt justerad här också.\n\nOm alternativet \"Importera träningspass automatiskt\" aktiveras försöker appen automatiskt att importera nya träningspass som läggs till av andra appar i den lokala databasen.\n\n\"Synkronisera alla icke-synkade träningspass\" synkroniserar alla träningspass i den här appen, som inte redan är synkroniserade med Apple Hälsa.";
+"Settings.AppleHealthPreferences.Message" = "Om synkroniseringsalternativen är aktiverade försöker appen synkronisera med Apple Hälsa, så ny data från Move: Feet automatiskt sparas även i Hälsoappen, och om vikten i Hälsoappen ändras blir den automatiskt justerad här också.\n\nOm alternativet \"Importera träningspass automatiskt\" aktiveras försöker appen automatiskt att importera nya träningspass som läggs till av andra appar i den lokala databasen.\n\n\"Synkronisera alla icke-synkade träningspass\" synkroniserar alla träningspass i den här appen, som inte redan är synkroniserade med Apple Hälsa.";
 "Settings.AppleHealthPreferences" = "Inställningar i Apple Hälsa";
 "Settings.UserSettings.Description" = "Denna App behöver din vikt för att beräkna ett uppskattat värde av bränd energi under ett träningspass. Att ange ditt namn är helt valfritt.";
 "Settings.Weight" = "Vikt";
@@ -173,10 +173,10 @@
 "Continue" = "Fortsätt";
 "Save" = "Spara";
 "Cancel" = "Avbryt";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Inställningar";
 "TabBar.Timeline" = "Tidslinje";
-"WorkoutShareAlert.OutRunBackup" = "OutRun säkerhetskopia";
+"WorkoutShareAlert.OutRunBackup" = "Move: Feet säkerhetskopia";
 "MapView.MapType.Hybrid" = "Hybrid";
 "EditWorkoutController.Info" = "Info";
 "Changelog" = "Ändringslogg";
@@ -192,7 +192,7 @@
 "EditWorkoutController.Custom" = "Anpassad";
 "EditWorkoutController.EditWorkout" = "Redigera träningspass";
 "EditWorkoutController.NewWorkout" = "Nytt träningspass";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Kunde inte ändra träningspasset i Apple Hälsa. Det är möjligt att träningen inte lades till i Apple Hälsa via OutRun, vilket innebär att vi inte kan ändra det. Den gamla instansen är fortfarande närvarande i Hälsoappen, men referensen togs bort från den här appen. Om du vill lägga till den nya träningen till Apple Hälsa måste du göra det manuellt.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Kunde inte ändra träningspasset i Apple Hälsa. Det är möjligt att träningen inte lades till i Apple Hälsa via Move: Feet, vilket innebär att vi inte kan ändra det. Den gamla instansen är fortfarande närvarande i Hälsoappen, men referensen togs bort från den här appen. Om du vill lägga till den nya träningen till Apple Hälsa måste du göra det manuellt.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Det gick inte att lägga till träningspass i Apple Hälsa";
 "EditWorkoutController.SaveWorkout.Error" = "Misslyckades med att lägga till träningspass, vänligen försök igen.";
 "Yesterday" = "Igår";

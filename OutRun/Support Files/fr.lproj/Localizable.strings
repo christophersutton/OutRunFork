@@ -21,7 +21,7 @@
 "Changelog" = "Modifications";
 "ExportManager.GPXError" = "L'application n'a pas réussi à créer un fichier GPX, veuillez contacter l'assistance.";
 "ExportManager.BackupError" = "L'application n'a pas réussi à créer une sauvegarde, veuillez contacter le support.";
-"WorkoutShareAlert.OutRunBackup" = "Sauvegarde OutRun";
+"WorkoutShareAlert.OutRunBackup" = "Sauvegarde Move: Feet";
 "WorkoutShareAlert.GPXExport" = "Fichier GPX";
 "WorkoutShareAlert.Message" = "Veuillez choisir comment exporter votre entraînement parmi les options ci-dessous. Si vous pensez qu'une option manque, n'hésitez pas à nous contacter et à la suggérer.";
 "WorkoutShareAlert.Title" = "Exportez votre entraînement";
@@ -34,7 +34,7 @@
 "EditWorkoutController.Info" = "Infos";
 "EditWorkoutController.EditWorkout" = "Modifier l'entraînement";
 "EditWorkoutController.NewWorkout" = "Nouvel entraînement";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Impossible de modifier l'entraînement dans Apple Health. Il est possible que l'entraînement n'ait pas été ajouté à Apple Health par OutRun, ce qui signifie que nous ne pouvons pas le modifier. L'ancienne instance est toujours présente dans l'application Health, mais la référence a été supprimée de cette application. Si vous souhaitez ajouter le nouvel entraînement à Apple Health, vous devez le faire manuellement.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Impossible de modifier l'entraînement dans Apple Health. Il est possible que l'entraînement n'ait pas été ajouté à Apple Health par Move: Feet, ce qui signifie que nous ne pouvons pas le modifier. L'ancienne instance est toujours présente dans l'application Health, mais la référence a été supprimée de cette application. Si vous souhaitez ajouter le nouvel entraînement à Apple Health, vous devez le faire manuellement.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Échec de l'ajout d'un entraînement à Apple Health";
 "EditWorkoutController.SaveWorkout.Error" = "Échec de l'ajout de l'entraînement, veuillez réessayer.";
 "Yesterday" = "Hier";
@@ -137,7 +137,7 @@
 "Settings.ImportBackupData.Success" = "Les entraînements uniques de votre sauvegarde ont été importés, les entraînements qui existent déjà dans cette base de données d'applications ont été laissés de côté.";
 "Settings.ImportBackupData" = "Importer les données de sauvegarde";
 "Settings.CreateBackup" = "Créer une sauvegarde";
-"Settings.DataPreferences.Message" = "Les sauvegardes dans OutRun, probablement contrairement à la plupart des autres applications, ne sont que des fichiers, pour lesquels vous n'avez pas besoin d'outils spéciaux pour les insérer dans l'application ou transférer vers un autre appareil. Ils restent également locaux (sauf si vous les enregistrez dans le nuage).\n\nLors de la création d'une sauvegarde, un fichier « .orbup » vous sera présenté que vous pourrez partager avec n'importe quelle autre application de votre choix. Sachez cependant que les données à l'intérieur de ce fichier ne sont pas chiffrées, les envoyer à quelqu'un ou les téléverser sur un service peut compromettre votre vie privée, alors gardez cela à l'esprit.\n\nPour importer une sauvegarde, sélectionnez simplement un fichier « .orbup » à partir de l'endroit où vous l'avez précédemment enregistré, l'application importera alors tous les entraînements contenus dans la sauvegarde, en s'assurant qu'il n'y a pas de doublons automatiquement.";
+"Settings.DataPreferences.Message" = "Les sauvegardes dans Move: Feet, probablement contrairement à la plupart des autres applications, ne sont que des fichiers, pour lesquels vous n'avez pas besoin d'outils spéciaux pour les insérer dans l'application ou transférer vers un autre appareil. Ils restent également locaux (sauf si vous les enregistrez dans le nuage).\n\nLors de la création d'une sauvegarde, un fichier « .orbup » vous sera présenté que vous pourrez partager avec n'importe quelle autre application de votre choix. Sachez cependant que les données à l'intérieur de ce fichier ne sont pas chiffrées, les envoyer à quelqu'un ou les téléverser sur un service peut compromettre votre vie privée, alors gardez cela à l'esprit.\n\nPour importer une sauvegarde, sélectionnez simplement un fichier « .orbup » à partir de l'endroit où vous l'avez précédemment enregistré, l'application importera alors tous les entraînements contenus dans la sauvegarde, en s'assurant qu'il n'y a pas de doublons automatiquement.";
 "Settings.DataPreferences" = "Préférences des données";
 "Settings.SyncAll.AllSyncedAlready" = "Il semble que tous les entraînements soient déjà synchronisés.";
 "Settings.SyncAll.Error" = "Une erreur s'est produite lors de la tentative de synchronisation de tous les entraînements non synchronisés avec Apple Health, certains entraînements peuvent ne pas avoir été synchronisés.";
@@ -269,7 +269,7 @@
 "Continue" = "Continuer";
 "Save" = "Enregistrer";
 "Cancel" = "Annuler";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Paramètres";
 "TabBar.Timeline" = "Historique";
 "Settings.Contribution.Translators" = "Traducteurs";

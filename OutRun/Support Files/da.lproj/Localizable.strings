@@ -18,7 +18,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-"WorkoutShareAlert.OutRunBackup" = "OutRun Backup";
+"WorkoutShareAlert.OutRunBackup" = "Move: Feet Backup";
 "EditWorkoutController.Info" = "Information";
 "Setup.Permission.AppleHealth" = "Health Tilladelse";
 "Settings.AppInfo" = "Oplysninger Om App";
@@ -42,7 +42,7 @@
 "EditWorkoutController.Custom" = "Brugerdefinerede";
 "EditWorkoutController.EditWorkout" = "Rediger træning";
 "EditWorkoutController.NewWorkout" = "Ny træning";
-"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Kunne ikke ændre træning i Apple Health. Det er muligt, at træningen ikke blev føjet til Apple Health af OutRun, hvilket betyder, at vi ikke kan ændre den. Den gamle forekomst er stadig til stede i Health-appen, men referencen blev fjernet fra denne app. Hvis du vil tilføje den nye træning til Apple Health, skal du gøre det manuelt.";
+"EditWorkoutController.AlterWorkout.AppleHealth.Error" = "Kunne ikke ændre træning i Apple Health. Det er muligt, at træningen ikke blev føjet til Apple Health af Move: Feet, hvilket betyder, at vi ikke kan ændre den. Den gamle forekomst er stadig til stede i Health-appen, men referencen blev fjernet fra denne app. Hvis du vil tilføje den nye træning til Apple Health, skal du gøre det manuelt.";
 "EditWorkoutController.SaveWorkout.AppleHealth.Error" = "Kunne ikke føje træning til Apple Health";
 "EditWorkoutController.SaveWorkout.Error" = "Kunne ikke tilføje træning. Prøv igen.";
 "Yesterday" = "I går";
@@ -152,7 +152,7 @@
 "Settings.ImportBackupData.Success" = "De unikke træningsprogrammer fra din sikkerhedskopi blev importeret, træning, der allerede findes i denne apps database, blev udeladt.";
 "Settings.ImportBackupData" = "Importer sikkerhedskopidata";
 "Settings.CreateBackup" = "Opret sikkerhedskopi";
-"Settings.DataPreferences.Message" = "Sikkerhedskopier i OutRun, sandsynligvis i modsætning til i de fleste andre apps, er bare filer, som du ikke har brug for specielle værktøjer til at indsætte i appen eller overføre til en anden enhed. De forbliver også lokale (medmindre du gemmer dem i skyen).\n\nNår du opretter en sikkerhedskopi, vil du blive præsenteret for en '.orbup' -fil, som du kan dele til den anden app, du vil. Vær opmærksom på, at dataene inde i den fil ikke er krypteret, men det kan kompromittere dit privatliv, hvis du sender dem til nogen eller uploader dem til en tjeneste, så husk det.\n\nFor at importere en sikkerhedskopi skal du blot vælge en .orbup-fil, hvorfra du tidligere har gemt den, og derefter importerer appen alle træningsprogrammerne i sikkerhedskopien og sørger for, at der ikke er nogen dubletter automatisk.";
+"Settings.DataPreferences.Message" = "Sikkerhedskopier i Move: Feet, sandsynligvis i modsætning til i de fleste andre apps, er bare filer, som du ikke har brug for specielle værktøjer til at indsætte i appen eller overføre til en anden enhed. De forbliver også lokale (medmindre du gemmer dem i skyen).\n\nNår du opretter en sikkerhedskopi, vil du blive præsenteret for en '.orbup' -fil, som du kan dele til den anden app, du vil. Vær opmærksom på, at dataene inde i den fil ikke er krypteret, men det kan kompromittere dit privatliv, hvis du sender dem til nogen eller uploader dem til en tjeneste, så husk det.\n\nFor at importere en sikkerhedskopi skal du blot vælge en .orbup-fil, hvorfra du tidligere har gemt den, og derefter importerer appen alle træningsprogrammerne i sikkerhedskopien og sørger for, at der ikke er nogen dubletter automatisk.";
 "Settings.DataPreferences" = "Dataindstillinger";
 "Settings.SyncAll.AllSyncedAlready" = "Det ser ud til, at alle træningsprogrammer allerede er synkroniseret.";
 "Settings.SyncAll.Error" = "Der opstod en fejl under forsøg på at synkronisere alle usynkroniserede træningsprogrammer med Apple Health. Nogle træningsprogrammer er muligvis ikke blevet synkroniseret.";
@@ -273,7 +273,7 @@
 "Delete" = "Slet";
 "Save" = "Gemme";
 "Cancel" = "Afbestille";
-"OutRun" = "OutRun";
+"OutRun" = "Move: Feet";
 "TabBar.Settings" = "Indstillinger";
 "TabBar.Timeline" = "Tidslinje";
 "Settings.Contribution.Translators" = "Oversættere";
