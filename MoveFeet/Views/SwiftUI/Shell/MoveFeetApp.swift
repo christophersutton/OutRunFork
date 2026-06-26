@@ -17,7 +17,7 @@
 import SwiftUI
 
 @main
-struct OutRunApp: App {
+struct MoveFeetApp: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase

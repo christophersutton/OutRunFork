@@ -1,4 +1,4 @@
-project 'OutRun.xcodeproj'
+project 'MoveFeet.xcodeproj'
 platform :ios, '17.0'
 
 def ui_pods
@@ -13,7 +13,7 @@ def data_pods
   pod 'CoreGPX'
 end
 
-target 'OutRun' do
+target 'MoveFeet' do
   use_frameworks!
 
   ui_pods

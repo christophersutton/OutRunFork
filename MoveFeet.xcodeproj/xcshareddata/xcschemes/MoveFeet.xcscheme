@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "22B6CF5222CA0814002D2FB0"
-               BuildableName = "OutRun.app"
-               BlueprintName = "OutRun"
-               ReferencedContainer = "container:OutRun.xcodeproj">
+               BuildableName = "MoveFeet.app"
+               BlueprintName = "MoveFeet"
+               ReferencedContainer = "container:MoveFeet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -31,9 +31,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "22B6CF5222CA0814002D2FB0"
-            BuildableName = "OutRun.app"
-            BlueprintName = "OutRun"
-            ReferencedContainer = "container:OutRun.xcodeproj">
+            BuildableName = "MoveFeet.app"
+            BlueprintName = "MoveFeet"
+            ReferencedContainer = "container:MoveFeet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -44,7 +44,7 @@
                BlueprintIdentifier = "22DD1588280C5BB4002CDB45"
                BuildableName = "UnitTests.xctest"
                BlueprintName = "UnitTests"
-               ReferencedContainer = "container:OutRun.xcodeproj">
+               ReferencedContainer = "container:MoveFeet.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -65,9 +65,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "22B6CF5222CA0814002D2FB0"
-            BuildableName = "OutRun.app"
-            BlueprintName = "OutRun"
-            ReferencedContainer = "container:OutRun.xcodeproj">
+            BuildableName = "MoveFeet.app"
+            BlueprintName = "MoveFeet"
+            ReferencedContainer = "container:MoveFeet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -82,9 +82,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "22B6CF5222CA0814002D2FB0"
-            BuildableName = "OutRun.app"
-            BlueprintName = "OutRun"
-            ReferencedContainer = "container:OutRun.xcodeproj">
+            BuildableName = "MoveFeet.app"
+            BlueprintName = "MoveFeet"
+            ReferencedContainer = "container:MoveFeet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

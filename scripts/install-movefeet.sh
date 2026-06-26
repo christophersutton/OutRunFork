@@ -46,15 +46,15 @@ fi
 echo "  → ${DEVICE_NAME} (${DEVICE_UDID})"
 
 echo "▸ Building for device (signing with your team, provisioning auto-updated)…"
-xcodebuild -quiet -workspace OutRun.xcworkspace -scheme OutRun -configuration Debug \
+xcodebuild -quiet -workspace MoveFeet.xcworkspace -scheme MoveFeet -configuration Debug \
   -destination "platform=iOS,id=${DEVICE_UDID}" \
   -allowProvisioningUpdates \
   build
 
-APP=$(find ~/Library/Developer/Xcode/DerivedData -path "*Debug-iphoneos/OutRun.app" -maxdepth 6 -type d 2>/dev/null \
+APP=$(find ~/Library/Developer/Xcode/DerivedData -path "*Debug-iphoneos/MoveFeet.app" -maxdepth 6 -type d 2>/dev/null \
       | xargs -I{} stat -f '%m %N' {} | sort -rn | head -1 | cut -d' ' -f2-)
 if [ -z "${APP:-}" ] || [ ! -d "$APP" ]; then
-  echo "✗ Could not locate the built OutRun.app (Debug-iphoneos)."; exit 1
+  echo "✗ Could not locate the built MoveFeet.app (Debug-iphoneos)."; exit 1
 fi
 
 echo "▸ Installing ${APP##*/} …"
