@@ -1,16 +1,12 @@
-# OutRun
+# Move: Feet
 
-OutRun is an iOS app for recording and viewing your outdoor workouts. Despite the name it supports not just running, but also walking, hiking, cycling and skating.
+Move: Feet is an iOS app for recording and viewing your outdoor workouts — running, walking, hiking, cycling and skating. It is a fork of [OutRun](https://github.com/timfraedrich/OutRun) by Tim Fraedrich.
 
-This project is fully open-source and ad-free.
+This project is fully open-source (GPL-3.0-or-later) and ad-free.
 
-## Wavelength Port Notice
+## Fork notice
 
-This fork is based on [OutRun](https://github.com/timfraedrich/OutRun) by Tim Fraedrich. Original OutRun code and notices remain under the GNU General Public License version 3 or later. Wavelength-specific policy URLs, support contact details, and final source-publication text should be set before distributing a Wavelength build.
-
-<a href="https://apps.apple.com/us/app/OutRun/id1477511092">
-    <img src="https://outrun.tadris.de/src/download.svg">
-</a>
+Move: Feet is a fork of [OutRun](https://github.com/timfraedrich/OutRun) by Tim Fraedrich. The original OutRun code, copyright notices, and per-file license headers are preserved and remain under the GNU General Public License version 3 or later. The combined work — including all Move: Feet modifications — also remains GPL-3.0-or-later. See [`NOTICE.md`](NOTICE.md) for attribution and the statement of modifications (GPLv3 §5a).
 
 ## Features
 
@@ -65,10 +61,11 @@ If you cannot contribute in any other way than financially or just feel really g
 
 ## License
 
-OutRun is published under the GNU GENERAL PUBLIC LICENSE Version 3 (GLPv3):
+Move: Feet is published under the GNU General Public License, version 3 or later (GPL-3.0-or-later) — the same license as the original OutRun. See [`NOTICE.md`](NOTICE.md) for the statement of modifications.
 
-    OutRun
-    Copyright (C) 2020 Tim Fraedrich <timfraedrich@icloud.com>
+    Move: Feet — a fork of OutRun
+    Copyright (C) 2020 Tim Fraedrich <timfraedrich@icloud.com>   (original OutRun)
+    Copyright (C) 2026 Chris Sutton / Wavelength                 (Move: Feet modifications)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
