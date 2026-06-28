@@ -16,7 +16,7 @@ _None right now._
 
 ## Features
 
-- **Live Activity for active workouts** — add a Live Activity view (Lock Screen / Dynamic Island) showing the in-progress workout.
+_None right now._
 
 ## UX flow
 
@@ -30,6 +30,7 @@ _None right now._
 
 ## Done
 
+- **Live Activity for active workouts** — added a display-only local ActivityKit Live Activity for in-progress workouts.
 - **Workout detail charts y-axis** — charts now use a padded data-driven y-axis range instead of always starting at `0`.
 - **Rework "stop workout" confirmation** — moved the stop/save/continue/discard confirmation into the main bottom workout controls instead of showing a floating top banner.
 - **Workout selector broken** — restored the New Workout bottom-left workout type picker.

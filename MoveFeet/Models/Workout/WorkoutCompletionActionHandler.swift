@@ -31,6 +31,7 @@ class WorkoutCompletionActionHandler {
     
     /// If `true` the `WorkoutCompletionActionHandler` did already perform an action, so no additional action should be taken
     private var didPerformAction: Bool = false
+    var onFinalAction: (() -> Void)?
     
     /**
      Initialises the `WorkoutCompletionActionHandler` with the needed snapshot of an `TempWorkout`
@@ -53,6 +54,7 @@ class WorkoutCompletionActionHandler {
         }
         
         self.didPerformAction = true
+        onFinalAction?()
         
         DataManager.saveWorkout(object: self.snapshot) { (success, error, workout) in
             
@@ -113,6 +115,7 @@ class WorkoutCompletionActionHandler {
         }
         
         self.didPerformAction = true
+        onFinalAction?()
         
     }
     

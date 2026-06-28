@@ -31,6 +31,7 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
     private let stepCounter: StepCounter
     private let altitudeManagement: AltitudeManagement
     private let liveStats: LiveStats
+    private let liveActivityController: WorkoutLiveActivityController
     
     var initialWorkoutType = Workout.WorkoutType(rawValue: UserPreferences.standardWorkoutType.value)
     
@@ -209,7 +210,9 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
         self.locationManagement = LocationManagement(builder: builder)
         self.stepCounter = StepCounter(builder: builder)
         self.altitudeManagement = AltitudeManagement(builder: builder)
-        self.liveStats = LiveStats(builder: builder)
+        let liveStats = LiveStats(builder: builder)
+        self.liveStats = liveStats
+        self.liveActivityController = WorkoutLiveActivityController(builder: builder, liveStats: liveStats)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -220,7 +223,9 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
         self.locationManagement = LocationManagement(builder: builder)
         self.stepCounter = StepCounter(builder: builder)
         self.altitudeManagement = AltitudeManagement(builder: builder)
-        self.liveStats = LiveStats(builder: builder)
+        let liveStats = LiveStats(builder: builder)
+        self.liveStats = liveStats
+        self.liveActivityController = WorkoutLiveActivityController(builder: builder, liveStats: liveStats)
         super.init(coder: coder)
     }
     
@@ -346,6 +351,9 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
     }
 
     private func showCompletionActions(handler: WorkoutCompletionActionHandler) {
+        handler.onFinalAction = { [weak self] in
+            self?.liveActivityController.end()
+        }
         actionButtonHeightConstraint?.update(offset: ActionButtonLayout.completionHeight)
         actionButton.showCompletionActions(handler: handler) { [weak self] in
             self?.hideCompletionActions()
