@@ -104,9 +104,7 @@ public class WorkoutBuilder: ApplicationStateObserver {
                 
                 if let snapshot = self.createSnapshot() {
                     let actionHandler = WorkoutCompletionActionHandler(snapshot: snapshot, builder: self)
-                    Task { @MainActor in
-                        actionHandler.display()
-                    }
+                    self.completionActionHandlerRelay.accept(actionHandler)
                 }
                 
                 self.reset()
@@ -153,6 +151,8 @@ public class WorkoutBuilder: ApplicationStateObserver {
     private let suspensionRelay = CurrentValueRelay<Bool>(false)
     /// The relay to publish a reset command.
     private let resetRelay = PassthroughRelay<ORWorkoutInterface?>()
+    /// The relay to publish a completed workout action handler.
+    private let completionActionHandlerRelay = PassthroughRelay<WorkoutCompletionActionHandler>()
     
     /// A type containing all input data needed to establish a data flow.
     public struct Input {
@@ -209,6 +209,7 @@ public class WorkoutBuilder: ApplicationStateObserver {
         let isUISuspended: AnyPublisher<Bool, Never>
         let isSuspended: AnyPublisher<Bool, Never>
         let onReset: AnyPublisher<ORWorkoutInterface?, Never>
+        let completionActionHandler: AnyPublisher<WorkoutCompletionActionHandler, Never>
     }
     
     /**
@@ -243,7 +244,8 @@ public class WorkoutBuilder: ApplicationStateObserver {
             insufficientPermission: insufficientPermissionRelay.asBackgroundPublisher(),
             isUISuspended: uiSuspensionRelay.asBackgroundPublisher(),
             isSuspended: suspensionRelay.asBackgroundPublisher(),
-            onReset: resetRelay.asBackgroundPublisher()
+            onReset: resetRelay.asBackgroundPublisher(),
+            completionActionHandler: completionActionHandlerRelay.asBackgroundPublisher()
         )
     }
     

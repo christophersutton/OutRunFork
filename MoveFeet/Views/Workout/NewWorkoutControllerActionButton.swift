@@ -22,11 +22,12 @@ import UIKit
 
 @MainActor
 class NewWorkoutControllerActionButton: UIView {
-    
+
     let actionClosure: (NewWorkoutControllerActionButton, ActionType) -> Void
     private var lastStatus = WorkoutBuilder.Status.waiting
+    private var completionActionView: WorkoutCompletionActionView?
     var isAnimating = false
-    
+
     lazy var startButton = baseButton(withTitle: LS["Start"], selector: #selector(startWorkout))
     lazy var stopButton = baseButton(withTitle: LS["Stop"], backgroundColor: .accentColor, selector: #selector(stopWorkout))
     lazy var pauseOrContinueButton: UIButton = {
@@ -40,15 +41,15 @@ class NewWorkoutControllerActionButton: UIView {
         button.addTarget(self, action: #selector(pauseOrContinueWorkout), for: .touchUpInside)
         return button
     }()
-        
+
     init(actionClosure: @escaping (NewWorkoutControllerActionButton, ActionType) -> Void) {
         self.actionClosure = actionClosure
         super.init(frame: .zero)
-        
+
         self.addSubview(stopButton)
         self.addSubview(pauseOrContinueButton)
         self.addSubview(startButton)
-        
+
         self.startButton.snp.makeConstraints { (make) in
             make.edges.equalToSuperview()
         }
@@ -60,35 +61,60 @@ class NewWorkoutControllerActionButton: UIView {
             make.right.equalTo(stopButton.snp.left).offset(-10)
             make.width.equalTo(pauseOrContinueButton.snp.height)
         }
-        
+
         self.startButton.isEnabled = false
         self.startButton.isUserInteractionEnabled = false
         self.stopButton.isHidden = true
         self.pauseOrContinueButton.isHidden = true
     }
-    
+
+    func showCompletionActions(handler: WorkoutCompletionActionHandler, onFinish: @escaping () -> Void) {
+        completionActionView?.removeFromSuperview()
+
+        let completionActionView = WorkoutCompletionActionView(handler: handler)
+        completionActionView.onFinish = { [weak self] in
+            self?.hideCompletionActions()
+            onFinish()
+        }
+        addSubview(completionActionView)
+        completionActionView.snp.makeConstraints { (make) in
+            make.edges.equalToSuperview()
+        }
+
+        self.completionActionView = completionActionView
+        startButton.isHidden = true
+        stopButton.isHidden = true
+        pauseOrContinueButton.isHidden = true
+    }
+
+    func hideCompletionActions() {
+        completionActionView?.removeFromSuperview()
+        completionActionView = nil
+        applyButtonVisibility(for: lastStatus)
+    }
+
     required init?(coder: NSCoder) {
         fatalError()
     }
-    
+
     @objc func startWorkout() {
         actionClosure(self, .start)
     }
-    
+
     @objc func stopWorkout() {
         actionClosure(self, .stop)
     }
-    
+
     @objc func pauseOrContinueWorkout() {
         actionClosure(self, .pauseOrContinue)
     }
-    
+
     func transition(to status: WorkoutBuilder.Status) {
-        
+
         guard self.lastStatus != status else {
             return
         }
-        
+
         switch (lastStatus, status) {
         case (.waiting, .ready), (.ready, .waiting):
             self.startButton.backgroundColor = status == .waiting ? .gray : .accentColor
@@ -96,26 +122,36 @@ class NewWorkoutControllerActionButton: UIView {
             self.startButton.isUserInteractionEnabled = status == .ready
         case (.recording, .paused), (.paused, .recording), (.autoPaused, .paused):
             self.pauseOrContinueButton.setImage(status == .paused ? .play : .pause, for: .normal)
-        case (.recording, .ready), (.paused, .ready), (.autoPaused, .ready), (.ready, .recording):
-            self.stopButton.isHidden = status == .ready
-            self.pauseOrContinueButton.isHidden = status == .ready
-            self.startButton.isHidden = status != .ready
+        case (.recording, .ready), (.paused, .ready), (.autoPaused, .ready), (.ready, .recording),
+            (.recording, .waiting), (.paused, .waiting), (.autoPaused, .waiting), (.waiting, .recording):
+            break
         case (.recording, .autoPaused), (.autoPaused, .recording):
             break
         case (.ready, .autoPaused), (.ready, .paused):
-            self.stopButton.isHidden = false
-            self.pauseOrContinueButton.isHidden = false
-            self.startButton.isHidden = true
             self.pauseOrContinueButton.setImage(status == .paused ? .play : .pause, for: .normal)
         default:
             print("[NewWorkoutControllerActionButton] invalid transition: (oldStatus: \(self.lastStatus), newStatus: \(status)")
             return
         }
-        
+
         self.lastStatus = status
-        
+        applyButtonVisibility(for: status)
+
     }
-    
+
+    private func applyButtonVisibility(for status: WorkoutBuilder.Status) {
+        guard completionActionView == nil else { return }
+
+        let isActive = status.isActiveStatus
+        let isReady = status == .ready
+        startButton.backgroundColor = isReady ? .accentColor : .gray
+        startButton.isEnabled = isReady
+        startButton.isUserInteractionEnabled = isReady
+        startButton.isHidden = isActive
+        stopButton.isHidden = !isActive
+        pauseOrContinueButton.isHidden = !isActive
+    }
+
     private func baseButton(withTitle title: String, backgroundColor: UIColor = .gray, selector: Selector) -> UIButton {
         let button = UIButton()
         button.backgroundColor = backgroundColor
@@ -129,7 +165,7 @@ class NewWorkoutControllerActionButton: UIView {
         button.addTarget(self, action: selector, for: .touchUpInside)
         return button
     }
-    
+
     enum ActionType {
         case start, stop, pauseOrContinue
     }

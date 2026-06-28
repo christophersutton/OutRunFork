@@ -21,15 +21,17 @@
 import Foundation
 import UIKit
 
-class WorkoutCompletionBanner: ORBaseBanner {
+@MainActor
+class WorkoutCompletionActionView: UIView {
     
     private var handler: WorkoutCompletionActionHandler
     private var isConfirmingDiscard = false
+    var onFinish: (() -> Void)?
     
     private let titleLabel: UILabel = UILabel(
         text: LS["NewWorkoutCompletion.Title"],
         textColor: .primaryColor,
-        font: .preferredFont(forTextStyle: .title2, weight: .bold),
+        font: .preferredFont(forTextStyle: .headline, weight: .bold),
         numberOfLines: 1
     )
     
@@ -79,17 +81,13 @@ class WorkoutCompletionBanner: ORBaseBanner {
     }()
     
     @objc private func saveWorkout() {
-        
         handler.saveWorkout()
-        self.dismiss()
-        
+        onFinish?()
     }
     
     @objc private func continueWorkout() {
-        
         handler.continueWorkout()
-        self.dismiss()
-        
+        onFinish?()
     }
     
     @objc private func discardWorkout() {
@@ -102,23 +100,25 @@ class WorkoutCompletionBanner: ORBaseBanner {
         }
 
         handler.discardWorkout()
-        self.dismiss()
-        
+        onFinish?()
     }
     
     init(handler: WorkoutCompletionActionHandler) {
         
         self.handler = handler
         
-        super.init(isDismissable: false)
+        super.init(frame: .zero)
         
         let spacing = 10
         let buttonHeight = 40
-        
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(saveButton)
-        contentView.addSubview(continueButton)
-        contentView.addSubview(discardButton)
+
+        titleLabel.adjustsFontSizeToFitWidth = true
+        titleLabel.minimumScaleFactor = 0.75
+
+        addSubview(titleLabel)
+        addSubview(saveButton)
+        addSubview(continueButton)
+        addSubview(discardButton)
         
         titleLabel.snp.makeConstraints { (make) in
             make.top.left.right.equalToSuperview()
@@ -147,12 +147,6 @@ class WorkoutCompletionBanner: ORBaseBanner {
         self.saveButton.addTarget(self, action: #selector(saveWorkout), for: .touchUpInside)
         self.continueButton.addTarget(self, action: #selector(continueWorkout), for: .touchUpInside)
         self.discardButton.addTarget(self, action: #selector(discardWorkout), for: .touchUpInside)
-        
-        onDismiss = { banner in
-            
-            self.saveWorkout()
-            
-        }
         
     }
     

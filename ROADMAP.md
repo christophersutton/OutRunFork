@@ -8,7 +8,7 @@ _None right now._
 
 ## Display / polish
 
-- **Workout detail charts y-axis** — charts need to zoom to real y values instead of always starting at `0`.
+_None right now._
 
 ## Design
 
@@ -20,8 +20,7 @@ _None right now._
 
 ## UX flow
 
-- **Rework "stop workout" confirmation**
-  - Move the confirmation dialog into the main bottom area instead of a new floating element at the top.
+_None right now._
 
 ## Port to Wavelength
 
@@ -31,6 +30,8 @@ _None right now._
 
 ## Done
 
+- **Workout detail charts y-axis** — charts now use a padded data-driven y-axis range instead of always starting at `0`.
+- **Rework "stop workout" confirmation** — moved the stop/save/continue/discard confirmation into the main bottom workout controls instead of showing a floating top banner.
 - **Workout selector broken** — restored the New Workout bottom-left workout type picker.
 - **Apple Health import broken** — wired Settings back to the existing Apple Health import list.
 - **Decimal point in main list** — main timeline distances now show one decimal place for miles/km (e.g. `3.1 mi` instead of `3 mi`).

@@ -59,6 +59,12 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
     let speedView = LabelledDataView(title: UserPreferences.displayRollingSpeed.value ? LS["Workout.AverageSpeed"] : LS["Workout.CurrentSpeed"])
     let paceView = LabelledDataView(title: UserPreferences.displayRollingSpeed.value ? LS["Workout.RollingPace"] : LS["Workout.TotalPace"])
     let caloriesView: LabelledDataView = LabelledDataView(title: LS["Workout.BurnedCalories"])
+    private var actionButtonHeightConstraint: Constraint?
+
+    private enum ActionButtonLayout {
+        static let collapsedHeight: CGFloat = 50
+        static let completionHeight: CGFloat = 128
+    }
 
     /// Either the speed or the pace tile depending on the user's unit preference; this is the
     /// one actually shown on screen, and therefore the one the live speed value is bound to.
@@ -141,9 +147,8 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
     @objc override func close() {
         
         if builder.status.isActiveStatus {
-            
-            var alert: UIAlertController?
-            alert = UIAlertController(
+
+            let alert = UIAlertController(
                 title: LS["NewWorkoutViewController.Cancel.Error.Recording.Title"],
                 message: LS["NewWorkoutViewController.Cancel.Error.Recording.Message"],
                 preferredStyle: .alert,
@@ -153,19 +158,8 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
                         style: .destructive,
                         action: { [weak self] _ in
                             guard let self else { return }
-                            // Ask the builder to stop & persist, then dismiss once it reports `.ready`.
+                            // The save/discard/continue controls now live in this controller's bottom area.
                             self.suggestNewStatusSubject.send(.ready)
-                            self.statusSubject
-                                .receive(on: DispatchQueue.main)
-                                .dropFirst()
-                                .filter { $0 == .ready }
-                                .first()
-                                .sink { [weak self] _ in
-                                    alert?.dismiss(animated: true) {
-                                        self?.dismiss(animated: true)
-                                    }
-                                }
-                                .store(in: &self.closeCancellables)
                         }
                     ),
                     (
@@ -175,7 +169,7 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
                     )
                 ]
             )
-            self.present(alert!, animated: true)
+            self.present(alert, animated: true)
             
         } else {
             self.dismiss(animated: true) {
@@ -289,17 +283,15 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
             make.left.equalTo(containerView.snp.left).offset(spacing)
             make.right.equalTo(containerView.snp.right).offset(-spacing)
             make.bottom.equalTo(safeLayout).offset(-spacing)
-            make.height.equalTo(50)
+            actionButtonHeightConstraint = make.height.equalTo(ActionButtonLayout.collapsedHeight).constraint
         }
     }
 
     // MARK: - Bindings
 
     private var cancellables = Set<AnyCancellable>()
-    private var closeCancellables = Set<AnyCancellable>()
     private let suggestNewStatusSubject = PassthroughSubject<WorkoutBuilder.Status, Never>()
     private lazy var workoutTypeSubject = CurrentValueSubject<Workout.WorkoutType, Never>(initialWorkoutType)
-    private let statusSubject = CurrentValueSubject<WorkoutBuilder.Status, Never>(.waiting)
 
     private func prepareBindings() {
 
@@ -324,7 +316,6 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
             .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
                 self?.apply(status: status)
-                self?.statusSubject.send(status)
             }
             .store(in: &cancellables)
         liveStats.currentLocation
@@ -345,7 +336,30 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
             workoutType: workoutTypeSubject.eraseToAnyPublisher(),
             statusSuggestion: suggestNewStatusSubject.eraseToAnyPublisher()
         )
-        _ = builder.tranform(input)
+        let output = builder.tranform(input)
+        output.completionActionHandler
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] handler in
+                self?.showCompletionActions(handler: handler)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func showCompletionActions(handler: WorkoutCompletionActionHandler) {
+        actionButtonHeightConstraint?.update(offset: ActionButtonLayout.completionHeight)
+        actionButton.showCompletionActions(handler: handler) { [weak self] in
+            self?.hideCompletionActions()
+        }
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    private func hideCompletionActions() {
+        actionButtonHeightConstraint?.update(offset: ActionButtonLayout.collapsedHeight)
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
+        }
     }
 
     private func apply(status: WorkoutBuilder.Status) {

@@ -44,18 +44,6 @@ class WorkoutCompletionActionHandler {
     }
     
     /**
-     Displays a dismissable view over the current `UIWindow` that gives the user options on what to do with the just recorded workout, saving it automatically after a certain time
-     */
-    @MainActor
-    public func display() {
-        
-        let banner = WorkoutCompletionBanner(handler: self)
-        
-        banner.show(queuePosition: .front)
-        
-    }
-    
-    /**
      Saves the workout if no other action was already performed
      */
     public func saveWorkout() {

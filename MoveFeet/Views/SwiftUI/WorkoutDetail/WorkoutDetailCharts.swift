@@ -25,6 +25,40 @@ struct WorkoutLineChartView: View {
         points.filter { $0.x.isFinite && $0.y.isFinite }
     }
 
+    private var yScaleDomain: ClosedRange<Double> {
+        let values = finitePoints.map(\.y)
+        guard let minY = values.min(), let maxY = values.max() else {
+            return 0 ... 1
+        }
+
+        guard minY != maxY else {
+            let padding = minY == 0 ? 1 : max(abs(minY) * 0.05, 0.01)
+            return paddedDomain(minY: minY, maxY: maxY, padding: padding)
+        }
+
+        return paddedDomain(minY: minY, maxY: maxY, padding: (maxY - minY) * 0.08)
+    }
+
+    private func paddedDomain(minY: Double, maxY: Double, padding: Double) -> ClosedRange<Double> {
+        let lower: Double
+        if minY > 0 {
+            lower = max(minY - padding, minY * 0.5)
+        } else if minY == 0 {
+            lower = 0
+        } else {
+            lower = minY - padding
+        }
+
+        let upper: Double
+        if maxY < 0 {
+            upper = min(maxY + padding, maxY * 0.5)
+        } else {
+            upper = maxY + padding
+        }
+
+        return lower ... upper
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(unitSymbol.isEmpty ? title : "\(title) (\(unitSymbol))")
@@ -41,6 +75,7 @@ struct WorkoutLineChartView: View {
                     .foregroundStyle(color)
                 }
             }
+            .chartYScale(domain: yScaleDomain)
             .chartYAxis {
                 AxisMarks(position: .trailing)
             }
