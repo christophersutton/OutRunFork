@@ -8,7 +8,7 @@ import XCTest
 final class CoreStorePresentationSnapshotTests: XCTestCase {
 
     func testEditWorkoutSeedingUsesRawValueSnapshotInsteadOfLiveCoreStoreAccessors() throws {
-        let stateSource = try readSource(at: "OutRun/Views/SwiftUI/EditWorkout/EditWorkoutState.swift")
+        let stateSource = try readSource(at: "MoveFeet/Views/SwiftUI/EditWorkout/EditWorkoutState.swift")
         let initBody = try body(named: "init(mode: Mode)", in: stateSource)
 
         XCTAssertFalse(
@@ -28,7 +28,7 @@ final class CoreStorePresentationSnapshotTests: XCTestCase {
     }
 
     func testWorkoutEditSnapshotReadsRawStorageAndAsyncQueryAPIExists() throws {
-        let snapshotSource = try readSource(at: "OutRun/Models/Data/Snapshots/WorkoutEditSnapshot.swift")
+        let snapshotSource = try readSource(at: "MoveFeet/Models/Data/Snapshots/WorkoutEditSnapshot.swift")
         let snapshotInit = try body(named: "init(_ workout: Workout)", in: snapshotSource)
 
         for rawField in ["_workoutType", "_distance", "_steps", "_startDate", "_endDate", "_isRace", "_comment"] {
@@ -44,7 +44,7 @@ final class CoreStorePresentationSnapshotTests: XCTestCase {
             )
         }
 
-        let querySource = try readSource(at: "OutRun/Models/Data/DataManager+Query.swift")
+        let querySource = try readSource(at: "MoveFeet/Models/Data/DataManager+Query.swift")
         let queryBody = try body(named: "public static func workoutEditSnapshot(for id: UUID?) async -> WorkoutEditSnapshot?", in: querySource)
         XCTAssertTrue(queryBody.contains("dataStack.perform"))
         XCTAssertTrue(queryBody.contains("queryObject(from: id, transaction: transaction)"))

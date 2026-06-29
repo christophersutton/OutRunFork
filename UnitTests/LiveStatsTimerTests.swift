@@ -23,7 +23,7 @@ import XCTest
 final class LiveStatsTimerTests: XCTestCase {
 
     func testDurationAndBurnedEnergyUseOneSharedAutoconnectedCommonModeTimer() throws {
-        let sourcePath = "OutRun/Models/Workout/WorkoutBuilder/Components/LiveStats.swift"
+        let sourcePath = "MoveFeet/Models/Workout/WorkoutBuilder/Components/LiveStats.swift"
         let source = try readSource(at: sourcePath).removingLineComments()
         let timerPublishCalls = source.matches(of: "Timer.publish(")
 

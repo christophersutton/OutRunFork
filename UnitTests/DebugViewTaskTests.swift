@@ -27,7 +27,7 @@ final class DebugViewTaskTests: XCTestCase {
             .deletingLastPathComponent()
             .deletingLastPathComponent()
 
-        let debugViewURL = repositoryRoot.appendingPathComponent("OutRun/Views/SwiftUI/Debug/DebugView.swift")
+        let debugViewURL = repositoryRoot.appendingPathComponent("MoveFeet/Views/SwiftUI/Debug/DebugView.swift")
         let debugViewSource = try String(contentsOf: debugViewURL, encoding: .utf8)
         let loadValuesSource = try sourceSlice(
             in: debugViewSource,
@@ -55,7 +55,7 @@ final class DebugViewTaskTests: XCTestCase {
             "DebugView.loadValues() should update cache UI from DataManager.DebugSummary.cacheDiskSize."
         )
 
-        let dataManagerURL = repositoryRoot.appendingPathComponent("OutRun/Models/Data/DataManager+Query.swift")
+        let dataManagerURL = repositoryRoot.appendingPathComponent("MoveFeet/Models/Data/DataManager+Query.swift")
         let dataManagerSource = try String(contentsOf: dataManagerURL, encoding: .utf8)
         let debugSummarySource = try sourceSlice(
             in: dataManagerSource,

@@ -55,7 +55,7 @@ final class PolicyManagerNetworkingTests: XCTestCase {
         let repositoryRoot = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
-        let sourceURL = repositoryRoot.appendingPathComponent("OutRun/Models/Settings/PolicyManager.swift")
+        let sourceURL = repositoryRoot.appendingPathComponent("MoveFeet/Models/Settings/PolicyManager.swift")
         return try String(contentsOf: sourceURL, encoding: .utf8)
     }
 }

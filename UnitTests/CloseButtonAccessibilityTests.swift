@@ -14,14 +14,14 @@ final class CloseButtonAccessibilityTests: XCTestCase {
 
         let cases = [
             (
-                "OutRun/Views/SwiftUI/WorkoutDetail/WorkoutDetailView.swift",
+                "MoveFeet/Views/SwiftUI/WorkoutDetail/WorkoutDetailView.swift",
                 #"""
                     Button { dismiss() } label: { Image(systemName: "xmark") }
                         .accessibilityLabel(Text(LS["Close"]))
 """#
             ),
             (
-                "OutRun/Views/SwiftUI/Debug/DebugView.swift",
+                "MoveFeet/Views/SwiftUI/Debug/DebugView.swift",
                 #"""
                     Button {
                         dismiss()
@@ -32,7 +32,7 @@ final class CloseButtonAccessibilityTests: XCTestCase {
 """#
             ),
             (
-                "OutRun/Views/SwiftUI/PolicyView.swift",
+                "MoveFeet/Views/SwiftUI/PolicyView.swift",
                 #"""
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
@@ -42,7 +42,7 @@ final class CloseButtonAccessibilityTests: XCTestCase {
 """#
             ),
             (
-                "OutRun/Views/SwiftUI/ChangelogView.swift",
+                "MoveFeet/Views/SwiftUI/ChangelogView.swift",
                 #"""
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")

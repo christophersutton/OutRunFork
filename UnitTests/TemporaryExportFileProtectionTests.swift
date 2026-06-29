@@ -5,12 +5,12 @@
 
 import Foundation
 import XCTest
-@testable import OutRun
+@testable import MoveFeet
 
 final class TemporaryExportFileProtectionTests: XCTestCase {
 
     func testBackupCreationUsesProtectedTemporaryExportWrite() throws {
-        let source = try readSource(at: "OutRun/Models/Data/Backup/BackupManager.swift")
+        let source = try readSource(at: "MoveFeet/Models/Data/Backup/BackupManager.swift")
         let body = try functionBody(named: "createBackup(for inclusionType: DataInclusionType", in: source)
 
         XCTAssertTrue(
@@ -24,7 +24,7 @@ final class TemporaryExportFileProtectionTests: XCTestCase {
     }
 
     func testGPXExportProtectsAndExcludesGeneratedURLsBeforeSharing() throws {
-        let source = try readSource(at: "OutRun/Models/Data/ExportManager.swift")
+        let source = try readSource(at: "MoveFeet/Models/Data/ExportManager.swift")
         let body = try functionBody(named: "createGPXFiles(for inclusionType: DataInclusionType", in: source)
 
         XCTAssertTrue(
@@ -42,7 +42,7 @@ final class TemporaryExportFileProtectionTests: XCTestCase {
     }
 
     func testSettingsBackupCleanupUsesLoggedDoCatchInsteadOfTryOptional() throws {
-        let source = try readSource(at: "OutRun/Views/SwiftUI/Settings/SettingsView.swift")
+        let source = try readSource(at: "MoveFeet/Views/SwiftUI/Settings/SettingsView.swift")
 
         XCTAssertFalse(
             source.contains("try? FileManager.default.removeItem(at: url)"),
@@ -57,7 +57,7 @@ final class TemporaryExportFileProtectionTests: XCTestCase {
     }
 
     func testTemporaryExportProtectionHelperAppliesProtectionAndBackupExclusion() throws {
-        let source = try readSource(at: "OutRun/Models/Data/TemporaryExportFileProtection.swift")
+        let source = try readSource(at: "MoveFeet/Models/Data/TemporaryExportFileProtection.swift")
 
         XCTAssertTrue(
             source.contains(".completeFileProtectionUntilFirstUserAuthentication"),

@@ -21,7 +21,7 @@
 import CoreStore
 import SQLite3
 import XCTest
-@testable import OutRun
+@testable import MoveFeet
 
 final class MigrationTests: XCTestCase {
 
@@ -52,7 +52,7 @@ final class MigrationTests: XCTestCase {
     func testV4HeartRateMigrationDoesNotForceCastLegacyValues() throws {
         let unitTestsDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
         let repositoryRoot = unitTestsDirectory.deletingLastPathComponent()
-        let v4SourceURL = repositoryRoot.appendingPathComponent("OutRun/Models/Data/DataModels/Versions/OutRunV4.swift")
+        let v4SourceURL = repositoryRoot.appendingPathComponent("MoveFeet/Models/Data/DataModels/Versions/OutRunV4.swift")
         let v4Source = try String(contentsOf: v4SourceURL, encoding: .utf8)
         let forceCast = "as" + "! Double"
 
@@ -122,7 +122,7 @@ final class MigrationTests: XCTestCase {
     private func tempV3Source() throws -> String {
         let unitTestsDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
         let repositoryRoot = unitTestsDirectory.deletingLastPathComponent()
-        let tempV3SourceURL = repositoryRoot.appendingPathComponent("OutRun/Models/Data/Temp/Versions/TempV3.swift")
+        let tempV3SourceURL = repositoryRoot.appendingPathComponent("MoveFeet/Models/Data/Temp/Versions/TempV3.swift")
         return try String(contentsOf: tempV3SourceURL, encoding: .utf8)
     }
 

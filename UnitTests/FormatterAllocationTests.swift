@@ -5,72 +5,72 @@
 
 import Foundation
 import XCTest
-@testable import OutRun
+@testable import MoveFeet
 
 final class FormatterAllocationTests: XCTestCase {
 
     func testFormattingHelpersDoNotAllocateFormattersInsideHotFunctions() throws {
-        let dateSource = try readSource(at: "OutRun/Models/Formatting/CustomDateFormatting.swift")
+        let dateSource = try readSource(at: "MoveFeet/Models/Formatting/CustomDateFormatting.swift")
         try assertFunctionBody(
             named: "dayString(forDate date: Date)",
             in: dateSource,
-            path: "OutRun/Models/Formatting/CustomDateFormatting.swift",
+            path: "MoveFeet/Models/Formatting/CustomDateFormatting.swift",
             excludes: ["DateFormatter()"]
         )
         try assertFunctionBody(
             named: "dayString(forIdentifier dayIdentifier: String)",
             in: dateSource,
-            path: "OutRun/Models/Formatting/CustomDateFormatting.swift",
+            path: "MoveFeet/Models/Formatting/CustomDateFormatting.swift",
             excludes: ["DateFormatter()"]
         )
         try assertFunctionBody(
             named: "dayIdentifier(forDate date: Date)",
             in: dateSource,
-            path: "OutRun/Models/Formatting/CustomDateFormatting.swift",
+            path: "MoveFeet/Models/Formatting/CustomDateFormatting.swift",
             excludes: ["DateFormatter()"]
         )
         try assertFunctionBody(
             named: "timeString(forDate date: Date)",
             in: dateSource,
-            path: "OutRun/Models/Formatting/CustomDateFormatting.swift",
+            path: "MoveFeet/Models/Formatting/CustomDateFormatting.swift",
             excludes: ["DateFormatter()"]
         )
         try assertFunctionBody(
             named: "backupTimeCode(forDate date: Date)",
             in: dateSource,
-            path: "OutRun/Models/Formatting/CustomDateFormatting.swift",
+            path: "MoveFeet/Models/Formatting/CustomDateFormatting.swift",
             excludes: ["DateFormatter()"]
         )
         try assertFunctionBody(
             named: "fullDateString(forDate date: Date)",
             in: dateSource,
-            path: "OutRun/Models/Formatting/CustomDateFormatting.swift",
+            path: "MoveFeet/Models/Formatting/CustomDateFormatting.swift",
             excludes: ["DateFormatter()"]
         )
 
-        let measurementSource = try readSource(at: "OutRun/Models/Formatting/CustomMeasurementFormatting.swift")
+        let measurementSource = try readSource(at: "MoveFeet/Models/Formatting/CustomMeasurementFormatting.swift")
         try assertFunctionBody(
             named: "string(forMeasurement measurement: NSMeasurement",
             in: measurementSource,
-            path: "OutRun/Models/Formatting/CustomMeasurementFormatting.swift",
+            path: "MoveFeet/Models/Formatting/CustomMeasurementFormatting.swift",
             excludes: ["MeasurementFormatter()", "DateComponentsFormatter()"]
         )
         try assertFunctionBody(
             named: "string(forUnit unit: Unit",
             in: measurementSource,
-            path: "OutRun/Models/Formatting/CustomMeasurementFormatting.swift",
+            path: "MoveFeet/Models/Formatting/CustomMeasurementFormatting.swift",
             excludes: ["MeasurementFormatter()", "DateComponentsFormatter()"]
         )
 
-        let settingsSource = try readSource(at: "OutRun/Views/SwiftUI/Settings/SettingsView.swift")
+        let settingsSource = try readSource(at: "MoveFeet/Views/SwiftUI/Settings/SettingsView.swift")
         XCTAssertFalse(settingsSource.contains("MeasurementFormatter().string(from:"))
 
-        let unitSelectionSource = try readSource(at: "OutRun/Views/SwiftUI/Settings/UnitSelectionView.swift")
+        let unitSelectionSource = try readSource(at: "MoveFeet/Views/SwiftUI/Settings/UnitSelectionView.swift")
         XCTAssertFalse(unitSelectionSource.contains("MeasurementFormatter().string(from:"))
     }
 
     func testFixedDateFormatsUseImmutablePOSIXConfiguration() throws {
-        let source = try readSource(at: "OutRun/Models/Formatting/CustomDateFormatting.swift")
+        let source = try readSource(at: "MoveFeet/Models/Formatting/CustomDateFormatting.swift")
 
         XCTAssertTrue(
             source.contains("static let dayIDFormat = \"yyyyMMdd\""),

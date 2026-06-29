@@ -8,7 +8,7 @@ import XCTest
 final class MapImageRenderSuspensionTests: XCTestCase {
 
     func testMapImageManagerUsesLogicalSuspensionInsteadOfRawDispatchQueueSuspension() throws {
-        let source = try sourceFile(relativePath: "OutRun/Models/Workout/MapManagement/Images/WorkoutMapImageManager.swift")
+        let source = try sourceFile(relativePath: "MoveFeet/Models/Workout/MapManagement/Images/WorkoutMapImageManager.swift")
         let suspendBody = try methodBody(named: "suspendRenderProcess", in: source)
         let resumeBody = try methodBody(named: "resumeRenderProcess", in: source)
 
@@ -47,7 +47,7 @@ final class MapImageRenderSuspensionTests: XCTestCase {
     }
 
     func testScenePhaseCommentNoLongerDocumentsRawDispatchResumeTrapAvoidance() throws {
-        let source = try sourceFile(relativePath: "OutRun/Views/SwiftUI/Shell/OutRunApp.swift")
+        let source = try sourceFile(relativePath: "MoveFeet/Views/SwiftUI/Shell/MoveFeetApp.swift")
 
         XCTAssertFalse(source.contains("raw, unbalanced `dispatch_suspend`/`dispatch_resume`"))
         XCTAssertFalse(source.contains("over-resume the queues and trap"))

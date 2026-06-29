@@ -4,7 +4,7 @@
 //
 
 import XCTest
-@testable import OutRun
+@testable import MoveFeet
 
 final class WorkoutMapImageRequestTests: XCTestCase {
 
@@ -133,7 +133,7 @@ final class WorkoutMapImageRequestTests: XCTestCase {
     }
 
     func testTimelineRowDoesNotRequestMapImageWithoutRouteData() throws {
-        let source = try mapTimelineSource(relativePath: "OutRun/Views/SwiftUI/Timeline/WorkoutTimelineRow.swift")
+        let source = try mapTimelineSource(relativePath: "MoveFeet/Views/SwiftUI/Timeline/WorkoutTimelineRow.swift")
         guard let guardRange = source.range(of: "guard snapshot.hasRouteData else { return }") else {
             XCTFail("WorkoutTimelineRow.loadRouteImageIfNeeded() must return before requesting map images when snapshot.hasRouteData is false.")
             return
@@ -199,7 +199,7 @@ final class WorkoutMapImageRequestTests: XCTestCase {
     }
 
     func testDarkModeRequeueUsesCoalescingPath() throws {
-        let source = try mapTimelineSource(relativePath: "OutRun/Models/Workout/MapManagement/Images/WorkoutMapImageManager.swift")
+        let source = try mapTimelineSource(relativePath: "MoveFeet/Models/Workout/MapManagement/Images/WorkoutMapImageManager.swift")
 
         XCTAssertFalse(
             source.contains("self.requestQueue.add(updatedAppearanceRequest)"),
@@ -213,10 +213,10 @@ final class WorkoutMapImageRequestTests: XCTestCase {
 
     func testMapImageAndTimelineSizingDoNotReadScreenBounds() throws {
         let checkedFiles = [
-            "OutRun/Views/SwiftUI/Timeline/WorkoutTimelineRow.swift",
-            "OutRun/Models/Workout/MapManagement/Images/WorkoutMapImageSize.swift",
-            "OutRun/Models/Workout/MapManagement/Images/WorkoutMapImageRequest.swift",
-            "OutRun/Models/Workout/MapManagement/Images/WorkoutMapImageManager.swift"
+            "MoveFeet/Views/SwiftUI/Timeline/WorkoutTimelineRow.swift",
+            "MoveFeet/Models/Workout/MapManagement/Images/WorkoutMapImageSize.swift",
+            "MoveFeet/Models/Workout/MapManagement/Images/WorkoutMapImageRequest.swift",
+            "MoveFeet/Models/Workout/MapManagement/Images/WorkoutMapImageManager.swift"
         ]
 
         for relativePath in checkedFiles {

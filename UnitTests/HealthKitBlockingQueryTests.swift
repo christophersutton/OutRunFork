@@ -26,7 +26,7 @@ final class HealthKitBlockingQueryTests: XCTestCase {
         let unitTestsDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
         let repositoryRoot = unitTestsDirectory.deletingLastPathComponent()
 
-        let dataManagerURL = repositoryRoot.appendingPathComponent("OutRun/Models/Data/DataManager+Query.swift")
+        let dataManagerURL = repositoryRoot.appendingPathComponent("MoveFeet/Models/Data/DataManager+Query.swift")
         let dataManagerSource = try String(contentsOf: dataManagerURL)
         let healthUUIDQuery = try XCTUnwrap(
             dataManagerSource.range(of: "public static func queryExistingHealthUUIDs")
@@ -43,8 +43,8 @@ final class HealthKitBlockingQueryTests: XCTestCase {
         )
 
         let healthKitCallSites = [
-            "OutRun/Models/HealthKit/HealthStoreManager+Observer.swift",
-            "OutRun/Models/HealthKit/HealthStoreManager+Query.swift"
+            "MoveFeet/Models/HealthKit/HealthStoreManager+Observer.swift",
+            "MoveFeet/Models/HealthKit/HealthStoreManager+Query.swift"
         ]
 
         for sourceFile in healthKitCallSites {
@@ -62,9 +62,9 @@ final class HealthKitBlockingQueryTests: XCTestCase {
         let unitTestsDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
         let repositoryRoot = unitTestsDirectory.deletingLastPathComponent()
         let sourceFiles = [
-            "OutRun/Models/HealthKit/HealthStoreManager.swift",
-            "OutRun/Models/HealthKit/HealthStoreManager+Query.swift",
-            "OutRun/Models/HealthKit/HealthStoreManager+Observer.swift"
+            "MoveFeet/Models/HealthKit/HealthStoreManager.swift",
+            "MoveFeet/Models/HealthKit/HealthStoreManager+Query.swift",
+            "MoveFeet/Models/HealthKit/HealthStoreManager+Observer.swift"
         ]
         let blockingWaitCall = "." + "wait" + "()"
 

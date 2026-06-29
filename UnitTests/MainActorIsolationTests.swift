@@ -24,14 +24,14 @@ final class MainActorIsolationTests: XCTestCase {
 
     func testUIKitClassesDeclareMainActorIsolation() throws {
         let targets = [
-            UIKitType(path: "OutRun/Views/Data/LoadingView.swift", declaration: "class LoadingView: UIView"),
-            UIKitType(path: "OutRun/Views/Data/LabelledDataView.swift", declaration: "class LabelledDataView: UIView"),
-            UIKitType(path: "OutRun/Views/Workout/WorkoutActionView.swift", declaration: "class WorkoutActionView: UIView"),
-            UIKitType(path: "OutRun/Views/Workout/WorkoutBuilderTypeView.swift", declaration: "class WorkoutBuilderTypeView: UIView"),
-            UIKitType(path: "OutRun/Views/Workout/WorkoutBuilderReadinessIndicationView.swift", declaration: "class WorkoutBuilderReadinessIndicationView: UIView"),
-            UIKitType(path: "OutRun/Views/Workout/NewWorkoutControllerActionButton.swift", declaration: "class NewWorkoutControllerActionButton: UIView"),
-            UIKitType(path: "OutRun/Views/ORBanner/ORBaseBanner.swift", declaration: "public class ORBaseBanner: UIView"),
-            UIKitType(path: "OutRun/Controllers/General/DetailViewController.swift", declaration: "class DetailViewController: UIViewController")
+            UIKitType(path: "MoveFeet/Views/Data/LoadingView.swift", declaration: "class LoadingView: UIView"),
+            UIKitType(path: "MoveFeet/Views/Data/LabelledDataView.swift", declaration: "class LabelledDataView: UIView"),
+            UIKitType(path: "MoveFeet/Views/Workout/WorkoutActionView.swift", declaration: "class WorkoutActionView: UIView"),
+            UIKitType(path: "MoveFeet/Views/Workout/WorkoutBuilderTypeView.swift", declaration: "class WorkoutBuilderTypeView: UIView"),
+            UIKitType(path: "MoveFeet/Views/Workout/WorkoutBuilderReadinessIndicationView.swift", declaration: "class WorkoutBuilderReadinessIndicationView: UIView"),
+            UIKitType(path: "MoveFeet/Views/Workout/NewWorkoutControllerActionButton.swift", declaration: "class NewWorkoutControllerActionButton: UIView"),
+            UIKitType(path: "MoveFeet/Views/ORBanner/ORBaseBanner.swift", declaration: "public class ORBaseBanner: UIView"),
+            UIKitType(path: "MoveFeet/Controllers/General/DetailViewController.swift", declaration: "class DetailViewController: UIViewController")
         ]
 
         for target in targets {

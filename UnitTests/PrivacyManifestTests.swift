@@ -25,7 +25,7 @@ final class PrivacyManifestTests: XCTestCase {
     func testAppPrivacyManifestDeclaresRequiredReasonAPIs() throws {
         let manifestURL = try XCTUnwrap(
             Bundle.main.url(forResource: "PrivacyInfo", withExtension: "xcprivacy"),
-            "OutRun.app must include PrivacyInfo.xcprivacy in its bundle resources."
+            "MoveFeet.app must include PrivacyInfo.xcprivacy in its bundle resources."
         )
 
         let data = try Data(contentsOf: manifestURL)

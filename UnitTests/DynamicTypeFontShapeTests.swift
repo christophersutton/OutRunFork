@@ -17,10 +17,10 @@ final class DynamicTypeFontShapeTests: XCTestCase {
         let allowedFixedSwiftUIFontSnippets: [String: Set<String>] = [
             // Visual brand/date treatments keep explicit sizes because they are composite display text;
             // normal labels/body copy and workout stats must use Dynamic Type.
-            "OutRun/Views/SwiftUI/Onboarding/OnboardingView.swift": [
+            "MoveFeet/Views/SwiftUI/Onboarding/OnboardingView.swift": [
                 ".font(Font.system(size: 42, weight: .heavy).lowercaseSmallCaps())"
             ],
-            "OutRun/Views/SwiftUI/WorkoutDetail/WorkoutDetailView.swift": [
+            "MoveFeet/Views/SwiftUI/WorkoutDetail/WorkoutDetailView.swift": [
                 // Symbol-only affordances: these are icon sizes, not text fonts.
                 ".font(.system(size: 34, weight: .semibold))",
                 ".font(.system(size: 15, weight: .bold))"

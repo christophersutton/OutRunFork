@@ -20,7 +20,7 @@
 
 import CoreLocation
 import XCTest
-@testable import OutRun
+@testable import MoveFeet
 
 final class LocationAccuracyPreferenceTests: XCTestCase {
 

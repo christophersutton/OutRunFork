@@ -4,7 +4,7 @@
 //
 
 import XCTest
-@testable import OutRun
+@testable import MoveFeet
 
 final class CoreStoreTempConversionThreadingTests: XCTestCase {
 
@@ -28,7 +28,7 @@ final class CoreStoreTempConversionThreadingTests: XCTestCase {
         let cases: [(type: String, path: String, forbiddenAccessors: [String])] = [
             (
                 type: "Workout",
-                path: "OutRun/Models/Data/DataModels/Workout.swift",
+                path: "MoveFeet/Models/Data/DataModels/Workout.swift",
                 forbiddenAccessors: [
                     "uuid", "workoutType", "distance", "steps", "startDate", "endDate",
                     "burnedEnergy", "isRace", "comment", "isUserModified", "healthKitUUID",
@@ -38,22 +38,22 @@ final class CoreStoreTempConversionThreadingTests: XCTestCase {
             ),
             (
                 type: "Event",
-                path: "OutRun/Models/Data/DataModels/Event.swift",
+                path: "MoveFeet/Models/Data/DataModels/Event.swift",
                 forbiddenAccessors: ["uuid", "title", "comment", "startDate", "endDate", "workouts"]
             ),
             (
                 type: "WorkoutPause",
-                path: "OutRun/Models/Data/DataModels/WorkoutPause.swift",
+                path: "MoveFeet/Models/Data/DataModels/WorkoutPause.swift",
                 forbiddenAccessors: ["uuid", "startDate", "endDate", "pauseType"]
             ),
             (
                 type: "WorkoutEvent",
-                path: "OutRun/Models/Data/DataModels/WorkoutEvent.swift",
+                path: "MoveFeet/Models/Data/DataModels/WorkoutEvent.swift",
                 forbiddenAccessors: ["uuid", "eventType", "timestamp"]
             ),
             (
                 type: "WorkoutRouteDataSample",
-                path: "OutRun/Models/Data/DataModels/WorkoutRouteDataSample.swift",
+                path: "MoveFeet/Models/Data/DataModels/WorkoutRouteDataSample.swift",
                 forbiddenAccessors: [
                     "uuid", "timestamp", "latitude", "longitude", "altitude",
                     "horizontalAccuracy", "verticalAccuracy", "speed", "direction"
@@ -61,7 +61,7 @@ final class CoreStoreTempConversionThreadingTests: XCTestCase {
             ),
             (
                 type: "WorkoutHeartRateDataSample",
-                path: "OutRun/Models/Data/DataModels/WorkoutHeartRateDataSample.swift",
+                path: "MoveFeet/Models/Data/DataModels/WorkoutHeartRateDataSample.swift",
                 forbiddenAccessors: ["uuid", "heartRate", "timestamp"]
             )
         ]

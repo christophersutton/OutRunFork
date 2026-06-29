@@ -19,7 +19,7 @@
 //
 
 import XCTest
-@testable import OutRun
+@testable import MoveFeet
 
 final class ApplicationStateObservationTests: XCTestCase {
 
@@ -55,7 +55,7 @@ final class ApplicationStateObservationTests: XCTestCase {
             .deletingLastPathComponent()
             .deletingLastPathComponent()
 
-        let observationURL = repositoryRoot.appendingPathComponent("OutRun/Models/ApplicationStateObservation.swift")
+        let observationURL = repositoryRoot.appendingPathComponent("MoveFeet/Models/ApplicationStateObservation.swift")
         let source = try String(contentsOf: observationURL, encoding: .utf8)
         let stateChangedSource = try sourceSlice(
             in: source,
