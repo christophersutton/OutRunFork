@@ -17,6 +17,10 @@ import CoreStore
 @Observable
 final class WorkoutStore {
 
+    /// Shared timeline store kept alive across tab switches so reselecting Timeline does not synchronously
+    /// rebuild every workout snapshot on the main actor.
+    static let shared = WorkoutStore()
+
     /// The current list of workouts as immutable value snapshots, newest first (mirrors the monitor's sort).
     private(set) var workouts: [WorkoutSnapshot] = []
 

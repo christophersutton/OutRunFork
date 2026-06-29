@@ -89,6 +89,7 @@ struct WorkoutDetailView: View {
                 }
                 .padding(20)
             }
+            .contentMargins(.bottom, 12, for: .scrollContent)
         } else if loadFailed {
             ContentUnavailableView(
                 LS["WorkoutViewController.LoadingError"],

@@ -3,12 +3,12 @@
 //
 //  OutRun
 //
-//  The custom SwiftUI tab shell replacing the UIKit `TabBarController`. SwiftUI's `TabView` exposes no tab
-//  bar to inject the in-bar floating "+" button into, so the shell is hand-built: the selected tab's content
-//  with a custom bottom bar (Timeline / Settings) hosted as a bottom safe-area inset, and a centered, raised
-//  "+" button as a non-clipped bottom overlay. The "+" tap starts a live recording; long-press offers the
-//  workout-type / manual-entry alert. A hidden 10-tap on the bar (while on Settings) opens the developer
-//  `DebugView`.
+//  The SwiftUI tab shell replacing the UIKit `TabBarController`. On iOS 26 and newer it uses the native
+//  `TabView`/`Tab` API with a search-role "+" action, so the add affordance is not a persistent tab. Older
+//  systems keep the hand-built bottom bar: Timeline / Settings live in a safe-area inset, and the centered,
+//  raised "+" overlay remains fully tappable. The legacy "+" tap starts a live recording; long-press offers
+//  the workout-type / manual-entry alert. A hidden 10-tap on the legacy bar (while on Settings) opens the
+//  developer `DebugView`.
 //
 //  Live recording (`NewWorkoutViewController`), the full-screen route map, and the manual-create flow are
 //  presented imperatively on the front-most view controller — preserving their existing self-dismiss
@@ -20,15 +20,24 @@ import UIKit
 
 struct MainTabView: View {
 
-    enum Tab {
+    enum AppTab: Hashable {
         case timeline
+        case newWorkout
         case settings
     }
 
-    @State private var selection: Tab = .timeline
+    @State private var selection: AppTab = .timeline
     @State private var showDebug = false
 
     var body: some View {
+        if #available(iOS 26.0, *) {
+            nativeTabView
+        } else {
+            legacyTabView
+        }
+    }
+
+    private var legacyTabView: some View {
         content
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 CustomTabBar(
@@ -52,12 +61,53 @@ struct MainTabView: View {
             }
     }
 
+    @available(iOS 26.0, *)
+    private var nativeTabView: some View {
+        TabView(selection: tabSelection) {
+            Tab(LS["TabBar.Timeline"], image: "timeline 23px", value: AppTab.timeline) {
+                tabContent(WorkoutTimelineView())
+            }
+
+            Tab(value: AppTab.newWorkout, role: .search) {
+                Color.clear
+            } label: {
+                Label(LS["NewWorkoutAlert.Title"], systemImage: "plus")
+            }
+
+            Tab(LS["TabBar.Settings"], image: "settings 23px", value: AppTab.settings) {
+                tabContent(SettingsView())
+            }
+        }
+        .sheet(isPresented: $showDebug) {
+            DebugView()
+        }
+    }
+
+    private var tabSelection: Binding<AppTab> {
+        Binding(
+            get: { selection },
+            set: { newSelection in
+                if newSelection == .newWorkout {
+                    presentRecording(initialType: nil)
+                } else {
+                    selection = newSelection
+                }
+            }
+        )
+    }
+
     @ViewBuilder
     private var content: some View {
         switch selection {
-        case .timeline: WorkoutTimelineView()
-        case .settings: SettingsView()
+        case .timeline: tabContent(WorkoutTimelineView())
+        case .newWorkout: EmptyView()
+        case .settings: tabContent(SettingsView())
         }
+    }
+
+    private func tabContent<Content: View>(_ content: Content) -> some View {
+        content
+            .contentMargins(.bottom, 12, for: .scrollContent)
     }
 
     // MARK: - Imperative UIKit presentations (front-most VC presenter)
@@ -109,7 +159,7 @@ struct MainTabView: View {
 
 private struct CustomTabBar: View {
 
-    @Binding var selection: MainTabView.Tab
+    @Binding var selection: MainTabView.AppTab
     let onDebugGesture: () -> Void
 
     var body: some View {
@@ -143,7 +193,7 @@ private struct CustomTabBar: View {
         .background(Color.orBackground)
     }
 
-    private func tabButton(_ tab: MainTabView.Tab, title: String, image: UIImage, selectedImage: UIImage) -> some View {
+    private func tabButton(_ tab: MainTabView.AppTab, title: String, image: UIImage, selectedImage: UIImage) -> some View {
         let isSelected = selection == tab
         return Button {
             selection = tab

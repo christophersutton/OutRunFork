@@ -131,8 +131,9 @@ struct WorkoutTimelineRow: View {
 
     /// Active duration in natural scale (e.g. "2 min", "1 hr 5 min").
     static func durationString(_ snapshot: WorkoutSnapshot) -> String {
-        CustomMeasurementFormatting.string(
-            forMeasurement: NSMeasurement(doubleValue: snapshot.activeDuration, unit: UnitDuration.seconds),
+        let roundedSeconds = (max(snapshot.activeDuration, 0) / 60).rounded() * 60
+        return CustomMeasurementFormatting.string(
+            forMeasurement: NSMeasurement(doubleValue: roundedSeconds, unit: UnitDuration.seconds),
             type: .time,
             rounding: .wholeNumbers
         )

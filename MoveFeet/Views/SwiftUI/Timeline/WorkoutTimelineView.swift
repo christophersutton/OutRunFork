@@ -18,7 +18,7 @@ import SwiftUI
 
 struct WorkoutTimelineView: View {
 
-    @State private var store = WorkoutStore()
+    @State private var store = WorkoutStore.shared
 
     // In-memory sort/filter (not persisted — matches the legacy controller).
     @State private var sortField: TimelineSortField = .date
@@ -97,7 +97,6 @@ struct WorkoutTimelineView: View {
                             }
                         }
                     }
-                    .padding(.bottom, 40)
                 }
             }
         }
