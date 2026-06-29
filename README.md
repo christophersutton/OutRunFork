@@ -19,6 +19,10 @@ OutRun has a rich feature set centered around customisation and privacy. The lis
 - Fully customise the recording process
 - Synchronise with Apple Health
 
+## Development
+
+For repeatable physical iPhone builds, use [`scripts/install-movefeet.sh`](scripts/install-movefeet.sh). It builds `MoveFeet.xcworkspace`, installs `com.wcc.movefeet` on the paired phone, launches it, and verifies the running process. See [`docs/DEVICE_INSTALL.md`](docs/DEVICE_INSTALL.md) for the exact device defaults and retry workflow.
+
 ## Contribution
 
 You want to make this app even better? No problem! There are lots of ways you can contribute even if you cannot code yourself:
