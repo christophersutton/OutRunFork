@@ -31,7 +31,6 @@ struct WorkoutSnapshot: Identifiable, Hashable {
     let isUserModified: Bool
     let healthKitUUID: UUID?
     let dayIdentifier: String
-    let hasRouteData: Bool
 
     /// Builds a snapshot by reading every needed field from a CoreStore `Workout`.
     /// MUST be called on the workout's designated queue (e.g. the main queue for `ListMonitor` objects,
@@ -55,6 +54,5 @@ struct WorkoutSnapshot: Identifiable, Hashable {
         self.isUserModified = workout._isUserModified.value
         self.healthKitUUID = workout._healthKitUUID.value
         self.dayIdentifier = workout._dayIdentifier.value
-        self.hasRouteData = workout._routeData.count > 0
     }
 }

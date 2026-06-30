@@ -23,6 +23,22 @@ import CoreStore
 import CoreLocation
 import HealthKit
 
+enum PerformanceDiagnostics {
+
+    static func mark() -> CFAbsoluteTime {
+        CFAbsoluteTimeGetCurrent()
+    }
+
+    static func log(_ label: String, since start: CFAbsoluteTime, details: String = "") {
+        #if DEBUG
+        let elapsed = (CFAbsoluteTimeGetCurrent() - start) * 1000
+        let formatted = String(format: "%.1f", elapsed)
+        let suffix = details.isEmpty ? "" : " \(details)"
+        print("[MoveFeetPerf] \(label) \(formatted)ms\(suffix)")
+        #endif
+    }
+}
+
 /// A structure holding static instances and methods for database management and manipulation
 struct DataManager {
     
@@ -167,6 +183,7 @@ struct DataManager {
         objects: [ORWorkoutInterface],
         completion: @escaping (_ success: Bool, _ error: DataManager.SaveMultipleError?, _ workouts: [Workout]) -> Void) {
         
+        let operationStartedAt = PerformanceDiagnostics.mark()
         let completion = safeClosure(from: completion)
         
         // filtering for Workout class and already saved
@@ -184,9 +201,22 @@ struct DataManager {
         
         dataStack.perform(asynchronous: { (transaction) -> [Workout] in
             
+            let transactionStartedAt = PerformanceDiagnostics.mark()
             var workouts = [Workout]()
+            var routeSampleCount = 0
+            var heartRateSampleCount = 0
+            var pauseCount = 0
+            var workoutEventCount = 0
             
             for object in validatedObjects {
+                let pauses = object.pauses
+                let workoutEvents = object.workoutEvents
+                let routeData = object.routeData
+                let heartRates = object.heartRates
+                pauseCount += pauses.count
+                workoutEventCount += workoutEvents.count
+                routeSampleCount += routeData.count
+                heartRateSampleCount += heartRates.count
                 
                 let workout = transaction.create(Into<Workout>())
                 workout._uuid .= object.uuid ?? UUID()
@@ -207,7 +237,7 @@ struct DataManager {
                 workout._pauseDuration .= object.pauseDuration
                 workout._dayIdentifier .= object.dayIdentifier
                 
-                for tempPause in object.pauses {
+                for tempPause in pauses {
                     let pause = transaction.create(Into<WorkoutPause>())
                     pause._uuid .= tempPause.uuid ?? UUID()
                     pause._startDate .= tempPause.startDate
@@ -217,7 +247,7 @@ struct DataManager {
                     pause._workout .= workout
                 }
                 
-                for tempWorkoutEvent in object.workoutEvents {
+                for tempWorkoutEvent in workoutEvents {
                     let workoutEvent = transaction.create(Into<WorkoutEvent>())
                     workoutEvent._uuid .= tempWorkoutEvent.uuid ?? UUID()
                     workoutEvent._eventType .= tempWorkoutEvent.eventType
@@ -226,7 +256,7 @@ struct DataManager {
                     workoutEvent._workout .= workout
                 }
 
-                for tempSample in object.routeData {
+                for tempSample in routeData {
                     let routeSample = transaction.create(Into<WorkoutRouteDataSample>())
                     routeSample._uuid .= tempSample.uuid ?? UUID()
                     routeSample._latitude .= tempSample.latitude
@@ -241,7 +271,7 @@ struct DataManager {
                     routeSample._workout .= workout
                 }
                 
-                for tempSample in object.heartRates {
+                for tempSample in heartRates {
                     let heartRateSample = transaction.create(Into<WorkoutHeartRateDataSample>())
                     heartRateSample._uuid .= tempSample.uuid ?? UUID()
                     heartRateSample._heartRate .= tempSample.heartRate
@@ -254,9 +284,19 @@ struct DataManager {
                 
             }
             
+            PerformanceDiagnostics.log(
+                "DataManager.saveWorkouts.transaction",
+                since: transactionStartedAt,
+                details: "workouts=\(validatedObjects.count) routeSamples=\(routeSampleCount) heartRateSamples=\(heartRateSampleCount) pauses=\(pauseCount) events=\(workoutEventCount)"
+            )
             return workouts
             
         }) { (result) in
+            PerformanceDiagnostics.log(
+                "DataManager.saveWorkouts.total",
+                since: operationStartedAt,
+                details: "requested=\(objects.count) filtered=\(filteredObjects.count) validated=\(validatedObjects.count)"
+            )
             switch result {
             case .success(let tempWorkouts):
                 let workouts = dataStack.fetchExisting(tempWorkouts)
@@ -644,6 +684,7 @@ struct DataManager {
      */
     public static func deleteWorkout(id: UUID?, completion: @escaping (_ success: Bool, _ error: DataManager.DeleteError?) -> Void) {
 
+        let operationStartedAt = PerformanceDiagnostics.mark()
         let completion = safeClosure(from: completion)
 
         guard let id else {
@@ -652,6 +693,15 @@ struct DataManager {
         }
 
         dataStack.perform(asynchronous: { (transaction) -> Bool in
+
+            let transactionStartedAt = PerformanceDiagnostics.mark()
+            defer {
+                PerformanceDiagnostics.log(
+                    "DataManager.deleteWorkout.transaction",
+                    since: transactionStartedAt,
+                    details: "id=\(id)"
+                )
+            }
 
             guard let workout: Workout = queryObject(from: id, transaction: transaction) else {
                 return false
@@ -662,6 +712,11 @@ struct DataManager {
 
         }) { (result) in
 
+            PerformanceDiagnostics.log(
+                "DataManager.deleteWorkout.total",
+                since: operationStartedAt,
+                details: "id=\(id)"
+            )
             switch result {
             case .success(let didDelete):
                 completion(didDelete, didDelete ? nil : .notSaved)

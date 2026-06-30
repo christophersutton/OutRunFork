@@ -140,8 +140,6 @@ struct WorkoutTimelineRow: View {
     }
 
     private func loadRouteImageIfNeeded() {
-        guard snapshot.hasRouteData else { return }
-
         let requestedSize = routeThumbnailSize
         guard requestedSize.width > 0, requestedSize.height > 0 else { return }
         guard requestedRouteThumbnailSize != requestedSize else { return }

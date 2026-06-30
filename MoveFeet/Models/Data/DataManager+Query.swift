@@ -213,9 +213,19 @@ extension DataManager {
      */
     public static func workoutDetailSnapshot(for id: UUID?) async -> WorkoutDetailSnapshot? {
 
-        await withCheckedContinuation { continuation in
+        let operationStartedAt = PerformanceDiagnostics.mark()
+        return await withCheckedContinuation { continuation in
 
             dataStack.perform(asynchronous: { (transaction) -> WorkoutDetailSnapshot? in
+
+                let transactionStartedAt = PerformanceDiagnostics.mark()
+                defer {
+                    PerformanceDiagnostics.log(
+                        "DataManager.workoutDetailSnapshot.transaction",
+                        since: transactionStartedAt,
+                        details: "id=\(id?.uuidString ?? "nil")"
+                    )
+                }
 
                 guard let workout: Workout = queryObject(from: id, transaction: transaction) else {
                     return nil
@@ -223,6 +233,11 @@ extension DataManager {
                 return WorkoutDetailSnapshot(workout)
 
             }) { (result) in
+                PerformanceDiagnostics.log(
+                    "DataManager.workoutDetailSnapshot.total",
+                    since: operationStartedAt,
+                    details: "id=\(id?.uuidString ?? "nil")"
+                )
                 switch result {
                 case .success(let snapshot):
                     continuation.resume(returning: snapshot)

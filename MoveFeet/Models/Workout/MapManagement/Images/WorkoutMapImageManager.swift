@@ -125,9 +125,19 @@ enum WorkoutMapImageManager {
         internalStatus = .running
         runningRequest = request
         
+        let requestStartedAt = PerformanceDiagnostics.mark()
+        let requestDetails = "id=\(request.workoutUUID?.uuidString ?? "nil") size=\(request.size)"
         let imageUsesDarkMode = request.usesDarkAppearance
+        let complete: (Bool, UIImage?, (() -> Void)?) -> Void = { success, image, followUp in
+            PerformanceDiagnostics.log(
+                "WorkoutMapImageManager.execute",
+                since: requestStartedAt,
+                details: "\(requestDetails) success=\(success)"
+            )
+            finish(request, success: success, image: image, followedBy: followUp)
+        }
         let completion: (Bool, UIImage?) -> Void = { (success, image) in
-            finish(request, success: success, image: image)
+            complete(success, image, nil)
         }
         
         guard let uuid = request.workoutUUID else {
@@ -135,14 +145,26 @@ enum WorkoutMapImageManager {
             return
         }
         
+        let routeQueryStartedAt = PerformanceDiagnostics.mark()
         DataManager.asyncLocationCoordinatesQuery(
             for: ORPrimitive<Workout>(uuid: uuid),
             completion: { error, coordinates in
+                PerformanceDiagnostics.log(
+                    "WorkoutMapImageManager.routeQuery",
+                    since: routeQueryStartedAt,
+                    details: "\(requestDetails) points=\(coordinates.count) error=\(String(describing: error))"
+                )
                 if error == nil {
                     
                     processQueue.async {
                         
+                        let renderStartedAt = PerformanceDiagnostics.mark()
                         guard coordinates.count > 1 else {
+                            PerformanceDiagnostics.log(
+                                "WorkoutMapImageManager.renderSkipped",
+                                since: renderStartedAt,
+                                details: "\(requestDetails) points=\(coordinates.count)"
+                            )
                             completion(false, nil)
                             return
                         }
@@ -162,6 +184,11 @@ enum WorkoutMapImageManager {
                         let snapshotter = MKMapSnapshotter(options: mapSnapshotOptions)
                         
                         snapshotter.start(with: snapshotQueue, completionHandler: { snapshot, error in
+                            PerformanceDiagnostics.log(
+                                "WorkoutMapImageManager.render",
+                                since: renderStartedAt,
+                                details: "\(requestDetails) points=\(coordinates.count) simplified=\(renderCoordinates.count) success=\(error == nil && snapshot != nil)"
+                            )
                             if error == nil, let snapshot = snapshot {
                                 let image = snapshot.image
                                 let format = UIGraphicsImageRendererFormat()
@@ -187,7 +214,7 @@ enum WorkoutMapImageManager {
                                     CustomImageCache.mapImageCache.set(mapImage: resultImage, for: id)
                                 }
                                 
-                                finish(request, success: true, image: resultImage) {
+                                complete(true, resultImage, {
                                     if Config.isDarkModeEnabled != imageUsesDarkMode {
                                         let updatedAppearanceRequest = WorkoutMapImageRequest(
                                             workoutUUID: request.workoutUUID,
@@ -204,7 +231,7 @@ enum WorkoutMapImageManager {
                                             updatedAppearanceRequest.completion(false, nil)
                                         }
                                     }
-                                }
+                                })
                                 
                             } else {
                                 completion(false, nil)
