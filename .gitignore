@@ -86,3 +86,7 @@ iOSInjectionProject/
 # AppCode
 .idea/*
 !.idea/codeStyles/*
+
+# Local agent tooling
+.agents/
+.claude/
