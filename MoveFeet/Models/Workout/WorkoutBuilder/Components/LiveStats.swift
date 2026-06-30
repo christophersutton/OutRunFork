@@ -67,8 +67,10 @@ class LiveStats: WorkoutBuilderComponent {
     }
     
     /// Maps to duration output.
-    private var durationMapper: (Date, Date?, [TempWorkoutPause], Date?) -> String? = { _, startDate, pauses, endDate in
-        guard let startDate = startDate else { return nil }
+    private var durationMapper: (Date, Date?, [TempWorkoutPause], Date?) -> String = { _, startDate, pauses, endDate in
+        guard let startDate = startDate else {
+            return StatsHelper.string(for: 0, unit: UnitDuration.seconds, type: .clock)
+        }
         let duration = startDate.distance(to: endDate ?? Date()) - pauses.map { $0.duration }.reduce(0, +)
         return StatsHelper.string(for: duration, unit: UnitDuration.seconds, type: .clock)
     }
@@ -81,8 +83,10 @@ class LiveStats: WorkoutBuilderComponent {
     }
     
     /// Binds location updates and the current start date to this component for speed calculation
-    private var speedMapper: ([TempWorkoutRouteDataSample], Date?, [TempWorkoutPause], Double) -> String? = { locations, startDate, pauses, distance in
-        guard let startDate = startDate else { return nil }
+    private var speedMapper: ([TempWorkoutRouteDataSample], Date?, [TempWorkoutPause], Double) -> String = { locations, startDate, pauses, distance in
+        guard let startDate = startDate else {
+            return StatsHelper.string(for: 0, unit: UnitSpeed.standardUnit)
+        }
 
         let speed: Double?
         
@@ -103,7 +107,9 @@ class LiveStats: WorkoutBuilderComponent {
                 lastLocation = location.clLocation
             }
             
-            guard tempDuration > 0, tempDistance > 0 else { return nil }
+            guard tempDuration > 0, tempDistance > 0 else {
+                return StatsHelper.string(for: 0, unit: UnitSpeed.standardUnit)
+            }
             speed = tempDistance / tempDuration
             
         } else { // average
@@ -151,7 +157,7 @@ class LiveStats: WorkoutBuilderComponent {
         
         output.locations
             .combineLatest(output.startDate, output.pauses, output.distance)
-            .compactMap(speedMapper)
+            .map(speedMapper)
             .sink(receiveValue: speedRelay.accept)
             .store(in: &cancellables)
         
@@ -165,7 +171,7 @@ class LiveStats: WorkoutBuilderComponent {
 
         liveStatsTimer
             .combineLatest(output.startDate, output.pauses, output.endDate)
-            .compactMap(durationMapper)
+            .map(durationMapper)
             .sink(receiveValue: durationRelay.accept)
             .store(in: &cancellables)
 

@@ -77,7 +77,7 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
         case .start:
             self.suggestNewStatusSubject.send(.recording)
         case .stop:
-            self.suggestNewStatusSubject.send(.ready)
+            self.suggestNewStatusSubject.send(.reviewing)
         case .pauseOrContinue:
             self.suggestNewStatusSubject.send(.paused)
         }
@@ -160,7 +160,7 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
                         action: { [weak self] _ in
                             guard let self else { return }
                             // The save/discard/continue controls now live in this controller's bottom area.
-                            self.suggestNewStatusSubject.send(.ready)
+                            self.suggestNewStatusSubject.send(.reviewing)
                         }
                     ),
                     (
@@ -172,6 +172,8 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
             )
             self.present(alert, animated: true)
             
+        } else if builder.status.isReviewingStatus {
+            return
         } else {
             self.dismiss(animated: true) {
                 print("[NewWorkout] dismissed")
@@ -373,7 +375,7 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
     private func apply(status: WorkoutBuilder.Status) {
         readinessIndicatorView.status = status
         actionButton.transition(to: status)
-        isModalInPresentation = status.isActiveStatus
+        isModalInPresentation = status.isActiveStatus || status.isReviewingStatus
     }
 
     private func updateCamera(with sample: TempWorkoutRouteDataSample?) {

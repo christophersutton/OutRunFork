@@ -60,6 +60,10 @@ public class AltitudeManagement: WorkoutBuilderComponent {
         return { [weak self] value in
             guard let self else { return }
             let (oldStatus, newStatus) = value
+            if newStatus.isReviewingStatus {
+                self.altimeter.stopRelativeAltitudeUpdates()
+                return
+            }
             guard newStatus.isActiveStatus && !(oldStatus?.isActiveStatus ?? false) else { return }
             self.startUpdating()
         }

@@ -142,6 +142,7 @@
 "WorkoutBuilder.Status.Recording" = "recording";
 "WorkoutBuilder.Status.Paused" = "paused";
 "WorkoutBuilder.Status.AutoPaused" = "auto paused";
+"WorkoutBuilder.Status.Reviewing" = "review";
 "WorkoutMapController.Headline" = "Your Route";
 "Settings" = "Settings";
 "Settings.UserSettings" = "User Settings";

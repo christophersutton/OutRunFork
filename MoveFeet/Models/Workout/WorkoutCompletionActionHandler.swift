@@ -22,12 +22,69 @@ import Foundation
 import UIKit
 
 class WorkoutCompletionActionHandler {
+
+    private typealias SnapshotProvider = () -> TempWorkout?
+
+    private final class SnapshotResolver: @unchecked Sendable {
+        private let snapshotProvider: SnapshotProvider
+        private let lock = NSLock()
+        private var snapshot: TempWorkout?
+
+        init(snapshot: TempWorkout) {
+            self.snapshotProvider = { Optional(snapshot) }
+            self.snapshot = snapshot
+        }
+
+        init(snapshotProvider: @escaping SnapshotProvider) {
+            self.snapshotProvider = snapshotProvider
+        }
+
+        func resolveSnapshot() -> TempWorkout? {
+            lock.lock()
+            defer { lock.unlock() }
+
+            if let snapshot = snapshot {
+                return snapshot
+            }
+
+            guard let snapshot = snapshotProvider() else {
+                return nil
+            }
+
+            self.snapshot = snapshot
+            return snapshot
+        }
+    }
+
+    private final class BuilderReference: @unchecked Sendable {
+        private weak var builder: WorkoutBuilder?
+
+        init(builder: WorkoutBuilder) {
+            self.builder = builder
+        }
+
+        @MainActor
+        func continueWorkout(from snapshot: TempWorkout) -> Bool {
+            guard let builder else {
+                return false
+            }
+
+            builder.continueWorkout(from: snapshot)
+            return true
+        }
+
+        @MainActor
+        func discardWorkout() {
+            builder?.discardWorkout()
+        }
+    }
     
-    /// A `TempWorkout` object to be saved, discarded or handed back to a `WorkoutBuilder` by this class
-    private var snapshot: TempWorkout
+    /// Builds the `TempWorkout` only for actions that actually need it.
+    private let snapshotResolver: SnapshotResolver
+    private let snapshotQueue = DispatchQueue(label: "outrun.workout.completion.snapshot", qos: .userInitiated)
     
     /// A weak reference to a `WorkoutBuilder` to continue the workout
-    private weak var builder: WorkoutBuilder?
+    private let builderReference: BuilderReference
     
     /// If `true` the `WorkoutCompletionActionHandler` did already perform an action, so no additional action should be taken
     private var didPerformAction: Bool = false
@@ -39,15 +96,32 @@ class WorkoutCompletionActionHandler {
      */
     public init(snapshot: TempWorkout, builder: WorkoutBuilder) {
         
-        self.snapshot = snapshot
-        self.builder = builder
+        self.snapshotResolver = SnapshotResolver(snapshot: snapshot)
+        self.builderReference = BuilderReference(builder: builder)
         
+    }
+
+    public init(snapshotProvider: @escaping () -> TempWorkout?, builder: WorkoutBuilder) {
+
+        self.snapshotResolver = SnapshotResolver(snapshotProvider: snapshotProvider)
+        self.builderReference = BuilderReference(builder: builder)
+
+    }
+
+    private static func showBanner(messageKey: String) {
+
+        Task { @MainActor in
+            let banner = TextBanner(text: LS[messageKey])
+            banner.duration = 5
+            banner.show()
+        }
+
     }
     
     /**
      Saves the workout if no other action was already performed
      */
-    public func saveWorkout() {
+    public func saveWorkout(completion: @escaping (Bool) -> Void = { _ in }) {
         
         guard !self.didPerformAction else {
             return
@@ -55,16 +129,36 @@ class WorkoutCompletionActionHandler {
         
         self.didPerformAction = true
         onFinalAction?()
-        
-        DataManager.saveWorkout(object: self.snapshot) { (success, error, workout) in
-            
-            Task { @MainActor in
-                let banner = TextBanner(text: LS["NewWorkoutCompletion.Save." + (success ? "Success" : "Error")])
-                banner.duration = 5
-                banner.show()
 
-                guard success else { return }
-                UIApplication.shared.topMostViewController?.dismiss(animated: true)
+        let snapshotResolver = self.snapshotResolver
+        snapshotQueue.async {
+
+            guard let snapshot = snapshotResolver.resolveSnapshot() else {
+                Self.showBanner(messageKey: "NewWorkoutCompletion.Save.Error")
+                Task { @MainActor in
+                    self.didPerformAction = false
+                    completion(false)
+                }
+                return
+            }
+
+            DataManager.saveWorkout(object: snapshot) { (success, error, workout) in
+
+                Task { @MainActor in
+                    if !success {
+                        self.didPerformAction = false
+                    }
+
+                    let banner = TextBanner(text: LS["NewWorkoutCompletion.Save." + (success ? "Success" : "Error")])
+                    banner.duration = 5
+                    banner.show()
+
+                    completion(success)
+
+                    guard success else { return }
+                    UIApplication.shared.topMostViewController?.dismiss(animated: true)
+                }
+
             }
             
         }
@@ -82,26 +176,35 @@ class WorkoutCompletionActionHandler {
         }
         
         self.didPerformAction = true
-        
-        var messageKey = ""
-        
-        if let builder = self.builder {
-            
-            builder.continueWorkout(from: self.snapshot)
-            
-            messageKey = "NewWorkoutCompletion.Continue.Success"
-            
-        } else {
-            
-            messageKey = "NewWorkoutCompletion.Continue.Error"
-            
+
+        let snapshotResolver = self.snapshotResolver
+        let builderReference = self.builderReference
+        snapshotQueue.async {
+
+            guard let snapshot = snapshotResolver.resolveSnapshot() else {
+                Self.showBanner(messageKey: "NewWorkoutCompletion.Continue.Error")
+                return
+            }
+
+            Task { @MainActor in
+                var messageKey = ""
+
+                if builderReference.continueWorkout(from: snapshot) {
+
+                    messageKey = "NewWorkoutCompletion.Continue.Success"
+
+                } else {
+
+                    messageKey = "NewWorkoutCompletion.Continue.Error"
+
+                }
+
+                let banner = TextBanner(text: LS[messageKey])
+                banner.duration = 5
+                banner.show()
+            }
+
         }
-        
-        let banner = TextBanner(text: LS[messageKey])
-        banner.duration = 5
-        banner.show()
-        
-        print("Imagine the workout would continue")
         
     }
     
@@ -116,6 +219,10 @@ class WorkoutCompletionActionHandler {
         
         self.didPerformAction = true
         onFinalAction?()
+        let builderReference = self.builderReference
+        Task { @MainActor in
+            builderReference.discardWorkout()
+        }
         
     }
     

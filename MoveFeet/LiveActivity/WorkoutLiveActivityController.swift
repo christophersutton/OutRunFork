@@ -8,18 +8,20 @@ import Combine
 import Foundation
 
 final class WorkoutLiveActivityController {
+    private static let staleInterval: TimeInterval = 90
+
     private var activity: Activity<WorkoutActivityAttributes>?
     private var cancellables = Set<AnyCancellable>()
 
     private var status: WorkoutBuilder.Status = .waiting
-    private var workoutType: Workout.WorkoutType = Workout.WorkoutType(rawValue: UserPreferences.standardWorkoutType.value)
     private var startDate: Date?
     private var pauses: [TempWorkoutPause] = []
     private var activePauseStart: Date?
-    private var distanceText = StatsHelper.string(for: 0, unit: UserPreferences.distanceMeasurementType.safeValue)
-    private var paceOrSpeedText = StatsHelper.string(for: 0, unit: UserPreferences.speedMeasurementType.safeValue)
-    private var caloriesText = StatsHelper.string(for: 0, unit: UserPreferences.energyMeasurementType.safeValue)
-    private let usesPace = UserPreferences.speedMeasurementType.safeValue.isPaceUnit
+    private var distanceText = CustomMeasurementFormatting.string(
+        forMeasurement: NSMeasurement(doubleValue: 0, unit: UnitLength.standardUnit),
+        type: .distance,
+        rounding: .oneDigit
+    )
     private var lastContentState: WorkoutActivityAttributes.ContentState?
 
     init(builder: WorkoutBuilder, liveStats: LiveStats) {
@@ -29,17 +31,14 @@ final class WorkoutLiveActivityController {
     private func bind(builder: WorkoutBuilder, liveStats: LiveStats) {
         let output = builder.tranform(WorkoutBuilder.Input())
 
-        output.workoutType
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] workoutType in
-                self?.workoutType = workoutType
-            }
-            .store(in: &cancellables)
-
         output.startDate
             .receive(on: DispatchQueue.main)
             .sink { [weak self] startDate in
-                self?.startDate = startDate
+                guard let self else { return }
+                self.startDate = startDate
+                if startDate != nil, self.status == .recording, self.activity == nil {
+                    self.startActivityIfPossible(reason: "startDate")
+                }
             }
             .store(in: &cancellables)
 
@@ -50,14 +49,21 @@ final class WorkoutLiveActivityController {
             }
             .store(in: &cancellables)
 
-        liveStats.distance
-            .combineLatest(liveStats.speed, liveStats.burnedEnergy)
+        output.distance
+            .map(Self.distanceString)
+            .removeDuplicates()
             .throttle(for: .seconds(2), scheduler: DispatchQueue.main, latest: true)
-            .sink { [weak self] distance, speed, calories in
+            .sink { [weak self] distance in
                 guard let self else { return }
                 self.distanceText = distance
-                self.paceOrSpeedText = speed
-                self.caloriesText = calories
+                self.updateActivityIfNeeded()
+            }
+            .store(in: &cancellables)
+
+        liveStats.duration
+            .throttle(for: .seconds(30), scheduler: DispatchQueue.main, latest: true)
+            .sink { [weak self] _ in
+                guard let self, self.status == .recording else { return }
                 self.updateActivityIfNeeded()
             }
             .store(in: &cancellables)
@@ -72,7 +78,7 @@ final class WorkoutLiveActivityController {
 
     func end() {
         guard let activity else { return }
-        let content = ActivityContent(state: lastContentState ?? contentState(status: status), staleDate: nil)
+        let content = activityContent(state: lastContentState ?? contentState(status: status), status: status)
         self.activity = nil
         Task {
             await activity.end(content, dismissalPolicy: .immediate)
@@ -92,66 +98,79 @@ final class WorkoutLiveActivityController {
         switch newStatus {
         case .recording:
             if activity == nil {
-                startActivityIfPossible()
+                startActivityIfPossible(reason: "status")
             } else {
                 updateActivityIfNeeded(status: newStatus)
             }
         case .paused, .autoPaused:
             updateActivityIfNeeded(status: newStatus)
-        case .ready:
+        case .reviewing:
             if oldStatus.isActiveStatus {
                 activePauseStart = Date()
                 updateActivityIfNeeded(status: newStatus)
             }
-        case .waiting:
+        case .ready, .waiting:
             break
         }
     }
 
-    private func startActivityIfPossible() {
-        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
-        guard activity == nil else { return }
-        guard startDate != nil else { return }
+    private func startActivityIfPossible(reason: String) {
+        let authInfo = ActivityAuthorizationInfo()
+        guard authInfo.areActivitiesEnabled else {
+            print("[WorkoutLiveActivityController] not starting activity (\(reason)): Live Activities are disabled")
+            return
+        }
+        guard activity == nil else {
+            print("[WorkoutLiveActivityController] not starting activity (\(reason)): activity already exists")
+            return
+        }
+        guard startDate != nil else {
+            print("[WorkoutLiveActivityController] not starting activity (\(reason)): missing start date")
+            return
+        }
 
-        let attributes = WorkoutActivityAttributes(
-            workoutTypeRawValue: workoutType.rawValue,
-            usesPace: usesPace
-        )
+        let attributes = WorkoutActivityAttributes()
         let state = contentState(status: .recording)
-        let content = ActivityContent(state: state, staleDate: nil)
+        let content = activityContent(state: state, status: .recording)
 
         do {
             activity = try Activity.request(attributes: attributes, content: content, pushType: nil)
             lastContentState = state
+            print("[WorkoutLiveActivityController] started activity (\(reason))")
         } catch {
-            print("[WorkoutLiveActivityController] failed to start activity: \(error)")
+            print("[WorkoutLiveActivityController] failed to start activity (\(reason)): \(error)")
         }
     }
 
     private func updateActivityIfNeeded(status overrideStatus: WorkoutBuilder.Status? = nil) {
         guard let activity else { return }
-        let state = contentState(status: overrideStatus ?? status)
+        let resolvedStatus = overrideStatus ?? status
+        let state = contentState(status: resolvedStatus)
         lastContentState = state
-        let content = ActivityContent(state: state, staleDate: nil)
+        let content = activityContent(state: state, status: resolvedStatus)
         Task {
             await activity.update(content)
         }
     }
 
     private func contentState(status: WorkoutBuilder.Status) -> WorkoutActivityAttributes.ContentState {
-        let isPaused = status.isPausedStatus || status == .ready
+        let isPaused = status.isPausedStatus || status.isReviewingStatus
         let pauseTime = isPaused ? (activePauseStart ?? Date()) : nil
 
         return WorkoutActivityAttributes.ContentState(
             timerStart: timerStart,
             pauseTime: pauseTime,
             isPaused: isPaused,
-            distanceText: distanceText,
-            paceOrSpeedText: paceOrSpeedText,
-            caloriesText: caloriesText,
-            statusTitle: status.title,
-            statusKind: status.liveActivityKind
+            distanceText: distanceText
         )
+    }
+
+    private func activityContent(
+        state: WorkoutActivityAttributes.ContentState,
+        status: WorkoutBuilder.Status
+    ) -> ActivityContent<WorkoutActivityAttributes.ContentState> {
+        let staleDate = status == .recording ? Date().addingTimeInterval(Self.staleInterval) : nil
+        return ActivityContent(state: state, staleDate: staleDate)
     }
 
     private var timerStart: Date {
@@ -159,16 +178,12 @@ final class WorkoutLiveActivityController {
         let completedPauseDuration = pauses.map { $0.duration }.reduce(0, +)
         return start.addingTimeInterval(completedPauseDuration)
     }
-}
 
-private extension WorkoutBuilder.Status {
-    var liveActivityKind: String {
-        switch self {
-        case .waiting: return "waiting"
-        case .ready: return "ready"
-        case .recording: return "recording"
-        case .paused: return "paused"
-        case .autoPaused: return "autoPaused"
-        }
+    private static func distanceString(for distance: Double) -> String {
+        CustomMeasurementFormatting.string(
+            forMeasurement: NSMeasurement(doubleValue: distance, unit: UnitLength.standardUnit),
+            type: .distance,
+            rounding: .oneDigit
+        )
     }
 }

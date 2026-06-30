@@ -158,6 +158,7 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
             guard let self else { return }
             self.locationsRelay.accept(snapshot?.routeData.map { .init(from: $0) } ?? [])
             self.distanceRelay.accept(snapshot?.distance ?? 0)
+            self.currentLocationRelay.accept(nil)
             self.startLocationUpdatesIfEnabled()
         }
     }

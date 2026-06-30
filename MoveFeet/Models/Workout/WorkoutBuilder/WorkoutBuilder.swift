@@ -91,24 +91,23 @@ public class WorkoutBuilder: ApplicationStateObserver {
                     self.lastPause = (type: pauseType, startingAt: self.lastPause?.startingAt ?? timestamp)
                 }
                 
-            case .ready: // stopping workout or indicating readiness
+            case .reviewing: // stopping workout for save/discard/continue review
                 guard self.startDateRelay.value != nil else { return }
                 
                 if let lastPause = self.lastPause {
                     let pause = TempWorkoutPause(uuid: nil, startDate: lastPause.startingAt, endDate: timestamp, pauseType: lastPause.type)
                     let pauses = self.pausesRelay.value + [pause]
                     self.pausesRelay.accept(pauses)
+                    self.lastPause = nil
                 }
                 
                 self.endDateRelay.accept(timestamp)
                 
-                if let snapshot = self.createSnapshot() {
-                    let actionHandler = WorkoutCompletionActionHandler(snapshot: snapshot, builder: self)
+                if let snapshotProvider = self.createSnapshotProvider() {
+                    let actionHandler = WorkoutCompletionActionHandler(snapshotProvider: snapshotProvider, builder: self)
                     self.completionActionHandlerRelay.accept(actionHandler)
                 }
-                
-                self.reset()
-                
+
             default: // ignore everything else
                 break
             }
@@ -245,7 +244,7 @@ public class WorkoutBuilder: ApplicationStateObserver {
             isUISuspended: uiSuspensionRelay.asBackgroundPublisher(),
             isSuspended: suspensionRelay.asBackgroundPublisher(),
             onReset: resetRelay.asBackgroundPublisher(),
-            completionActionHandler: completionActionHandlerRelay.asBackgroundPublisher()
+            completionActionHandler: completionActionHandlerRelay.eraseToAnyPublisher()
         )
     }
     
@@ -260,8 +259,7 @@ public class WorkoutBuilder: ApplicationStateObserver {
             case .ready(let preparingType):
                 self.preparingComponents.removeAll(where: { $0 == preparingType })
             }
-            let isReadyToRecord = self.preparingComponents.isEmpty
-            let newStatus: Status = isReadyToRecord ? .ready : .waiting
+            let newStatus = self.readinessStatus
             self.validateTransition(to: newStatus) { isValid in
                 guard isValid else { return }
                 self.statusRelay.accept(newStatus)
@@ -281,30 +279,60 @@ public class WorkoutBuilder: ApplicationStateObserver {
     }
     
     // MARK: - Create Snapshot
+
+    private struct SnapshotValues {
+        let workoutType: Workout.WorkoutType
+        let distance: Double
+        let steps: Int?
+        let startDate: Date
+        let endDate: Date
+        let routeData: [TempWorkoutRouteDataSample]
+        let pauses: [TempWorkoutPause]
+
+        func makeSnapshot() -> TempWorkout {
+            NewWorkout(
+                workoutType: workoutType,
+                distance: distance,
+                steps: steps,
+                startDate: startDate,
+                endDate: endDate,
+                isRace: false,
+                comment: nil,
+                isUserModified: false,
+                finishedRecording: true,
+                heartRates: [],
+                routeData: routeData,
+                pauses: pauses,
+                workoutEvents: []
+            )
+        }
+    }
     
     /**
-     Creates a snapshot of the workout currently under construction.
-     - returns: a `TempWorkout` constructed from the recorded data; will be `nil` when start or end cannot be determined
+     Captures the values needed to create a final snapshot later.
+     - returns: a provider that constructs the recorded workout; will be `nil` when start or end cannot be determined
      */
-    private func createSnapshot() -> TempWorkout? {
+    private func createSnapshotProvider() -> (() -> TempWorkout?)? {
         
         guard let start = startDateRelay.value, let end = endDateRelay.value else { return nil }
-        
-        return NewWorkout(
+
+        let values = SnapshotValues(
             workoutType: workoutTypeRelay.value,
             distance: distanceRelay.value,
             steps: stepsRelay.value,
             startDate: start,
             endDate: end,
-            isRace: false,
-            comment: nil,
-            isUserModified: false,
-            finishedRecording: true,
-            heartRates: [],
             routeData: locationsRelay.value,
-            pauses: pausesRelay.value,
-            workoutEvents: []
+            pauses: pausesRelay.value
         )
+
+        return {
+            values.makeSnapshot()
+        }
+    }
+
+    private var readinessStatus: Status {
+        preparingComponents.isEmpty ? .ready : .waiting
     }
     
     // MARK: - Preparation
@@ -312,11 +340,16 @@ public class WorkoutBuilder: ApplicationStateObserver {
     /// Resets the `WorkoutBuilder` and it's components and prepares them for another recording.
     private func reset() {
         
-        statusRelay.accept(.waiting)
         startDateRelay.accept(nil)
         endDateRelay.accept(nil)
+        lastPause = nil
         pausesRelay.accept([])
         resetRelay.accept(nil)
+        statusRelay.accept(readinessStatus)
+    }
+
+    public func discardWorkout() {
+        reset()
     }
     
     /**
@@ -350,11 +383,12 @@ public class WorkoutBuilder: ApplicationStateObserver {
         var isValid = false
         
         switch newStatus {
-        case .recording: isValid = oldStatus != .waiting
+        case .recording: isValid = [.ready, .paused, .autoPaused, .reviewing].contains(oldStatus)
         case .paused: isValid = [.recording, .autoPaused].contains(oldStatus)
         case .waiting: isValid = oldStatus == .ready
-        case .ready: isValid = true
+        case .ready: isValid = oldStatus == .waiting
         case .autoPaused: isValid = oldStatus == .recording
+        case .reviewing: isValid = oldStatus.isActiveStatus
         }
         
         closure(isValid)

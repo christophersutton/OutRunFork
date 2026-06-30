@@ -81,8 +81,11 @@ class WorkoutCompletionActionView: UIView {
     }()
     
     @objc private func saveWorkout() {
-        handler.saveWorkout()
-        onFinish?()
+        setSaving(true)
+        handler.saveWorkout { [weak self] success in
+            guard !success else { return }
+            self?.setSaving(false)
+        }
     }
     
     @objc private func continueWorkout() {
@@ -101,6 +104,16 @@ class WorkoutCompletionActionView: UIView {
 
         handler.discardWorkout()
         onFinish?()
+    }
+
+    private func setSaving(_ isSaving: Bool) {
+        saveButton.isEnabled = !isSaving
+        continueButton.isEnabled = !isSaving
+        discardButton.isEnabled = !isSaving
+        saveButton.setTitle(isSaving ? LS["Loading"] : LS["Save"], for: .normal)
+        saveButton.alpha = isSaving ? 0.65 : 1
+        continueButton.alpha = isSaving ? 0.45 : 1
+        discardButton.alpha = isSaving ? 0.45 : 1
     }
     
     init(handler: WorkoutCompletionActionHandler) {

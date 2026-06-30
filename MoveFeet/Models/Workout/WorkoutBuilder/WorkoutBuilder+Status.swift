@@ -38,6 +38,8 @@ extension WorkoutBuilder {
         case paused
         /// indicating that the `WorkoutBuilder` was paused by the automatic pause detection, it should act as if it was manually paused, which a user should still be able to do in this scenario
         case autoPaused
+        /// indicating that recording stopped and the completed workout is waiting for save/discard/continue
+        case reviewing
         
         /// a localised title for the status
         public var title: String {
@@ -52,6 +54,8 @@ extension WorkoutBuilder {
                 return LS["WorkoutBuilder.Status.Paused"]
             case .autoPaused:
                 return LS["WorkoutBuilder.Status.AutoPaused"]
+            case .reviewing:
+                return LS["WorkoutBuilder.Status.Reviewing"]
             }
             
         }
@@ -65,7 +69,7 @@ extension WorkoutBuilder {
                 return .green
             case .recording:
                 return .red
-            case .paused, .autoPaused:
+            case .paused, .autoPaused, .reviewing:
                 return .systemGray
             }
         }
@@ -78,6 +82,11 @@ extension WorkoutBuilder {
         /// a boolean indicating whether the status is an active status meaning data is recorded while one of these status is the current one
         public var isActiveStatus: Bool {
             return [.recording, .paused, .autoPaused].contains(self)
+        }
+
+        /// a boolean indicating whether the status is holding a stopped workout for save/discard/continue
+        public var isReviewingStatus: Bool {
+            return self == .reviewing
         }
     }
     

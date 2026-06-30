@@ -19,41 +19,39 @@ struct WorkoutActivityWidget: Widget {
         ActivityConfiguration(for: WorkoutActivityAttributes.self) { context in
             WorkoutActivityLockScreenView(context: context)
                 .activityBackgroundTint(Color(.secondarySystemBackground))
-                .activitySystemActionForegroundColor(.accentColor)
+                .activitySystemActionForegroundColor(.primary)
                 .widgetURL(URL(string: "movefeet://workout/active"))
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Label(context.attributes.workoutTypeName, systemImage: context.attributes.workoutTypeSymbol)
-                        .font(.headline)
-                        .foregroundStyle(context.state.statusColor)
+                    WorkoutActivityMetric(title: "Time") {
+                        WorkoutActivityTimerView(state: context.state)
+                    }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    WorkoutActivityTimerView(state: context.state)
-                        .font(.title3.monospacedDigit())
-                        .fontWeight(.semibold)
+                    WorkoutActivityMetric(title: "Distance", isStale: context.isStale) {
+                        Text(context.state.distanceText)
+                    }
                 }
                 DynamicIslandExpandedRegion(.center) {
-                    WorkoutActivityStatusPill(state: context.state)
-                }
-                DynamicIslandExpandedRegion(.bottom) {
-                    WorkoutActivityStatsRow(
-                        state: context.state,
-                        usesPace: context.attributes.usesPace
-                    )
+                    WorkoutActivityGlyph(isStale: context.isStale)
                 }
             } compactLeading: {
-                Image(systemName: context.attributes.workoutTypeSymbol)
-                    .foregroundStyle(context.state.statusColor)
+                WorkoutActivityCompactTimer(state: context.state)
             } compactTrailing: {
-                WorkoutActivityTimerView(state: context.state)
+                Text(context.state.distanceText)
                     .font(.caption.monospacedDigit())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .foregroundStyle(context.isStale ? .secondary : .primary)
             } minimal: {
-                Image(systemName: context.attributes.workoutTypeSymbol)
-                    .foregroundStyle(context.state.statusColor)
+                WorkoutActivityTimerView(state: context.state)
+                    .font(.caption2.monospacedDigit())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
             }
             .widgetURL(URL(string: "movefeet://workout/active"))
-            .keylineTint(context.state.statusColor)
+            .keylineTint(context.isStale ? .gray : .clear)
         }
     }
 }
@@ -62,24 +60,13 @@ private struct WorkoutActivityLockScreenView: View {
     let context: ActivityViewContext<WorkoutActivityAttributes>
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label(context.attributes.workoutTypeName, systemImage: context.attributes.workoutTypeSymbol)
-                    .font(.headline)
-                Spacer()
-                WorkoutActivityStatusPill(state: context.state)
+        HStack(alignment: .firstTextBaseline, spacing: 18) {
+            WorkoutActivityGlyph(isStale: context.isStale)
+            WorkoutActivityMetric(title: "Time") {
+                WorkoutActivityTimerView(state: context.state)
             }
-
-            HStack(alignment: .firstTextBaseline, spacing: 16) {
-                WorkoutActivityStat(title: "Duration") {
-                    WorkoutActivityTimerView(state: context.state)
-                }
-                WorkoutActivityStat(title: "Distance", value: context.state.distanceText)
-            }
-
-            HStack(alignment: .firstTextBaseline, spacing: 16) {
-                WorkoutActivityStat(title: context.attributes.usesPace ? "Pace" : "Speed", value: context.state.paceOrSpeedText)
-                WorkoutActivityStat(title: "Calories", value: context.state.caloriesText)
+            WorkoutActivityMetric(title: "Distance", isStale: context.isStale) {
+                Text(context.state.distanceText)
             }
         }
         .foregroundStyle(.primary)
@@ -87,42 +74,49 @@ private struct WorkoutActivityLockScreenView: View {
     }
 }
 
-private struct WorkoutActivityStatsRow: View {
-    let state: WorkoutActivityAttributes.ContentState
-    let usesPace: Bool
+private struct WorkoutActivityGlyph: View {
+    var isStale = false
 
     var body: some View {
-        HStack(spacing: 8) {
-            WorkoutActivityStat(title: "Distance", value: state.distanceText)
-            WorkoutActivityStat(title: usesPace ? "Pace" : "Speed", value: state.paceOrSpeedText)
-            WorkoutActivityStat(title: "Calories", value: state.caloriesText)
-        }
+        Image(systemName: "figure.run")
+            .font(.system(.title3, weight: .semibold))
+            .foregroundStyle(isStale ? Color.secondary : Color.primary)
+            .accessibilityHidden(true)
     }
 }
 
-private struct WorkoutActivityStat<Value: View>: View {
-    let title: String
-    @ViewBuilder var value: Value
-
-    init(title: String, @ViewBuilder value: () -> Value) {
-        self.title = title
-        self.value = value()
-    }
-
-    init(title: String, value: String) where Value == Text {
-        self.title = title
-        self.value = Text(value)
-    }
+private struct WorkoutActivityCompactTimer: View {
+    let state: WorkoutActivityAttributes.ContentState
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 3) {
+                Image(systemName: "figure.run")
+                    .font(.caption2.weight(.semibold))
+                    .accessibilityHidden(true)
+                WorkoutActivityTimerView(state: state)
+            }
+            WorkoutActivityTimerView(state: state)
+        }
+        .font(.caption.monospacedDigit())
+    }
+}
+
+private struct WorkoutActivityMetric<Value: View>: View {
+    let title: String
+    var isStale = false
+    @ViewBuilder var value: Value
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
             Text(title.uppercased())
-                .font(.caption2)
+                .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
             value
-                .font(.headline.monospacedDigit())
+                .font(.system(.title2, design: .rounded, weight: .bold).monospacedDigit())
                 .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .minimumScaleFactor(0.7)
+                .foregroundStyle(isStale ? .secondary : .primary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -138,46 +132,5 @@ private struct WorkoutActivityTimerView: View {
             countsDown: false
         )
         .monospacedDigit()
-    }
-}
-
-private struct WorkoutActivityStatusPill: View {
-    let state: WorkoutActivityAttributes.ContentState
-
-    var body: some View {
-        Text(state.statusTitle.uppercased())
-            .font(.caption2.weight(.bold))
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .foregroundStyle(.white)
-            .background(state.statusColor, in: Capsule())
-    }
-}
-
-private extension WorkoutActivityAttributes {
-    var workoutTypeName: String {
-        switch workoutTypeRawValue {
-        case 0: return "Running"
-        case 1: return "Walking"
-        case 4: return "Hiking"
-        default: return "Workout"
-        }
-    }
-
-    var workoutTypeSymbol: String {
-        switch workoutTypeRawValue {
-        case 0: return "figure.run"
-        case 1: return "figure.walk"
-        case 4: return "figure.hiking"
-        default: return "figure.run"
-        }
-    }
-}
-
-private extension WorkoutActivityAttributes.ContentState {
-    var statusColor: Color {
-        if isPaused { return .gray }
-        if statusKind == "recording" { return .red }
-        return .green
     }
 }

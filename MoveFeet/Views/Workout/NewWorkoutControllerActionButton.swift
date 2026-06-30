@@ -122,7 +122,9 @@ class NewWorkoutControllerActionButton: UIView {
             self.startButton.isUserInteractionEnabled = status == .ready
         case (.recording, .paused), (.paused, .recording), (.autoPaused, .paused):
             self.pauseOrContinueButton.setImage(status == .paused ? .play : .pause, for: .normal)
-        case (.recording, .ready), (.paused, .ready), (.autoPaused, .ready), (.ready, .recording),
+        case (.recording, .reviewing), (.paused, .reviewing), (.autoPaused, .reviewing),
+            (.reviewing, .ready), (.reviewing, .waiting), (.reviewing, .recording),
+            (.recording, .ready), (.paused, .ready), (.autoPaused, .ready), (.ready, .recording),
             (.recording, .waiting), (.paused, .waiting), (.autoPaused, .waiting), (.waiting, .recording):
             break
         case (.recording, .autoPaused), (.autoPaused, .recording):
@@ -147,7 +149,7 @@ class NewWorkoutControllerActionButton: UIView {
         startButton.backgroundColor = isReady ? .accentColor : .gray
         startButton.isEnabled = isReady
         startButton.isUserInteractionEnabled = isReady
-        startButton.isHidden = isActive
+        startButton.isHidden = isActive || status.isReviewingStatus
         stopButton.isHidden = !isActive
         pauseOrContinueButton.isHidden = !isActive
     }
