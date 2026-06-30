@@ -19,6 +19,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 @MainActor
 struct DebugView: View {
@@ -30,6 +31,9 @@ struct DebugView: View {
     @State private var cacheSize: String = "…"
     @State private var clearCacheMessage = ""
     @State private var isShowingClearCacheAlert = false
+    @State private var performanceLogSummary = ""
+    @State private var performanceLogMessage = ""
+    @State private var isShowingPerformanceLogAlert = false
     
     private var isClearCacheDisabled: Bool {
         [0, -1, nil].contains(cacheDiskSize)
@@ -51,6 +55,22 @@ struct DebugView: View {
                         clearCache()
                     }
                     .disabled(isClearCacheDisabled)
+                }
+
+                Section("Performance") {
+                    DebugValueRow(title: "Recent Events", value: performanceLogSummary)
+
+                    Button("Mark Slow Moment") {
+                        markSlowMoment()
+                    }
+
+                    Button("Export Performance Log") {
+                        exportPerformanceLog()
+                    }
+
+                    Button("Clear Performance Log", role: .destructive) {
+                        clearPerformanceLog()
+                    }
                 }
                 
                 Section("Config") {
@@ -78,6 +98,9 @@ struct DebugView: View {
         .task {
             await loadValues()
         }
+        .onAppear {
+            updatePerformanceLogSummary()
+        }
         .alert(
             "Clear Cache",
             isPresented: $isShowingClearCacheAlert,
@@ -86,6 +109,16 @@ struct DebugView: View {
             },
             message: {
                 Text(clearCacheMessage)
+            }
+        )
+        .alert(
+            "Performance Log",
+            isPresented: $isShowingPerformanceLogAlert,
+            actions: {
+                Button("OK") { }
+            },
+            message: {
+                Text(performanceLogMessage)
             }
         )
     }
@@ -134,6 +167,46 @@ struct DebugView: View {
     private func updateCacheSize(_ diskSize: Int?) {
         cacheDiskSize = diskSize
         cacheSize = CustomByteFormatting.string(for: diskSize ?? -1)
+    }
+
+    private func updatePerformanceLogSummary() {
+        let events = PerformanceDiagnostics.snapshot()
+        if let latest = events.last {
+            performanceLogSummary = "\(events.count) - \(latest.label)"
+        } else {
+            performanceLogSummary = "0"
+        }
+    }
+
+    private func markSlowMoment() {
+        PerformanceDiagnostics.event("Manual slow moment", details: "Marked from DebugView")
+        updatePerformanceLogSummary()
+    }
+
+    private func exportPerformanceLog() {
+        do {
+            let url = try PerformanceDiagnostics.exportLogFile()
+            guard let presenter = UIApplication.shared.topMostViewController else {
+                try? FileManager.default.removeItem(at: url)
+                performanceLogMessage = "Could not open the share sheet."
+                isShowingPerformanceLogAlert = true
+                return
+            }
+
+            let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+            activityVC.completionWithItemsHandler = { _, _, _, _ in
+                try? FileManager.default.removeItem(at: url)
+            }
+            presenter.present(activityVC, animated: true)
+        } catch {
+            performanceLogMessage = error.localizedDescription
+            isShowingPerformanceLogAlert = true
+        }
+    }
+
+    private func clearPerformanceLog() {
+        PerformanceDiagnostics.clear()
+        updatePerformanceLogSummary()
     }
     
     private static let placeholderDatabaseRows = [

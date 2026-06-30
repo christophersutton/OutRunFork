@@ -25,6 +25,17 @@ import HealthKit
 
 enum PerformanceDiagnostics {
 
+    struct Entry: Sendable {
+        let timestamp: Date
+        let label: String
+        let elapsedMilliseconds: Double?
+        let details: String
+    }
+
+    private static let lock = NSLock()
+    private static let maximumEntryCount = 500
+    private static var entries: [Entry] = []
+
     static func mark() -> CFAbsoluteTime {
         CFAbsoluteTimeGetCurrent()
     }
@@ -34,8 +45,95 @@ enum PerformanceDiagnostics {
         let elapsed = (CFAbsoluteTimeGetCurrent() - start) * 1000
         let formatted = String(format: "%.1f", elapsed)
         let suffix = details.isEmpty ? "" : " \(details)"
+        append(Entry(
+            timestamp: Date(),
+            label: label,
+            elapsedMilliseconds: elapsed,
+            details: details
+        ))
         print("[MoveFeetPerf] \(label) \(formatted)ms\(suffix)")
         #endif
+    }
+
+    static func event(_ label: String, details: String = "") {
+        #if DEBUG
+        let suffix = details.isEmpty ? "" : " \(details)"
+        append(Entry(
+            timestamp: Date(),
+            label: label,
+            elapsedMilliseconds: nil,
+            details: details
+        ))
+        print("[MoveFeetPerf] \(label)\(suffix)")
+        #endif
+    }
+
+    static func snapshot() -> [Entry] {
+        lock.lock()
+        defer { lock.unlock() }
+        return entries
+    }
+
+    static func clear() {
+        lock.lock()
+        entries.removeAll(keepingCapacity: true)
+        lock.unlock()
+    }
+
+    static func exportLogFile() throws -> URL {
+        let text = exportText()
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        let filename = "movefeet-perf-log-\(formatter.string(from: Date())).txt"
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+        try text.write(to: url, atomically: true, encoding: .utf8)
+        return url
+    }
+
+    static func exportText() -> String {
+        let snapshot = snapshot()
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        var lines = [
+            "MoveFeet Performance Log",
+            "Generated: \(isoFormatter.string(from: Date()))",
+            "Event count: \(snapshot.count)",
+            ""
+        ]
+
+        if snapshot.isEmpty {
+            lines.append("No performance events captured.")
+            return lines.joined(separator: "\n")
+        }
+
+        lines.append("timestamp\tlabel\telapsed_ms\tdetails")
+        for entry in snapshot {
+            let elapsedText = entry.elapsedMilliseconds.map { String(format: "%.1f", $0) } ?? ""
+            lines.append([
+                isoFormatter.string(from: entry.timestamp),
+                entry.label,
+                elapsedText,
+                entry.details
+            ].map(tabSafe).joined(separator: "\t"))
+        }
+        return lines.joined(separator: "\n")
+    }
+
+    private static func append(_ entry: Entry) {
+        lock.lock()
+        entries.append(entry)
+        if entries.count > maximumEntryCount {
+            entries.removeFirst(entries.count - maximumEntryCount)
+        }
+        lock.unlock()
+    }
+
+    private static func tabSafe(_ value: String) -> String {
+        value
+            .replacingOccurrences(of: "\t", with: " ")
+            .replacingOccurrences(of: "\n", with: " ")
     }
 }
 
