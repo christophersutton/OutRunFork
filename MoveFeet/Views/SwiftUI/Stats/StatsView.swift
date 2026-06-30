@@ -9,8 +9,8 @@
 //  (distance / active-time), a workout-type mix, and tappable all-time records that open the existing
 //  `WorkoutDetailView`.
 //
-//  Charting uses Apple's Swift Charts (already used by `WorkoutDetailCharts`). Aggregation is O(n) over the
-//  snapshot array and is rebuilt in `body`; the array is small (one element per workout) so this stays cheap.
+//  Charting uses Apple's Swift Charts (already used by `WorkoutDetailCharts`). Aggregation is cached by the
+//  workout-store generation and selected period so unrelated view updates do not rescan workout history.
 //
 
 import SwiftUI
@@ -23,6 +23,8 @@ struct StatsView: View {
     @State private var period: StatsPeriod = .month
     @State private var metric: StatsMetric = .distance
     @State private var selectedWorkout: WorkoutSnapshot?
+    @State private var statsSummary: StatsSummary?
+    @State private var statsSummaryKey: StatsSummaryCacheKey?
 
     // Formatted strings read `UserPreferences` (not observable). Re-render when the tab reappears with a
     // changed distance unit, mirroring the timeline's refresh approach.
@@ -41,6 +43,9 @@ struct StatsView: View {
                         unitRefreshToken += 1
                     }
                 }
+                .task(id: currentStatsSummaryKey) {
+                    rebuildStatsSummary(for: currentStatsSummaryKey)
+                }
                 .sheet(item: $selectedWorkout) { snapshot in
                     NavigationStack { WorkoutDetailView(workoutID: snapshot.id) }
                 }
@@ -55,17 +60,15 @@ struct StatsView: View {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-            // Touching the token keeps SwiftUI honest about re-rendering on a unit change.
-            let _ = unitRefreshToken
-            let summary = StatsSummary.make(from: store.workouts, period: period, referenceDate: Date())
+            let key = currentStatsSummaryKey
 
-            if !summary.hasAnyWorkouts {
+            if let summary = statsSummary, statsSummaryKey == key, !summary.hasAnyWorkouts {
                 ContentUnavailableView(
                     "No Stats Yet",
                     systemImage: "chart.bar.xaxis",
                     description: Text("Record a workout to start tracking your distance, time and trends.")
                 )
-            } else {
+            } else if let summary = statsSummary, statsSummaryKey == key {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 28) {
                         header
@@ -78,6 +81,9 @@ struct StatsView: View {
                     .padding(.horizontal, 20)
                     .padding(.bottom, 24)
                 }
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }
@@ -181,6 +187,39 @@ struct StatsView: View {
     private func openWorkout(_ id: UUID) {
         selectedWorkout = store.workouts.first { $0.id == id }
     }
+
+    private var currentStatsSummaryKey: StatsSummaryCacheKey {
+        StatsSummaryCacheKey(
+            workoutGeneration: store.generation,
+            period: period,
+            unitRefreshToken: unitRefreshToken
+        )
+    }
+
+    @MainActor
+    private func rebuildStatsSummary(for key: StatsSummaryCacheKey) {
+        guard store.isLoaded else {
+            statsSummary = nil
+            statsSummaryKey = key
+            return
+        }
+
+        let startedAt = PerformanceDiagnostics.mark()
+        let snapshots = store.workouts
+        statsSummary = StatsSummary.make(from: snapshots, period: key.period, referenceDate: Date())
+        statsSummaryKey = key
+        PerformanceDiagnostics.log(
+            "StatsSummary.make",
+            since: startedAt,
+            details: "workouts=\(snapshots.count) generation=\(key.workoutGeneration) period=\(key.period)"
+        )
+    }
+}
+
+private struct StatsSummaryCacheKey: Hashable {
+    let workoutGeneration: Int
+    let period: StatsPeriod
+    let unitRefreshToken: Int
 }
 
 // MARK: - Trend chart

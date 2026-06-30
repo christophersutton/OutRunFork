@@ -24,6 +24,10 @@ final class WorkoutStore {
     /// The current list of workouts as immutable value snapshots, newest first (mirrors the monitor's sort).
     private(set) var workouts: [WorkoutSnapshot] = []
 
+    /// Monotonic version of the snapshot array. Views can observe this cheap scalar instead of comparing
+    /// the whole workout array when they cache derived summaries.
+    private(set) var generation = 0
+
     /// `true` once the backing monitor has loaded at least once.
     private(set) var isLoaded: Bool = false
 
@@ -51,11 +55,12 @@ final class WorkoutStore {
             snapshots.append(WorkoutSnapshot(object))
         }
         workouts = snapshots
+        generation &+= 1
         isLoaded = true
         PerformanceDiagnostics.log(
             "WorkoutStore.rebuild",
             since: startedAt,
-            details: "workouts=\(objects.count)"
+            details: "workouts=\(objects.count) generation=\(generation)"
         )
     }
 }

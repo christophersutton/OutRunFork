@@ -106,36 +106,60 @@ struct WorkoutDetailSnapshot: Identifiable {
         self.hasPauses = !workout._pauses.value.isEmpty
 
         // Route coordinates. Route sample lat/lon default to the -1 "unset" sentinel; skip those.
-        self.routeCoordinates = routeSamples.compactMap { sample -> CLLocationCoordinate2D? in
-            let lat = sample._latitude.value
-            let lon = sample._longitude.value
-            guard lat != -1, lon != -1 else { return nil }
-            return CLLocationCoordinate2D(latitude: lat, longitude: lon)
-        }
+        var routeCoordinates: [CLLocationCoordinate2D] = []
+        routeCoordinates.reserveCapacity(routeSamples.count)
+        var altitudeSeries: [WorkoutChartPoint] = []
+        altitudeSeries.reserveCapacity(routeSamples.count)
+        var speedSeries: [WorkoutChartPoint] = []
+        speedSeries.reserveCapacity(routeSamples.count)
+        var topSpeed: Double?
 
         // Chart series. x = seconds since start (start.distance(to: timestamp) == timestamp - start, so it
         // increases over the workout). The legacy WorkoutStats used the inverse (timestamp.distance(to:
         // start)), which produced negative/decreasing x — a latent bug masked by the old charts never
         // being fed data. Altitude/speed carry -1 sentinels for unset samples; skip them.
-        self.altitudeSeries = routeSamples.compactMap { sample -> WorkoutChartPoint? in
+        for sample in routeSamples {
+            let timestamp = sample._timestamp.value
+            let elapsed = start.distance(to: timestamp)
+            let lat = sample._latitude.value
+            let lon = sample._longitude.value
+
+            if lat != -1, lon != -1 {
+                routeCoordinates.append(CLLocationCoordinate2D(latitude: lat, longitude: lon))
+            }
+
             let altitude = sample._altitude.value
-            guard altitude != -1 else { return nil }
-            return WorkoutChartPoint(x: start.distance(to: sample._timestamp.value), y: altitude)
-        }
-        self.speedSeries = routeSamples.compactMap { sample -> WorkoutChartPoint? in
+            if altitude != -1 {
+                altitudeSeries.append(WorkoutChartPoint(x: elapsed, y: altitude))
+            }
+
             let speed = sample._speed.value
-            guard speed >= 0 else { return nil }
-            return WorkoutChartPoint(x: start.distance(to: sample._timestamp.value), y: speed)
+            if speed >= 0 {
+                speedSeries.append(WorkoutChartPoint(x: elapsed, y: speed))
+                topSpeed = topSpeed.map { max($0, speed) } ?? speed
+            }
         }
-        self.heartRateSeries = heartRateSamples.map { sample -> WorkoutChartPoint in
-            WorkoutChartPoint(x: start.distance(to: sample._timestamp.value), y: Double(sample._heartRate.value))
+
+        var heartRateSeries: [WorkoutChartPoint] = []
+        heartRateSeries.reserveCapacity(heartRateSamples.count)
+        var heartRateTotal = 0
+        for sample in heartRateSamples {
+            let heartRate = sample._heartRate.value
+            heartRateTotal += heartRate
+            heartRateSeries.append(WorkoutChartPoint(
+                x: start.distance(to: sample._timestamp.value),
+                y: Double(heartRate)
+            ))
         }
+
+        self.routeCoordinates = routeCoordinates
+        self.altitudeSeries = altitudeSeries
+        self.speedSeries = speedSeries
+        self.heartRateSeries = heartRateSeries
 
         // Derived scalars.
         self.averageSpeed = active > 0 ? (workout._distance.value / active) : nil
-        let validSpeeds = routeSamples.map { $0._speed.value }.filter { $0 >= 0 }
-        self.topSpeed = validSpeeds.max()
-        let heartRates = heartRateSamples.map { $0._heartRate.value }
-        self.averageHeartRate = heartRates.isEmpty ? nil : (heartRates.reduce(0, +) / heartRates.count)
+        self.topSpeed = topSpeed
+        self.averageHeartRate = heartRateSamples.isEmpty ? nil : (heartRateTotal / heartRateSamples.count)
     }
 }
