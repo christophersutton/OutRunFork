@@ -172,12 +172,14 @@
 		3EEF94F6BCA55CC093010D5E /* RouteMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F35FB551FC0CA6FB8E06726 /* RouteMapView.swift */; };
 		4250858154265B28F8E0DE16 /* UIApplication+Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB197FB483D98436A1C4E74 /* UIApplication+Scene.swift */; };
 		487022E2F9AD1AE6D374FF39 /* Pods_UnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C56A574B3F5BFCBF50DB5368 /* Pods_UnitTests.framework */; };
+		4C67FF5E3BB63AADEB0F5424 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54BC36E9697B1E9C4649ABE /* StatsView.swift */; };
 		602E5E5BDDD8B9AEF650A3AE /* OnboardingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4E77E84CB639C7024482CF /* OnboardingState.swift */; };
 		65B9D86DF8FD6F867AEDC3EC /* GPSAccuracyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47496944ED1243905C4C74C /* GPSAccuracyView.swift */; };
 		6C33E94101A1199F6D2B111F /* EditWorkoutForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A11FA4EE6ACEFA03DDFD3B /* EditWorkoutForm.swift */; };
 		72D1C1ED6E5ED42EBB9702E0 /* WorkoutActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D6865114224CD8DCAB576E /* WorkoutActivityAttributes.swift */; };
 		75A1328B5D776DA175F3BDD0 /* WorkoutActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D6865114224CD8DCAB576E /* WorkoutActivityAttributes.swift */; };
 		791404446FC7C79E82B76583 /* Pods_MoveFeet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 423F2493BA9FDAF929D69067 /* Pods_MoveFeet.framework */; };
+		7ACCCC135B4B753934624381 /* StatsSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659BDFF6FD21EC446B677AEE /* StatsSummary.swift */; };
 		80E47226C8D5E9A9FBAF96F6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F4881D3C0ABDB9F29D9F1 /* SettingsView.swift */; };
 		8507A243F0F6AFD08A25BCDD /* UnitSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009326DFA9A337DBAC258D99 /* UnitSelectionView.swift */; };
 		8649F58A654C90B28807051B /* ContributorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A3B5D27FAE44448206DBB0 /* ContributorsView.swift */; };
@@ -446,6 +448,7 @@
 		5BB197FB483D98436A1C4E74 /* UIApplication+Scene.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIApplication+Scene.swift"; path = "MoveFeet/Views/SwiftUI/Shell/UIApplication+Scene.swift"; sourceTree = "<group>"; };
 		5DF2F1FC240DE54A3AA8C01B /* OnboardingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OnboardingView.swift; path = MoveFeet/Views/SwiftUI/Onboarding/OnboardingView.swift; sourceTree = "<group>"; };
 		61294E219B86FDA8C97C1283 /* WorkoutStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutStore.swift; path = MoveFeet/Models/Data/Store/WorkoutStore.swift; sourceTree = "<group>"; };
+		659BDFF6FD21EC446B677AEE /* StatsSummary.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StatsSummary.swift; path = MoveFeet/Views/SwiftUI/Stats/StatsSummary.swift; sourceTree = "<group>"; };
 		6CE62CE31E3A3C5275BE50AE /* MoveFeetActivities.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoveFeetActivities.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		724F1B8CE3D9A6A7B1E7FF13 /* Color+Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Color+Theme.swift"; path = "MoveFeet/Extensions/SwiftUI/Color+Theme.swift"; sourceTree = "<group>"; };
 		775F282D0B7B495122A7D308 /* SettingsState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsState.swift; path = MoveFeet/Views/SwiftUI/Settings/SettingsState.swift; sourceTree = "<group>"; };
@@ -463,6 +466,7 @@
 		C56A574B3F5BFCBF50DB5368 /* Pods_UnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C83409E6DA8392FBB7CBC324 /* MainTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MainTabView.swift; path = MoveFeet/Views/SwiftUI/Shell/MainTabView.swift; sourceTree = "<group>"; };
 		CC69B536B9AE143386811D1F /* WorkoutDetailSnapshot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutDetailSnapshot.swift; path = MoveFeet/Models/Data/Snapshots/WorkoutDetailSnapshot.swift; sourceTree = "<group>"; };
+		D54BC36E9697B1E9C4649ABE /* StatsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StatsView.swift; path = MoveFeet/Views/SwiftUI/Stats/StatsView.swift; sourceTree = "<group>"; };
 		D9634604C51089F827F17B28 /* UIViewController+SwiftUI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIViewController+SwiftUI.swift"; path = "MoveFeet/Extensions/SwiftUI/UIViewController+SwiftUI.swift"; sourceTree = "<group>"; };
 		DFAEA5FDFE2B7C5A905A9B89 /* Pods-MoveFeet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoveFeet.release.xcconfig"; path = "Pods/Target Support Files/Pods-MoveFeet/Pods-MoveFeet.release.xcconfig"; sourceTree = "<group>"; };
 		E31ECD42757BAD59BC2162D1 /* WorkoutDetailCharts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutDetailCharts.swift; path = MoveFeet/Views/SwiftUI/WorkoutDetail/WorkoutDetailCharts.swift; sourceTree = "<group>"; };
@@ -507,6 +511,15 @@
 				98CD3BFE1AA6D6576875D12C /* OnboardingStepViews.swift */,
 			);
 			name = Onboarding;
+			sourceTree = SOURCE_ROOT;
+		};
+		18CE54D3E6624A7707D95EA8 /* Stats */ = {
+			isa = PBXGroup;
+			children = (
+				659BDFF6FD21EC446B677AEE /* StatsSummary.swift */,
+				D54BC36E9697B1E9C4649ABE /* StatsView.swift */,
+			);
+			name = Stats;
 			sourceTree = SOURCE_ROOT;
 		};
 		2218436A24C75D5D00FDCC5E /* HealthKit */ = {
@@ -1146,6 +1159,7 @@
 				ADBDC1C4967B27C864838A36 /* Timeline */,
 				3062863986359B32C3D7EC6A /* Debug */,
 				93C408E2A1EC10E2EA42722D /* Shell */,
+				18CE54D3E6624A7707D95EA8 /* Stats */,
 			);
 			name = SwiftUI;
 			sourceTree = SOURCE_ROOT;
@@ -1621,6 +1635,8 @@
 				07BE6791C22C708724B7A059 /* WorkoutEditSnapshot.swift in Sources */,
 				72D1C1ED6E5ED42EBB9702E0 /* WorkoutActivityAttributes.swift in Sources */,
 				8BD6B0F27C483F35C0BEB189 /* WorkoutLiveActivityController.swift in Sources */,
+				7ACCCC135B4B753934624381 /* StatsSummary.swift in Sources */,
+				4C67FF5E3BB63AADEB0F5424 /* StatsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

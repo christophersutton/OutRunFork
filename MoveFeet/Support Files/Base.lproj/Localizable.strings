@@ -19,6 +19,7 @@
 //
 
 "TabBar.Timeline" = "Timeline";
+"TabBar.Stats" = "Stats";
 "TabBar.Settings" = "Settings";
 "OutRun" = "Move: Feet";
 "Cancel" = "Cancel";

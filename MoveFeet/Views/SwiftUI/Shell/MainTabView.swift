@@ -22,6 +22,7 @@ struct MainTabView: View {
 
     enum AppTab: Hashable {
         case timeline
+        case stats
         case newWorkout
         case settings
     }
@@ -68,6 +69,10 @@ struct MainTabView: View {
                 tabContent(WorkoutTimelineView())
             }
 
+            Tab(LS["TabBar.Stats"], systemImage: "chart.bar.fill", value: AppTab.stats) {
+                tabContent(StatsView())
+            }
+
             Tab(value: AppTab.newWorkout, role: .search) {
                 Color.clear
             } label: {
@@ -100,6 +105,7 @@ struct MainTabView: View {
     private var content: some View {
         switch selection {
         case .timeline: tabContent(WorkoutTimelineView())
+        case .stats: tabContent(StatsView())
         case .newWorkout: EmptyView()
         case .settings: tabContent(SettingsView())
         }
@@ -176,18 +182,23 @@ private struct CustomTabBar: View {
                 .contentShape(Rectangle())
                 .onTapGesture(count: 10, perform: onDebugGesture)
 
+            // Two tabs sit left of the raised "+" (which floats over the centre gap) and Settings sits at the
+            // trailing edge. No side padding keeps the centre gap clear on compact legacy devices.
             HStack(spacing: 0) {
                 tabButton(.timeline,
                           title: LS["TabBar.Timeline"],
                           image: .tabbarTimeline,
                           selectedImage: .tabbarTimelineFilled)
+                symbolTabButton(.stats,
+                                title: LS["TabBar.Stats"],
+                                systemName: "chart.bar",
+                                selectedSystemName: "chart.bar.fill")
                 Spacer(minLength: 0)
                 tabButton(.settings,
                           title: LS["TabBar.Settings"],
                           image: .tabbarSettings,
                           selectedImage: .tabbarSettingsFilled)
             }
-            .padding(.horizontal, 36)
             .frame(height: 49)
         }
         .background(Color.orBackground)
@@ -203,6 +214,26 @@ private struct CustomTabBar: View {
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
+                    .frame(width: 23, height: 23)
+                Text(title)
+                    .font(.system(.caption2, weight: .medium))
+            }
+            .foregroundStyle(isSelected ? Color.orAccent : Color.orSecondary)
+            .frame(width: 64)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Same as `tabButton` but backed by an SF Symbol (used for tabs without a bundled image asset).
+    private func symbolTabButton(_ tab: MainTabView.AppTab, title: String, systemName: String, selectedSystemName: String) -> some View {
+        let isSelected = selection == tab
+        return Button {
+            selection = tab
+        } label: {
+            VStack(spacing: 4) {
+                Image(systemName: isSelected ? selectedSystemName : systemName)
+                    .font(.system(size: 20, weight: .regular))
                     .frame(width: 23, height: 23)
                 Text(title)
                     .font(.system(.caption2, weight: .medium))
