@@ -55,6 +55,6 @@ struct WorkoutSnapshot: Identifiable, Hashable {
         self.isUserModified = workout._isUserModified.value
         self.healthKitUUID = workout._healthKitUUID.value
         self.dayIdentifier = workout._dayIdentifier.value
-        self.hasRouteData = workout.hasRouteData
+        self.hasRouteData = workout._routeData.count > 0
     }
 }

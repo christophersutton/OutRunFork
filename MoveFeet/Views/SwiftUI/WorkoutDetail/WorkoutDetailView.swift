@@ -7,7 +7,7 @@
 //  `WorkoutDetailSnapshot` (built off the CoreStore queue by `DataManager.workoutDetailSnapshot(for:)`),
 //  never a live `Workout`. Live `Workout` objects are re-resolved on the main queue, on demand, only for
 //  the action handlers (share / edit / delete / Apple Health / full-screen map) which need to hand a real
-//  object to the existing UIKit managers.
+//  object to the existing UIKit managers. Delete is id-based and stays off live CoreStore objects.
 //
 //  Note: unlike the legacy screen — whose stat tiles were never bound to data and whose charts were never
 //  fed — this screen renders real values. Charts are added on top of this in the Swift Charts step.
@@ -30,6 +30,7 @@ struct WorkoutDetailView: View {
     @State private var showEditSheet = false
     @State private var showDeleteConfirm = false
     @State private var showHealthDeletePrompt = false
+    @State private var isDeleting = false
 
     var body: some View {
         content
@@ -67,6 +68,18 @@ struct WorkoutDetailView: View {
                 Text(LS["WorkoutDeletion.AppleHealth.Message"])
             }
             .task(id: reloadToken) { await load() }
+            .overlay {
+                if isDeleting {
+                    ZStack {
+                        Color.black.opacity(0.12)
+                            .ignoresSafeArea()
+                        ProgressView()
+                            .padding(18)
+                            .background(Color.orForeground)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                }
+            }
             .sheet(isPresented: $showEditSheet) {
                 // Editing the *existing* workout; on save, dismiss the sheet and refresh this screen's
                 // snapshot in place (the form delegates all teardown to this hook).
@@ -302,6 +315,7 @@ struct WorkoutDetailView: View {
         } label: {
             Image(systemName: "ellipsis.circle")
         }
+        .disabled(isDeleting)
     }
 
     // MARK: - Loading
@@ -368,19 +382,24 @@ struct WorkoutDetailView: View {
     }
 
     private func performDelete(removeFromHealth: Bool) {
-        guard let workout = liveWorkout() else { return }
+        guard !isDeleting else { return }
+        guard let snapshot else { return }
+        isDeleting = true
 
         func deleteFromStore() {
-            DataManager.deleteObject(object: workout) { success, _ in
-                DispatchQueue.main.async {
-                    if success { dismiss() }
+            DataManager.deleteWorkout(id: workoutID) { success, error in
+                if success {
+                    dismiss()
+                } else {
+                    print("[WorkoutDelete][Detail] delete failed: \(error?.debugDescription ?? "unknown error")")
+                    isDeleting = false
                 }
             }
         }
 
-        if removeFromHealth, workout.healthKitUUID != nil {
-            HealthStoreManager.deleteHealthWorkout(for: workout) { _ in
-                DispatchQueue.main.async { deleteFromStore() }
+        if removeFromHealth, snapshot.healthKitUUID != nil {
+            HealthStoreManager.deleteHealthWorkout(reference: snapshot.healthKitUUID) { _ in
+                deleteFromStore()
             }
         } else {
             deleteFromStore()

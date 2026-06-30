@@ -31,6 +31,10 @@ class DeleteWorkoutView: WorkoutActionView {
     }
     
     override func action(button: UIButton) {
+        let workoutID = workout.uuid
+        let healthKitUUID = workout.healthKitUUID
+        let controller = self.controller
+
         let alert = UIAlertController(
             title: LS["WorkoutDeletion.Title"],
             message: LS["WorkoutDeletion.Message"],
@@ -44,22 +48,23 @@ class DeleteWorkoutView: WorkoutActionView {
                         DispatchQueue.main.async {
                             
                             func deleteWorkout() {
-                                DataManager.deleteObject(object: self.workout) { (success, error) in
-                                    self.controller.endLoading(completion: {
-                                        
-                                        if success {
-                                            guard let controller = self.controller as? DetailViewController else {
-                                                return
+                                DataManager.deleteWorkout(id: workoutID) { (success, error) in
+                                    Task { @MainActor in
+                                        controller.endLoading {
+                                            if success {
+                                                guard let controller = controller as? DetailViewController else {
+                                                    return
+                                                }
+                                                controller.close()
+                                            } else {
+                                                controller.displayError(withMessage: LS["WorkoutDeletion.Error.Message"] + "\n\n\(error?.debugDescription ?? "unknown error")")
                                             }
-                                            controller.close()
-                                        } else {
-                                            self.controller.displayError(withMessage: LS["WorkoutDeletion.Error.Message"] + "\n\n\(error?.debugDescription)")
                                         }
-                                    })
+                                    }
                                 }
                             }
                             
-                            if self.workout.healthKitUUID != nil {
+                            if healthKitUUID != nil {
                                 
                                 let appleHealthAlert = UIAlertController(
                                     title: LS["WorkoutDeletion.AppleHealth.Title"],
@@ -70,14 +75,15 @@ class DeleteWorkoutView: WorkoutActionView {
                                             title: LS["Delete"],
                                             style: .destructive,
                                             action: { _ in
-                                                HealthStoreManager.deleteHealthWorkout(for: self.workout) { (error) in
-                                                    
-                                                    if error != nil {
-                                                        self.controller.displayError(withMessage: LS["WorkoutDeletion.Error.AppleHealth.Message"], dismissAction: { _ in
+                                                HealthStoreManager.deleteHealthWorkout(reference: healthKitUUID) { (error) in
+                                                    Task { @MainActor in
+                                                        if error != nil {
+                                                            controller.displayError(withMessage: LS["WorkoutDeletion.Error.AppleHealth.Message"], dismissAction: { _ in
+                                                                deleteWorkout()
+                                                            })
+                                                        } else {
                                                             deleteWorkout()
-                                                        })
-                                                    } else {
-                                                        deleteWorkout()
+                                                        }
                                                     }
                                                 }
                                             }
@@ -92,7 +98,7 @@ class DeleteWorkoutView: WorkoutActionView {
                                     ]
                                 )
                                 
-                                self.controller.present(appleHealthAlert, animated: true, completion: nil)
+                                controller.present(appleHealthAlert, animated: true, completion: nil)
                                 
                             } else {
                                 deleteWorkout()
@@ -108,7 +114,7 @@ class DeleteWorkoutView: WorkoutActionView {
                 )
             ]
         )
-        self.controller.present(alert, animated: true, completion: nil)
+        controller.present(alert, animated: true, completion: nil)
     }
     
 }

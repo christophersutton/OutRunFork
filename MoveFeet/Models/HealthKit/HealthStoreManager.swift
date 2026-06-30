@@ -270,8 +270,19 @@ class HealthStoreManager {
      - parameter completion: the closure being performed upon completion indicating if an error occured
      */
     static func deleteHealthWorkout(for workout: ORWorkoutInterface, completion: @escaping (HealthError?) -> Void) {
-        
-        guard let reference = workout.healthKitUUID else { completion(.invalidInput); return }
+
+        deleteHealthWorkout(reference: workout.healthKitUUID, completion: completion)
+
+    }
+
+    /**
+     Deletes the `HKWorkout` matching the provided HealthKit UUID.
+     - parameter reference: the HealthKit UUID stored on a workout
+     - parameter completion: the closure being performed upon completion indicating if an error occured
+     */
+    static func deleteHealthWorkout(reference: UUID?, completion: @escaping (HealthError?) -> Void) {
+
+        guard let reference else { completion(.invalidInput); return }
         let completion = safeClosure(from: completion)
         
         gainAuthorisation(for: [HealthType.Workout]) { workoutAuthorisation, _ in

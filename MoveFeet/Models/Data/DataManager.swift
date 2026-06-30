@@ -636,6 +636,40 @@ struct DataManager {
         }
         
     }
+
+    /**
+     Deletes a workout by resolving the `Workout` inside CoreStore's transaction queue.
+     - parameter id: the `UUID` of the workout being deleted
+     - parameter completion: the closure being performed upon finishing the deletion process
+     */
+    public static func deleteWorkout(id: UUID?, completion: @escaping (_ success: Bool, _ error: DataManager.DeleteError?) -> Void) {
+
+        let completion = safeClosure(from: completion)
+
+        guard let id else {
+            completion(false, .notSaved)
+            return
+        }
+
+        dataStack.perform(asynchronous: { (transaction) -> Bool in
+
+            guard let workout: Workout = queryObject(from: id, transaction: transaction) else {
+                return false
+            }
+
+            transaction.delete(workout)
+            return true
+
+        }) { (result) in
+
+            switch result {
+            case .success(let didDelete):
+                completion(didDelete, didDelete ? nil : .notSaved)
+            case .failure(let error):
+                completion(false, .databaseError(error: error))
+            }
+        }
+    }
     
     /**
      This function deletes all data objects in the database.
