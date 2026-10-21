@@ -220,7 +220,7 @@ extension HealthStoreManager {
                         }
                     }
                     HealthStoreManager.healthStore.execute(query)
-                }, completion: { result in
+                }, completion: { (result: Result<[CLLocation], Error>) in
                     switch result {
                     case .success(let locations): completion(locations.sorted { $0.timestamp < $1.timestamp }, nil)
                     case .failure(let error): completion([], error)
