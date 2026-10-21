@@ -209,6 +209,16 @@
 		FE10210000000000000001A3 /* RecordingSaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10210000000000000000A3 /* RecordingSaveOperation.swift */; };
 		FE10210000000000000001A4 /* RecordingDurabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10210000000000000000A4 /* RecordingDurabilityTests.swift */; };
 		FE10210000000000000001A5 /* FeetRecordingBehaviorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10210000000000000000A5 /* FeetRecordingBehaviorTests.swift */; };
+		80B9B1E8E6C431CFB54B052B /* BackupValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17F3970514793E04DB58F772 /* BackupValidation.swift */; };
+		2F893B053D91CE7446F296AF /* DataManager+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1D684693A1C77EE34B5525 /* DataManager+Setup.swift */; };
+		E91391BF806BEC9D56B3AD07 /* DataManager+Restore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E0A4C2F4DA7B8CBC3FCF1D /* DataManager+Restore.swift */; };
+		B74847C3D240C230ED917B9F /* StorageFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0E4348FF09DB43E8C122876 /* StorageFixtures.swift */; };
+		B762279FAEAA89B999837FBE /* StoragePortableSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDB7E63B5A05F987CB6F90A /* StoragePortableSupport.swift */; };
+		B7E83228DE20380D387EAFFA /* BackupValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FDBFD7BC3420A5336D5C1AB /* BackupValidationTests.swift */; };
+		0288D84D8DD6D86A28037ECC /* StorageTransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00921A7F6380C5C1A7731B24 /* StorageTransactionTests.swift */; };
+		8D5DFEB729E9CAC8E8C0DCED /* StorageSetupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F0C80BA3A61F2705CD716F4 /* StorageSetupTests.swift */; };
+		2918DEBA25299D32977D774D /* RootStorageFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD07D8BE03275927E86D2271 /* RootStorageFailureTests.swift */; };
+		7FF8DECBC325F66E27CF9516 /* SettingsDataResetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE0ACA0EDAB28C5D6BF0716 /* SettingsDataResetTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -491,6 +501,16 @@
 		FE10210000000000000000A3 /* RecordingSaveOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingSaveOperation.swift; sourceTree = "<group>"; };
 		FE10210000000000000000A4 /* RecordingDurabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingDurabilityTests.swift; sourceTree = "<group>"; };
 		FE10210000000000000000A5 /* FeetRecordingBehaviorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeetRecordingBehaviorTests.swift; sourceTree = "<group>"; };
+		17F3970514793E04DB58F772 /* BackupValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupValidation.swift"; sourceTree = "<group>"; };
+		9D1D684693A1C77EE34B5525 /* DataManager+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataManager+Setup.swift"; sourceTree = "<group>"; };
+		68E0A4C2F4DA7B8CBC3FCF1D /* DataManager+Restore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataManager+Restore.swift"; sourceTree = "<group>"; };
+		D0E4348FF09DB43E8C122876 /* StorageFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageFixtures.swift"; sourceTree = "<group>"; };
+		BBDB7E63B5A05F987CB6F90A /* StoragePortableSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StoragePortableSupport.swift"; sourceTree = "<group>"; };
+		2FDBFD7BC3420A5336D5C1AB /* BackupValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupValidationTests.swift"; sourceTree = "<group>"; };
+		00921A7F6380C5C1A7731B24 /* StorageTransactionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageTransactionTests.swift"; sourceTree = "<group>"; };
+		5F0C80BA3A61F2705CD716F4 /* StorageSetupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageSetupTests.swift"; sourceTree = "<group>"; };
+		AD07D8BE03275927E86D2271 /* RootStorageFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RootStorageFailureTests.swift"; sourceTree = "<group>"; };
+		1DE0ACA0EDAB28C5D6BF0716 /* SettingsDataResetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsDataResetTests.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -560,6 +580,7 @@
 		221E47D223ECB84C004EAB1D /* Backup */ = {
 			isa = PBXGroup;
 			children = (
+				17F3970514793E04DB58F772 /* BackupValidation.swift */,
 				22E8969B23E9A2B80074D2BB /* BackupManager.swift */,
 				221E47D023ECB837004EAB1D /* Backup.swift */,
 			);
@@ -983,6 +1004,8 @@
 		22DBFBD32348AB8000DE6E92 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				68E0A4C2F4DA7B8CBC3FCF1D /* DataManager+Restore.swift */,
+				9D1D684693A1C77EE34B5525 /* DataManager+Setup.swift */,
 				221E47D223ECB84C004EAB1D /* Backup */,
 				2298D20C234543B900344989 /* DataModels */,
 				22A5D02325C1A42D00C30786 /* Temp */,
@@ -1057,6 +1080,13 @@
 		22DD158A280C5BB4002CDB45 /* UnitTests */ = {
 			isa = PBXGroup;
 			children = (
+				1DE0ACA0EDAB28C5D6BF0716 /* SettingsDataResetTests.swift */,
+				AD07D8BE03275927E86D2271 /* RootStorageFailureTests.swift */,
+				5F0C80BA3A61F2705CD716F4 /* StorageSetupTests.swift */,
+				00921A7F6380C5C1A7731B24 /* StorageTransactionTests.swift */,
+				2FDBFD7BC3420A5336D5C1AB /* BackupValidationTests.swift */,
+				BBDB7E63B5A05F987CB6F90A /* StoragePortableSupport.swift */,
+				D0E4348FF09DB43E8C122876 /* StorageFixtures.swift */,
 				22DD158B280C5BB4002CDB45 /* MigrationTests.swift */,
 				22DD1594280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift */,
 				420C4C3C215243DEBF616611 /* HealthPermissionsBehaviorTests.swift */,
@@ -1580,6 +1610,9 @@
 				22834F8625422E6900057FEB /* ORWorkoutRouteDataSampleInterface.swift in Sources */,
 				22AB2FB5233CC849002EF0DE /* UISegmentedControl.swift in Sources */,
 				2209E53924DD4A8F00BBFC2F /* AltitudeManagement.swift in Sources */,
+				80B9B1E8E6C431CFB54B052B /* BackupValidation.swift in Sources */,
+				2F893B053D91CE7446F296AF /* DataManager+Setup.swift in Sources */,
+				E91391BF806BEC9D56B3AD07 /* DataManager+Restore.swift in Sources */,
 				22D043B222DCCE2700154EB8 /* DataManager.swift in Sources */,
 				22B6CF7222CA0A14002D2FB0 /* NewWorkoutViewController.swift in Sources */,
 				22E5056E25C96A7800DC9AC1 /* HKWorkoutEvent.swift in Sources */,
@@ -1676,6 +1709,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7FF8DECBC325F66E27CF9516 /* SettingsDataResetTests.swift in Sources */,
+				2918DEBA25299D32977D774D /* RootStorageFailureTests.swift in Sources */,
+				8D5DFEB729E9CAC8E8C0DCED /* StorageSetupTests.swift in Sources */,
+				0288D84D8DD6D86A28037ECC /* StorageTransactionTests.swift in Sources */,
+				B7E83228DE20380D387EAFFA /* BackupValidationTests.swift in Sources */,
+				B762279FAEAA89B999837FBE /* StoragePortableSupport.swift in Sources */,
+				B74847C3D240C230ED917B9F /* StorageFixtures.swift in Sources */,
 				22DD158C280C5BB4002CDB45 /* MigrationTests.swift in Sources */,
 				22DD1595280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift in Sources */,
 				A412B201DB2749D4AA4285AA /* HealthPermissionsBehaviorTests.swift in Sources */,

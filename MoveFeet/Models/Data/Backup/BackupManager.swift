@@ -67,93 +67,48 @@ enum BackupManager {
      - parameter events: the events that were saved to the database
      */
     static func insertBackup(from url: URL, completion: @escaping (_ success: Bool, _ workouts: [ORWorkoutInterface], _ events: [OREventInterface]) -> Void) {
-        
-        
-        guard let data = try? Data(contentsOf: url),
-              let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String:Any],
-              let version = json["version"] as? String else {
-            completion(false, [], [])
-            return
+
+        insertBackup(from: url) { (result: Result<DataManager.RestoreReport, Error>) in
+            switch result {
+            case .success(let report): completion(true, report.workouts, report.events)
+            case .failure: completion(false, [], [])
+            }
         }
-        
-        switch version {
-        case BackupV1.versionCode, BackupV2.versionCode, BackupV3.versionCode, BackupV4.versionCode:
-            
-            guard let data: (events: [TempEvent], workouts: [TempWorkout]) = try? {
-                
-                if version == BackupV1.versionCode {
-                    let oldBackup = try JSONDecoder().decode(BackupV1.self, from: data)
-                    return (events: [], workouts: oldBackup.workoutData.map { $0.asTemp })
-                    
-                } else if version == BackupV2.versionCode {
-                    let oldBackup = try JSONDecoder().decode(BackupV2.self, from: data)
-                    return (events: [], workouts: oldBackup.workoutData.map { $0.asTemp })
-                    
-                } else if version == BackupV3.versionCode {
-                    let oldBackup = try JSONDecoder().decode(BackupV3.self, from: data)
-                    return (events: oldBackup.eventData.map { $0.asTemp },
-                            workouts: oldBackup.workoutData.map { $0.asTemp })
-                    
-                    
-                } else {
-                    let backup = try JSONDecoder().decode(Backup.self, from: data)
-                    return (events: backup.eventData, workouts: backup.workoutData)
-                }
-            }() else {
-                
-                break
-            }
-            
-            var returnSuccess = true
-            var returnWorkouts: [Workout]?
-            var returnEvents: [Event]?
-            
-            func completeIfAppropriate() {
-                if let returnWorkouts = returnWorkouts, let returnEvents = returnEvents {
-                    completion(returnSuccess, returnWorkouts, returnEvents)
-                }
-            }
-            
-            DataManager.saveWorkouts(objects: data.workouts) { (success, saveError, workouts) in
-                if saveError == nil {
-                    
-                    returnWorkouts = workouts
-                    
-                } else {
-                    print("Error while saving workouts during backup import:", saveError!.debugDescription)
-                    returnSuccess = false
-                    returnWorkouts = []
-                }
-                
-                completeIfAppropriate()
-            }
-            
-            DataManager.saveEvents(objects: data.events) { (success, saveError, events) in
-                
-                if saveError == nil {
-                    
-                    returnEvents = events
-                    
-                } else {
-                    print("Error while saving events during backup import:", saveError!.debugDescription)
-                    returnSuccess = false
-                    returnEvents = []
-                }
-                
-                completeIfAppropriate()
-            }
-
-            // The two async saves above own the completion callback. Without this return the
-            // success path falls through to the failure `completion(false, …)` below, firing the
-            // completion twice (once with a bogus failure, then again with the real result).
-            return
-
-        default:
-            break
-        }
-
-        completion(false, [], [])
-        return
     }
-    
+
+    /// Detailed result for callers displaying imported and duplicate counts. Duplicate-only restores
+    /// are successful; a genuine failure returns no imported objects because the transaction rolls back.
+    static func insertBackup(from url: URL, completion: @escaping (Result<DataManager.RestoreReport, Error>) -> Void) {
+        let completion = safeClosure(from: completion)
+        do {
+            let payload = try decodeBackup(from: Data(contentsOf: url))
+            DataManager.restore(workouts: payload.workouts, events: payload.events,
+                                in: DataManager.dataStack, completion: completion)
+        } catch {
+            completion(.failure(error))
+        }
+    }
+
+    static func decodeBackup(from data: Data) throws -> (events: [TempEvent], workouts: [TempWorkout]) {
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let version = json["version"] as? String else {
+            throw BackupValidation.InvalidData(field: "backup version")
+        }
+        switch version {
+        case BackupV1.versionCode:
+            let backup = try JSONDecoder().decode(BackupV1.self, from: data)
+            return ([], backup.workoutData.map { $0.asTemp })
+        case BackupV2.versionCode:
+            let backup = try JSONDecoder().decode(BackupV2.self, from: data)
+            return ([], backup.workoutData.map { $0.asTemp })
+        case BackupV3.versionCode:
+            let backup = try JSONDecoder().decode(BackupV3.self, from: data)
+            return (backup.eventData.map { $0.asTemp }, backup.workoutData.map { $0.asTemp })
+        case BackupV4.versionCode:
+            let backup = try JSONDecoder().decode(Backup.self, from: data)
+            return (backup.eventData, backup.workoutData)
+        default:
+            throw BackupValidation.InvalidData(field: "unsupported backup version")
+        }
+    }
 }
