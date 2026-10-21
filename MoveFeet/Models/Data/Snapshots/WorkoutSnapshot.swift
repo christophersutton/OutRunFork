@@ -30,6 +30,7 @@ struct WorkoutSnapshot: Identifiable, Hashable {
     let comment: String?
     let isUserModified: Bool
     let healthKitUUID: UUID?
+    let hasRouteData: Bool
     let dayIdentifier: String
 
     /// Builds a snapshot by reading every needed field from a CoreStore `Workout`.
@@ -53,6 +54,7 @@ struct WorkoutSnapshot: Identifiable, Hashable {
         self.comment = workout._comment.value
         self.isUserModified = workout._isUserModified.value
         self.healthKitUUID = workout._healthKitUUID.value
+        self.hasRouteData = !workout._routeData.value.isEmpty
         self.dayIdentifier = workout._dayIdentifier.value
     }
 }
