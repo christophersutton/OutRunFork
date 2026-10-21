@@ -10,6 +10,7 @@ extension DataManager {
     static func prepareStorage(
         dataModel: ORDataModel.Type = OutRunV4.self,
         storage: SQLiteStore,
+        completedIntermediate: ORDataModel.Type? = nil,
         addStorage: @escaping AddStorage = { $0.addStorage($1, completion: $2) },
         mapIntermediate: @escaping MapIntermediate = completeIntermediateMapping,
         migration: @escaping (Progress) -> Void,
@@ -17,7 +18,10 @@ extension DataManager {
     ) {
         let currentVersion = storage.currentORModel(from: dataModel.migrationChain)
         let relevant = dataModel.migrationChain.filter { type in
-            type == dataModel || (currentVersion.map {
+            // A successfully mapped intermediate remains the on-disk version until
+            // the NEXT store is opened. Do not reopen it forever during this attempt.
+            if let completedIntermediate, type == completedIntermediate { return false }
+            return type == dataModel || (currentVersion.map {
                 type is ORIntermediateDataModel.Type && (type.isSuccessor(to: $0) || type == $0)
             } ?? false)
         }
@@ -50,7 +54,7 @@ extension DataManager {
                             migrationMappingProviders: storage.migrationMappingProviders,
                             localStorageOptions: .none
                         )
-                        prepareStorage(dataModel: dataModel, storage: nextStorage,
+                        prepareStorage(dataModel: dataModel, storage: nextStorage, completedIntermediate: destination,
                                        addStorage: addStorage, mapIntermediate: mapIntermediate,
                                        migration: migration, completion: finish)
                     }
