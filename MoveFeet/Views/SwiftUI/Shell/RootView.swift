@@ -42,6 +42,7 @@ final class RootRouter {
     @ObservationIgnored private var storageReady = false
     @ObservationIgnored private var setupInFlight = false
     @ObservationIgnored private var setupAttempt = UUID()
+    @ObservationIgnored private var migrationObservation: NSKeyValueObservation?
     @ObservationIgnored private var didBoot = false
     @ObservationIgnored private var didScheduleHealthObservers = false
     @ObservationIgnored private var didOfferRecordingRecovery = false
@@ -100,6 +101,7 @@ final class RootRouter {
                 Task { @MainActor in
                     guard let self, self.setupAttempt == attempt, self.setupInFlight else { return }
                     self.setupInFlight = false
+                    self.migrationObservation = nil
                     if let error {
                         self.phase = .storageFailed(error.debugDescription)
                     } else {
@@ -112,11 +114,15 @@ final class RootRouter {
                 Task { @MainActor in
                     guard let self, self.setupAttempt == attempt, self.setupInFlight else { return }
                     self.phase = .migrating(progress.fractionCompleted)
-                }
-                progress.setProgressHandler { [weak self] progress in
-                    Task { @MainActor in
-                        guard let self, self.setupAttempt == attempt, self.setupInFlight else { return }
-                        self.phase = .migrating(progress.fractionCompleted)
+                    // CoreStore's Progress helper keeps an unowned reference in an
+                    // associated observer, which crashes when temporary progress dies.
+                    // Foundation's scoped observation invalidates safely on replacement.
+                    self.migrationObservation = progress.observe(\.fractionCompleted, options: [.initial, .new]) { [weak self] progress, _ in
+                        let fraction = progress.fractionCompleted
+                        Task { @MainActor in
+                            guard let self, self.setupAttempt == attempt, self.setupInFlight else { return }
+                            self.phase = .migrating(fraction)
+                        }
                     }
                 }
             }
