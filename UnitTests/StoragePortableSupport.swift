@@ -67,7 +67,19 @@ enum Config {
 enum HealthStoreManager {
     static func setupObservers() { fatalError("No Health access is allowed in these tests") }
 }
-class UIViewController {}
+class UIViewController {
+    var presentingViewController: UIViewController? { fatalError("No app UI access is allowed") }
+    var presentedViewController: UIViewController? { fatalError("No app UI access is allowed") }
+    var isBeingDismissed: Bool { fatalError("No app UI access is allowed") }
+    var viewIfLoaded: PortableView? { fatalError("No app UI access is allowed") }
+    func present(_ controller: UIViewController, animated: Bool) { fatalError("No app UI access is allowed") }
+}
+class UIAlertController: UIViewController {}
+class NewWorkoutViewController: UIViewController {}
+class PortableView { var window: Bool? { fatalError("No app UI access is allowed") } }
+enum WorkoutBuilder {
+    static var recoveryURL: URL { fatalError("Tests must inject recovery; no application files may be read") }
+}
 class UIApplication {
     static let shared = UIApplication()
     var topMostViewController: UIViewController? { fatalError("No app UI access is allowed in these tests") }

@@ -145,8 +145,11 @@ class HealthStoreManager {
      */
     static func saveHealthWorkout(for workout: ORWorkoutInterface, completion: @escaping (HealthError?, HKWorkout?) -> Void) {
         DispatchQueue.main.async {
+            // CoreStore values can change while Health callbacks are in flight. All parent,
+            // sample and route writes in this operation must use one immutable value capture.
+            let snapshot = TempWorkout(from: workout)
             exportOperations.enqueue { done in
-                performHealthExport(for: workout) { error, parent in
+                performHealthExport(for: snapshot) { error, parent in
                     completion(error, parent)
                     done()
                 }

@@ -248,7 +248,8 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
 
     func process(_ locations: [CLLocation], now: Date) {
         let valid = locations.filter { location in
-            location.altitude.isFinite && location.speed.isFinite && location.course.isFinite
+            location.altitude.isFinite && location.verticalAccuracy.isFinite
+                && location.speed.isFinite && location.course.isFinite
                 && locationGate.accept(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude,
                 accuracy: location.horizontalAccuracy, timestamp: location.timestamp, now: now)
         }

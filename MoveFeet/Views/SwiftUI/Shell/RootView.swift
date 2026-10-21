@@ -39,6 +39,8 @@ final class RootRouter {
 
     @ObservationIgnored private let setupStorage: SetupStorage
     @ObservationIgnored private let isSetUp: () -> Bool
+    @ObservationIgnored private let hasRecordingRecovery: () -> Bool
+    @ObservationIgnored private let presentRecordingRecovery: @MainActor () -> Bool
     @ObservationIgnored private var storageReady = false
     @ObservationIgnored private var setupInFlight = false
     @ObservationIgnored private var setupAttempt = UUID()
@@ -52,10 +54,16 @@ final class RootRouter {
         setupStorage: @escaping SetupStorage = { completion, migration in
             DataManager.setup(completion: completion, migration: migration)
         },
-        isSetUp: @escaping () -> Bool = { UserPreferences.isSetUp.value }
+        isSetUp: @escaping () -> Bool = { UserPreferences.isSetUp.value },
+        hasRecordingRecovery: @escaping () -> Bool = {
+            RecordingCheckpointStore<TempWorkout>(url: WorkoutBuilder.recoveryURL).exists
+        },
+        presentRecordingRecovery: @escaping @MainActor () -> Bool = { RootRouter.presentRecoveryController() }
     ) {
         self.setupStorage = setupStorage
         self.isSetUp = isSetUp
+        self.hasRecordingRecovery = hasRecordingRecovery
+        self.presentRecordingRecovery = presentRecordingRecovery
     }
 
     deinit {
@@ -137,6 +145,7 @@ final class RootRouter {
         // would register a second set of anchored queries.) No changelog on a fresh setup — `finish()` set
         // `lastVersion = Config.version`, so a brand-new user only sees a changelog after their first update.
         phase = .main
+        offerRecordingRecovery()
     }
 
     // MARK: Boot internals
@@ -188,26 +197,38 @@ final class RootRouter {
     /// Runs only after storage boot and permission/changelog presentation have finished.
     func offerRecordingRecovery() {
         guard phase == .main, changelogText == nil, !didOfferRecordingRecovery,
-              RecordingCheckpointStore<TempWorkout>(url: WorkoutBuilder.recoveryURL).exists else { return }
+              hasRecordingRecovery() else { return }
         didOfferRecordingRecovery = true
         Task { @MainActor in
             // UIKit dismissal and SwiftUI root transitions need a presentation turn.
             for _ in 0..<40 {
                 try? await Task.sleep(nanoseconds: 250_000_000)
-                guard phase == .main, changelogText == nil else { return }
-                guard let presenter = UIApplication.shared.topMostViewController else { continue }
-                if presenter is NewWorkoutViewController { return }
-                guard !(presenter is UIAlertController), presenter.presentingViewController == nil,
-                      !presenter.isBeingDismissed, presenter.viewIfLoaded?.window != nil else { continue }
-                // Recording owns Review / confirmed Discard / Later and UUID deduplication.
-                presenter.present(NewWorkoutViewController(), animated: true)
-                return
+                guard phase == .main, changelogText == nil, hasRecordingRecovery() else { return }
+                if presentRecordingRecovery() { return }
             }
             // A user-opened modal may delay this beyond launch. The normal + path still offers recovery.
         }
     }
 
+    /// True once recording is already open or has been presented. An alert over an existing
+    /// recording also counts, so dismissing it cannot cause a second controller to be created.
+    private static func presentRecoveryController() -> Bool {
+        guard let presenter = UIApplication.shared.topMostViewController else { return false }
+        var ancestor: UIViewController? = presenter
+        while let controller = ancestor {
+            if controller is NewWorkoutViewController { return true }
+            ancestor = controller.presentingViewController
+        }
+        guard !(presenter is UIAlertController), presenter.presentingViewController == nil,
+              !presenter.isBeingDismissed, presenter.presentedViewController == nil,
+              presenter.viewIfLoaded?.window != nil else { return false }
+        // Recording owns Review / confirmed Discard / Later and UUID deduplication.
+        presenter.present(NewWorkoutViewController(), animated: true)
+        return true
+    }
+
     private func presentChangelogIfNeeded() {
+        guard phase == .main else { return }
         defer { if changelogText == nil { offerRecordingRecovery() } }
         if AppDelegate.lastVersion.value != Config.version && AppDelegate.lastVersion.value != nil {
             if let changeLog = Config.changeLogs[Config.version] {

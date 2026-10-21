@@ -31,6 +31,7 @@ let package = Package(name: "StorageValidationHarness", platforms: [.macOS(.v14)
         "MoveFeet/Models/Data/Backup/BackupValidation.swift",
         "MoveFeet/Protocols/TempValueConvertible.swift",
         "UnitTests/StoragePortableSupport.swift",
+        "MoveFeet/Models/Workout/WorkoutBuilder/RecordingCheckpointStore.swift",
     ]:
         shutil.copyfile(repo / relative, sources / Path(relative).name)
     backup = (repo / "MoveFeet/Models/Data/Backup/Backup.swift").read_text()

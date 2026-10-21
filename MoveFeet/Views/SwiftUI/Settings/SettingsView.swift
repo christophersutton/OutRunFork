@@ -317,7 +317,7 @@ struct SettingsView: View {
                 get: { state.syncWorkouts },
                 set: { newValue in
                     guard newValue else { state.syncWorkouts = false; return }
-                    PermissionManager.standard.checkHealthPermission { success in
+                    PermissionManager.standard.checkHealthPermission(workouts: true, weight: false) { success in
                         DispatchQueue.main.async {
                             state.syncWorkouts = success
                             if success { HealthStoreManager.setupObservers() }
@@ -330,7 +330,7 @@ struct SettingsView: View {
                 get: { state.syncWeight },
                 set: { newValue in
                     guard newValue else { state.syncWeight = false; return }
-                    PermissionManager.standard.checkHealthPermission { success in
+                    PermissionManager.standard.checkHealthPermission(workouts: false, weight: true) { success in
                         DispatchQueue.main.async {
                             state.syncWeight = success
                             if success { HealthStoreManager.setupObservers() }
@@ -413,6 +413,9 @@ struct SettingsView: View {
             DispatchQueue.main.async {
                 SettingsDataReset.complete(
                     success: success, error: error,
+                    discardRecording: {
+                        try RecordingCheckpointStore<TempWorkout>(url: WorkoutBuilder.recoveryURL).discard()
+                    },
                     resetPreferences: { UserPreferences.reset() },
                     didReset: { NotificationCenter.default.post(name: .outRunDidResetData, object: nil) },
                     showError: { showDeleteError = true }
@@ -501,16 +504,21 @@ struct SettingsView: View {
     }
 }
 
-/// Keep preferences and root routing tied to a confirmed complete database deletion.
+/// Keep preferences and root routing tied to a confirmed database deletion and checkpoint cleanup.
 enum SettingsDataReset {
     static func complete(
         success: Bool, error: DataManager.DeleteError?,
+        discardRecording: () throws -> Void = {},
         resetPreferences: () -> Void, didReset: () -> Void, showError: () -> Void
     ) {
         guard success && error == nil else {
             showError()
             return
         }
+        // Never remove recovery on a failed database deletion. After a successful deletion,
+        // remove it before onboarding can offer to recover the data the user just deleted.
+        do { try discardRecording() }
+        catch { showError(); return }
         resetPreferences()
         didReset()
     }
