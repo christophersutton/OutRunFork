@@ -40,7 +40,7 @@ final class OnboardingState {
     // MARK: Permissions
     var locationPermissionGranted = false
     var motionPermissionGranted = false
-    var appleHealthPermissionGranted = false
+    var appleHealthRequestCompleted = false
 
     // MARK: Derived
 
@@ -52,9 +52,9 @@ final class OnboardingState {
     var userInfoValid: Bool { userWeightKg != nil }
     var syncEnabled: Bool { shouldSyncWorkouts || shouldSyncWeight }
 
-    /// Location and motion are always required; Apple Health is required only when the user opted into syncing.
+    /// Health is optional, including after a denied or partial authorization request.
     var permissionsValid: Bool {
-        locationPermissionGranted && motionPermissionGranted && (appleHealthPermissionGranted || !syncEnabled)
+        locationPermissionGranted && motionPermissionGranted
     }
 
     // MARK: Weight conversion (driven from the view via .onChange)

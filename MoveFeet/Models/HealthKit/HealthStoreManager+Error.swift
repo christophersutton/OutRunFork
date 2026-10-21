@@ -23,7 +23,7 @@ import HealthKit
 
 extension HealthStoreManager {
     
-    enum HealthError: Error, CustomDebugStringConvertible {
+    enum HealthError: Error, LocalizedError, CustomDebugStringConvertible {
         
         /// The intended action could not be performed due to lack of proper authorisation.
         case insufficientAuthorisation
@@ -34,8 +34,26 @@ extension HealthStoreManager {
         /// The input provided to perform the intended action was invalid
         case invalidInput
         
+        case importConversionFailed
+        case exportIncomplete
+        case exportOptionalDataDenied
+        case exportRecoveryRequired
+        case existingHealthHistoryPreserved
+
+        var errorDescription: String? { debugDescription }
+
         var debugDescription: String {
             switch self {
+            case .importConversionFailed:
+                return "Health import could not be fully converted. The import checkpoint was retained for retry."
+            case .exportOptionalDataDenied:
+                return "The Health workout was saved with incomplete optional data. Your local workout is safe. Allow the desired types in Health, then use Sync All to retry."
+            case .exportIncomplete:
+                return "The Health workout was saved, but some attachments failed. Your local workout is safe. Use Sync All to retry."
+            case .exportRecoveryRequired:
+                return "The existing Health export could not be safely identified. No duplicate was created. Your local workout is safe."
+            case .existingHealthHistoryPreserved:
+                return "Your local edits were saved. The existing Health workout was preserved; Health history is not automatically replaced."
             case .insufficientAuthorisation:
                 return "The intended action could not be performed due to lack of proper authorisation."
             case .healthKitError(let error):

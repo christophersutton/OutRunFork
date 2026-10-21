@@ -135,9 +135,12 @@ struct PermissionsStep: View {
                     info: { showInfo(LS["Setup.Permission.Motion"], LS["Setup.Permission.Motion.Message"]) }
                 )
                 if state.syncEnabled {
+                    Text("Apple Health access is optional. You can finish setup without granting it, or go Back to change your choices.")
+                        .font(.footnote)
+                        .foregroundStyle(Color.orSecondary)
                     OnboardingPermissionRow(
                         title: LS["Setup.Permission.AppleHealth"],
-                        granted: state.appleHealthPermissionGranted,
+                        granted: state.appleHealthRequestCompleted,
                         grant: requestHealth,
                         info: { showInfo(LS["Setup.Permission.AppleHealth"], LS["Setup.Permission.AppleHealth.Message"]) }
                     )
@@ -205,9 +208,9 @@ struct PermissionsStep: View {
     }
 
     private func requestHealth() {
-        PermissionManager.standard.checkHealthPermission { success in
+        PermissionManager.standard.checkHealthPermission(workouts: state.shouldSyncWorkouts, weight: state.shouldSyncWeight) { success in
             DispatchQueue.main.async {
-                state.appleHealthPermissionGranted = success
+                state.appleHealthRequestCompleted = success
                 if !success {
                     alertInfo = OnboardingAlertInfo(
                         title: LS["Setup.Permission.AppleHealth"],

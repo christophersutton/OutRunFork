@@ -110,10 +110,11 @@ extension HealthStoreManager {
         
         let completion = safeClosure(from: completion)
         
-        gainAuthorisation(for: [HealthType.Workout]) { authorisation, _ in
+        requestReadAuthorisation(for: workoutReadTypes) { authorisation in
             guard authorisation else { completion(.insufficientAuthorisation, []); return }
             
-            DataManager.queryExistingHealthUUIDs { existingHealthUUIDs in
+            queryHealthImportIdentities { existingHealthUUIDs, _ in
+                guard let existingHealthUUIDs = existingHealthUUIDs else { completion(.importConversionFailed, []); return }
                 let unsyncedWorkouts = NSCompoundPredicate(notPredicateWithSubpredicate: HKQuery.predicateForObjects(with: Set(existingHealthUUIDs)))
                 let supportedTypes = NSCompoundPredicate(orPredicateWithSubpredicates: Workout.WorkoutType.supportedTypes.map { HKQuery.predicateForWorkouts(with: $0.healthKitType) })
                 let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [unsyncedWorkouts, supportedTypes])
@@ -126,13 +127,16 @@ extension HealthStoreManager {
                     limit: HKObjectQueryNoLimit,
                     sortDescriptors: [sortDescriptor]
                 ) { (_, samples, error) in
-                    guard let hkWorkouts = samples?.compactMap({ $0 as? HKWorkout }) else {
+                    guard error == nil, let hkWorkouts = samples?.compactMap({ $0 as? HKWorkout }) else {
                         completion(.healthKitError(error: error), [])
                         return
                     }
 
-                    createHealthWorkouts(from: hkWorkouts) { healthWorkouts in
-                        completion(nil, healthWorkouts)
+                    createHealthWorkoutsResult(from: hkWorkouts) { result in
+                        switch result {
+                        case .success(let workouts): completion(nil, workouts)
+                        case .failure(let error): completion(error, [])
+                        }
                     }
                 }
 
@@ -150,14 +154,14 @@ extension HealthStoreManager {
      - parameter quantity: the current quantity for extracting the wanted data
      - parameter dateInterval: the quantity's date interval
      */
-    static func queryAnchoredHealthSeriesData<ReturnType>(of type: HKQuantityType, attachedTo healthWorkout: HKWorkout, transform: @escaping (_ lastValue: ReturnType?, _ quantity: HKQuantity, _ dateInterval: DateInterval) -> ReturnType?, completion: @escaping (_ value: ReturnType?) -> Void) {
+    static func queryAnchoredHealthSeriesData<ReturnType>(of type: HKQuantityType, attachedTo healthWorkout: HKWorkout, transform: @escaping (_ lastValue: ReturnType?, _ quantity: HKQuantity, _ dateInterval: DateInterval) -> ReturnType?, completion: @escaping (_ value: ReturnType?, _ error: Error?) -> Void) {
         
         var lastValue: ReturnType?
         var didComplete = false
         let resultQueue = DispatchQueue(label: "com.tifraedrich.OutRun.HealthStoreManager.anchoredHealthSeriesData")
         
-        gainAuthorisation(for: [type]) { authorisation, _ in
-            guard authorisation else { completion(nil); return }
+        requestReadAuthorisation(for: [type]) { authorisation in
+            guard authorisation else { completion(nil, HealthError.insufficientAuthorisation); return }
             
             let predicate = HKAnchoredObjectQuery.predicateForObjects(from: healthWorkout)
             let query = HKQuantitySeriesSampleQuery(quantityType: type, predicate: predicate) { query, quantity, dateInterval, _, done, error in
@@ -174,7 +178,7 @@ extension HealthStoreManager {
                     guard done || error != nil else { return }
                     didComplete = true
                     HealthStoreManager.healthStore.stop(query)
-                    completion(lastValue)
+                    completion(lastValue, error)
                 }
             }
             
@@ -187,20 +191,20 @@ extension HealthStoreManager {
      - parameter healthRoute: the health workout the route is associated with
      - returns: the location data of the queried health workout
      */
-    static func queryAnchoredWorkoutRoute(attachedTo healthWorkout: HKWorkout, completion: @escaping (_ routeData: [CLLocation]) -> Void) {
+    static func queryAnchoredWorkoutRoute(attachedTo healthWorkout: HKWorkout, completion: @escaping (_ routeData: [CLLocation], _ error: Error?) -> Void) {
         
         var routeData = [CLLocation]()
         var didComplete = false
         let routeDataQueue = DispatchQueue(label: "com.tifraedrich.OutRun.HealthStoreManager.workoutRouteData")
         
-        gainAuthorisation(for: [HealthType.Route]) { authorisation, _ in
-            guard authorisation else { completion([]); return }
+        requestReadAuthorisation(for: [HealthType.Route]) { authorisation in
+            guard authorisation else { completion([], HealthError.insufficientAuthorisation); return }
             
             queryHealthObjects(
                 of: HealthType.Route,
                 attachedTo: healthWorkout
             ) { routes, error in
-                guard let route = routes?.first as? HKWorkoutRoute else { completion([]); return }
+                guard let route = routes?.first as? HKWorkoutRoute else { completion([], error); return }
                 
                 let query = HKWorkoutRouteQuery(route: route) { query, locations, done, error in
                     routeDataQueue.async {
@@ -213,7 +217,7 @@ extension HealthStoreManager {
                         guard done || error != nil || locations == nil else { return }
                         didComplete = true
                         HealthStoreManager.healthStore.stop(query)
-                        completion(routeData)
+                        completion(routeData, error)
                     }
                 }
                 
@@ -225,20 +229,20 @@ extension HealthStoreManager {
     /**
      Queries the most recent body weight sample from the health store and saves it to UserSettings.
      */
-    static func queryMostRecentWeightSample() {
-        
-        let query = HKSampleQuery(
-            sampleType: HealthStoreManager.HealthType.BodyMass,
-            predicate: nil,
-            limit: 1,
-            sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
-        ) { (_, samples, _) in
-            guard let weight = samples?.max(by: { $0.startDate > $1.startDate }) as? HKQuantitySample else { return }
-            
-            let newWeightInKG = weight.quantity.doubleValue(for: HKUnit.init(from: .kilogram))
-            UserPreferences.weight.value = newWeightInKG
+    static func queryMostRecentWeightSample(completion: @escaping (Bool) -> Void = { _ in }) {
+        let query = HKSampleQuery(sampleType: HealthType.BodyMass, predicate: nil, limit: 1,
+            sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]) { _, samples, error in
+            DispatchQueue.main.async {
+                guard UserPreferences.synchronizeWeightWithAppleHealth.value,
+                      error == nil, let samples = samples else { completion(false); return }
+                // An empty read can also mean read denial, which HealthKit keeps private.
+                guard let weight = samples.first as? HKQuantitySample else { completion(samples.isEmpty); return }
+                let kilograms = weight.quantity.doubleValue(for: HealthUnit.Kilogram)
+                guard kilograms.isFinite, kilograms > 0 else { completion(false); return }
+                UserPreferences.weight.value = kilograms
+                completion(true)
+            }
         }
-        
-        HealthStoreManager.healthStore.execute(query)
+        healthStore.execute(query)
     }
 }
