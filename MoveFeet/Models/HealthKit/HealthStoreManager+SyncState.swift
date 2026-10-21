@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 /// Queue confined to the main queue by its caller. A failed batch invalidates all
 /// later callbacks; a new observer must restart from the last committed anchor.
@@ -75,6 +76,7 @@ final class HealthExportLedger {
     struct Entry: Codable, Equatable {
         var parent: UUID?
         var completed: Set<String> = []
+        var contentDigest: String?
     }
     enum LedgerError: Error { case invalidData }
     static let attachmentKeys: Set<String> = ["distance", "energy", "steps", "heartRate", "route"]
@@ -104,6 +106,20 @@ final class HealthExportLedger {
     }
 }
 
+/// Bind completed attachments to the values that produced them without putting workout
+/// contents in the retry preferences. Sorted JSON keeps the digest stable across launches.
+enum HealthExportFingerprint {
+    static func digest<Content: Encodable>(_ content: Content) throws -> String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        return SHA256.hash(data: try encoder.encode(content)).map { String(format: "%02x", $0) }.joined()
+    }
+
+    static func canResume(recorded: String?, current: String) -> Bool {
+        recorded == nil || recorded == current
+    }
+}
+
 /// Await every attachment and record each successful group before moving on.
 /// Failed groups remain pending, while already completed groups are never repeated.
 enum HealthAttachmentBatch {
@@ -126,6 +142,31 @@ enum HealthAttachmentBatch {
 
 enum HealthImportValues {
     static func addingSteps(_ previous: Int?, _ sample: Int) -> Int { (previous ?? 0) + sample }
+}
+
+/// A workout can contain several Health routes. Import is complete only after every
+/// segment is read; a failed segment must keep the observer's previous anchor.
+enum HealthRouteCollection {
+    static func collect<Route, Location>(routes: [Route],
+        query: @escaping (Route, @escaping (Result<[Location], Error>) -> Void) -> Void,
+        completion: @escaping (Result<[Location], Error>) -> Void) {
+        var locations: [Location] = []
+        func next(_ index: Int) {
+            guard index < routes.count else { completion(.success(locations)); return }
+            var finished = false
+            query(routes[index]) { result in
+                guard !finished else { return }
+                finished = true
+                switch result {
+                case .failure(let error): completion(.failure(error))
+                case .success(let segment):
+                    locations.append(contentsOf: segment)
+                    next(index + 1)
+                }
+            }
+        }
+        next(0)
+    }
 }
 
 /// Per-feature request policy, independent of HealthKit's private read decisions.
@@ -199,8 +240,11 @@ final class HealthImportPersistence<Record> {
 enum HealthExportRecovery {
     static func canReuse(expectedStart: Date, expectedEnd: Date, expectedActivity: UInt,
                          start: Date, end: Date, activity: UInt,
-                         parent: UUID, ledgerParent: UUID?) -> Bool {
+                         parent: UUID, ledgerParent: UUID?,
+                         expectedDistance: Double? = nil, distance: Double? = nil,
+                         expectedEnergy: Double? = nil, energy: Double? = nil) -> Bool {
         expectedStart == start && expectedEnd == end && expectedActivity == activity &&
+            expectedDistance == distance && expectedEnergy == energy &&
             (ledgerParent == nil || ledgerParent == parent)
     }
     static func canCreate(ledgerParent: UUID?, localReference: UUID?) -> Bool {

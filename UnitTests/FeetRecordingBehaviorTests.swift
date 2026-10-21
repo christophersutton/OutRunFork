@@ -116,6 +116,32 @@ final class FeetRecordingBehaviorTests: XCTestCase {
         XCTAssertEqual(try store.load()?.snapshot.routeData.count, 2)
     }
 
+    func testNonfiniteVerticalAccuracyCannotPoisonDurableRouteCheckpoint() throws {
+        let store = store(), clock = Clock()
+        defer { try? store.discard() }
+        let builder = WorkoutBuilder(workoutType: .walking, checkpointStore: store, now: { clock.date })
+        let location = LocationManagement(builder: builder, prepareSensors: false)
+        let status = PassthroughSubject<WorkoutBuilder.Status, Never>()
+        _ = builder.tranform(.init(statusSuggestion: status.eraseToAnyPublisher()))
+        var checkpointErrors = 0
+        builder.checkpointError = { _ in checkpointErrors += 1 }
+        status.send(.recording)
+        location.process([sample(clock.date)], now: clock.date)
+        clock.advance(1)
+        let invalid = CLLocation(coordinate: .init(latitude: 41, longitude: -74), altitude: 10,
+            horizontalAccuracy: 5, verticalAccuracy: .nan, course: 0, speed: 2, timestamp: clock.date)
+        location.process([invalid], now: clock.date)
+        clock.advance(1)
+        location.process([sample(clock.date, latitude: 40.001)], now: clock.date)
+        status.send(.reviewing)
+        XCTAssertEqual(checkpointErrors, 0)
+        let snapshot = try XCTUnwrap(builder.createSnapshotProvider()?())
+        XCTAssertEqual(snapshot.routeData.count, 2)
+        XCTAssertTrue(snapshot.routeData.allSatisfy { $0.verticalAccuracy.isFinite })
+        XCTAssertEqual(try store.load()?.snapshot.endDate, clock.date)
+        XCTAssertEqual(try store.load()?.snapshot.routeData.count, 2)
+    }
+
     func testRecoveryOfEveryPhaseFreezesEndAndContinueExcludesTerminationTime() throws {
         for phase: WorkoutBuilder.CheckpointStore.Phase in [.recording, .paused, .reviewing, .failedSave] {
             let store = store(), clock = Clock()

@@ -193,35 +193,39 @@ extension HealthStoreManager {
      */
     static func queryAnchoredWorkoutRoute(attachedTo healthWorkout: HKWorkout, completion: @escaping (_ routeData: [CLLocation], _ error: Error?) -> Void) {
         
-        var routeData = [CLLocation]()
-        var didComplete = false
         let routeDataQueue = DispatchQueue(label: "com.tifraedrich.OutRun.HealthStoreManager.workoutRouteData")
-        
+
         requestReadAuthorisation(for: [HealthType.Route]) { authorisation in
             guard authorisation else { completion([], HealthError.insufficientAuthorisation); return }
-            
-            queryHealthObjects(
-                of: HealthType.Route,
-                attachedTo: healthWorkout
-            ) { routes, error in
-                guard let route = routes?.first as? HKWorkoutRoute else { completion([], error); return }
-                
-                let query = HKWorkoutRouteQuery(route: route) { query, locations, done, error in
-                    routeDataQueue.async {
-                        guard !didComplete else { return }
 
-                        if let locations = locations {
-                            routeData.append(contentsOf: locations)
-                        }
-
-                        guard done || error != nil || locations == nil else { return }
-                        didComplete = true
-                        HealthStoreManager.healthStore.stop(query)
-                        completion(routeData, error)
-                    }
+            queryHealthObjects(of: HealthType.Route, attachedTo: healthWorkout) { (routes: [HKWorkoutRoute]?, error) in
+                guard error == nil, let routes else { completion([], error ?? HealthError.importConversionFailed); return }
+                let ordered = routes.sorted {
+                    if $0.startDate != $1.startDate { return $0.startDate < $1.startDate }
+                    return $0.uuid.uuidString < $1.uuid.uuidString
                 }
-                
-                HealthStoreManager.healthStore.execute(query)
+                HealthRouteCollection.collect(routes: ordered, query: { route, finish in
+                    var routeData: [CLLocation] = []
+                    var didComplete = false
+                    let query = HKWorkoutRouteQuery(route: route) { query, locations, done, error in
+                        routeDataQueue.async {
+                            guard !didComplete else { return }
+                            if let locations { routeData.append(contentsOf: locations) }
+                            guard done || error != nil || locations == nil else { return }
+                            didComplete = true
+                            HealthStoreManager.healthStore.stop(query)
+                            if let error { finish(.failure(error)) }
+                            else if locations == nil && !done { finish(.failure(HealthError.importConversionFailed)) }
+                            else { finish(.success(routeData)) }
+                        }
+                    }
+                    HealthStoreManager.healthStore.execute(query)
+                }, completion: { result in
+                    switch result {
+                    case .success(let locations): completion(locations.sorted { $0.timestamp < $1.timestamp }, nil)
+                    case .failure(let error): completion([], error)
+                    }
+                })
             }
         }
     }

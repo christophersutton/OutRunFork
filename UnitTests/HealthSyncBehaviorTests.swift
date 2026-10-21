@@ -252,4 +252,86 @@ final class HealthSyncBehaviorTests: XCTestCase {
         XCTAssertEqual(HealthSampleRecovery.plan(expected: ["steps.0"], saved: ["steps.0": [id]], attached: [id]), [])
     }
 
+    func testRetryFingerprintIsStableAcrossKeyOrderingAndRejectsEditedAttachments() throws {
+        let original = try HealthExportFingerprint.digest(["distance": 1000, "steps": 500])
+        let repeated = try HealthExportFingerprint.digest(["steps": 500, "distance": 1000])
+        let edited = try HealthExportFingerprint.digest(["distance": 1000, "steps": 600])
+        XCTAssertEqual(original, repeated)
+        XCTAssertTrue(HealthExportFingerprint.canResume(recorded: original, current: repeated))
+        XCTAssertFalse(HealthExportFingerprint.canResume(recorded: original, current: edited))
+        // Older entries are reconciled against the parent and saved samples by the adapter.
+        XCTAssertTrue(HealthExportFingerprint.canResume(recorded: nil, current: original))
+        XCTAssertEqual(original.count, 64)
+    }
+
+    func testRetryFingerprintSurvivesLedgerRecreation() throws {
+        let suite = "HealthSyncTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let id = UUID(), parent = UUID()
+        let digest = try HealthExportFingerprint.digest(["steps": 500])
+        try HealthExportLedger(defaults: defaults).set(.init(parent: parent, completed: ["steps"], contentDigest: digest), for: id)
+        let restored = try XCTUnwrap(HealthExportLedger(defaults: defaults).entry(for: id))
+        XCTAssertEqual(restored.contentDigest, digest)
+        XCTAssertFalse(HealthExportFingerprint.canResume(recorded: restored.contentDigest,
+            current: try HealthExportFingerprint.digest(["steps": 600])))
+    }
+
+    func testRecoveredParentMustMatchImmutableDistanceAndEnergy() {
+        let start = Date(timeIntervalSince1970: 100), end = Date(timeIntervalSince1970: 200), parent = UUID()
+        func matches(distance: Double?, energy: Double?) -> Bool {
+            HealthExportRecovery.canReuse(expectedStart: start, expectedEnd: end, expectedActivity: 37,
+                start: start, end: end, activity: 37, parent: parent, ledgerParent: nil,
+                expectedDistance: 1000, distance: distance, expectedEnergy: 70, energy: energy)
+        }
+        XCTAssertTrue(matches(distance: 1000, energy: 70))
+        XCTAssertFalse(matches(distance: 2000, energy: 70))
+        XCTAssertFalse(matches(distance: 1000, energy: 80))
+        XCTAssertFalse(matches(distance: nil, energy: 70))
+        XCTAssertFalse(matches(distance: 1000, energy: nil))
+    }
+
+    func testAllHealthRouteSegmentsAreReadBeforeImportCompletes() throws {
+        var first: ((Result<[Int], Error>) -> Void)?
+        var second: ((Result<[Int], Error>) -> Void)?
+        var result: Result<[Int], Error>?
+        var queried: [Int] = []
+        HealthRouteCollection.collect(routes: [1, 2], query: { route, finish in
+            queried.append(route)
+            if route == 1 { first = finish } else { second = finish }
+        }, completion: { result = $0 })
+        XCTAssertEqual(queried, [1])
+        XCTAssertNil(result)
+        first?(.success([10, 11]))
+        XCTAssertEqual(queried, [1, 2])
+        XCTAssertNil(result)
+        second?(.success([20, 21]))
+        XCTAssertEqual(try result?.get(), [10, 11, 20, 21])
+    }
+
+    func testFailureReadingLaterRouteRejectsPartialImportAndDoesNotCommitAnchor() {
+        enum Fault: Error { case route }
+        let batches = HealthImportBatchQueue()
+        var queried: [Int] = []
+        var failed = false
+        batches.enqueue(process: { done in
+            HealthRouteCollection.collect(routes: [1, 2, 3], query: { route, finish in
+                queried.append(route)
+                if route == 1 { finish(.success([10])) } else { finish(.failure(Fault.route)) }
+            }, completion: { (result: Result<[Int], Error>) in
+                done((try? result.get()) != nil)
+            })
+        }, commit: { XCTFail("Partial route must not advance anchor") }, failure: { failed = true })
+        XCTAssertEqual(queried, [1, 2])
+        XCTAssertTrue(failed)
+        XCTAssertTrue(batches.blocked)
+    }
+
+    func testWorkoutWithoutRoutesImportsEmptyRouteSuccessfully() throws {
+        var result: Result<[Int], Error>?
+        HealthRouteCollection.collect(routes: [] as [Int], query: { _, _ in XCTFail("No route query expected") },
+            completion: { result = $0 })
+        XCTAssertEqual(try result?.get(), [])
+    }
+
 }
