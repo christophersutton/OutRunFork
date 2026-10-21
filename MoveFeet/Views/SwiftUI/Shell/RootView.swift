@@ -27,6 +27,7 @@ final class RootRouter {
     enum Phase: Equatable {
         case launching
         case migrating(Double)
+        case storageFailed(String)
         case onboarding
         case main
     }
@@ -34,9 +35,26 @@ final class RootRouter {
     var phase: Phase = .launching
     var changelogText: String?
 
+    typealias SetupStorage = (@escaping (DataManager.SetupError?) -> Void, @escaping (Progress) -> Void) -> Void
+
+    @ObservationIgnored private let setupStorage: SetupStorage
+    @ObservationIgnored private let isSetUp: () -> Bool
+    @ObservationIgnored private var storageReady = false
+    @ObservationIgnored private var setupInFlight = false
+    @ObservationIgnored private var setupAttempt = UUID()
     @ObservationIgnored private var didBoot = false
     @ObservationIgnored private var didScheduleHealthObservers = false
     @ObservationIgnored private var resetObserver: NSObjectProtocol?
+
+    init(
+        setupStorage: @escaping SetupStorage = { completion, migration in
+            DataManager.setup(completion: completion, migration: migration)
+        },
+        isSetUp: @escaping () -> Bool = { UserPreferences.isSetUp.value }
+    ) {
+        self.setupStorage = setupStorage
+        self.isSetUp = isSetUp
+    }
 
     deinit {
         if let resetObserver {
@@ -54,26 +72,50 @@ final class RootRouter {
             forName: .outRunDidResetData, object: nil, queue: .main
         ) { [weak self] _ in
             Task { @MainActor in
-                self?.changelogText = nil
-                self?.phase = .onboarding
+                guard let self, self.storageReady else { return }
+                self.changelogText = nil
+                self.phase = .onboarding
             }
         }
 
-        // `DataManager.setup`'s completion/migration closures are guaranteed to fire on the main queue,
-        // but the migration progress handler's queue is unspecified — hop to MainActor uniformly.
-        DataManager.setup(
-            completion: { _ in
-                Task { @MainActor in self.finishBoot() }
-            },
-            migration: { progress in
+        beginStorageSetup()
+    }
+
+    func retryStorageSetup() {
+        guard case .storageFailed = phase else { return }
+        beginStorageSetup()
+    }
+
+    private func beginStorageSetup() {
+        guard !setupInFlight else { return }
+        phase = .launching
+        storageReady = false
+        setupInFlight = true
+        setupAttempt = UUID()
+        let attempt = setupAttempt
+
+        setupStorage(
+            { [weak self] error in
                 Task { @MainActor in
-                    if case .migrating = self.phase {} else { self.phase = .migrating(0) }
+                    guard let self, self.setupAttempt == attempt, self.setupInFlight else { return }
+                    self.setupInFlight = false
+                    if let error {
+                        self.phase = .storageFailed(error.debugDescription)
+                    } else {
+                        self.storageReady = true
+                        self.finishBoot()
+                    }
                 }
-                progress.setProgressHandler { progress in
+            },
+            { [weak self] progress in
+                Task { @MainActor in
+                    guard let self, self.setupAttempt == attempt, self.setupInFlight else { return }
+                    self.phase = .migrating(progress.fractionCompleted)
+                }
+                progress.setProgressHandler { [weak self] progress in
                     Task { @MainActor in
-                        if case .migrating = self.phase {
-                            self.phase = .migrating(progress.fractionCompleted)
-                        }
+                        guard let self, self.setupAttempt == attempt, self.setupInFlight else { return }
+                        self.phase = .migrating(progress.fractionCompleted)
                     }
                 }
             }
@@ -82,6 +124,7 @@ final class RootRouter {
 
     /// Called by `OnboardingView.onComplete` after `OnboardingState.finish()` has persisted setup.
     func completeOnboarding() {
+        guard storageReady else { return }
         // `OnboardingState.finish()` has already registered the HealthKit observers and written
         // `lastVersion`, so just flip the root. (Calling `HealthStoreManager.setupObservers()` again here
         // would register a second set of anchored queries.) No changelog on a fresh setup — `finish()` set
@@ -92,7 +135,8 @@ final class RootRouter {
     // MARK: Boot internals
 
     private func finishBoot() {
-        if UserPreferences.isSetUp.value {
+        guard storageReady else { return }
+        if isSetUp() {
             phase = .main
             scheduleHealthObserverSetup()
             runPostLaunch()
@@ -159,6 +203,8 @@ struct RootView: View {
                 LaunchView()
             case .migrating(let progress):
                 MigrationView(progress: progress)
+            case .storageFailed(let detail):
+                StorageFailureView(detail: detail, retry: { router.retryStorageSetup() })
             case .onboarding:
                 OnboardingView(onComplete: { router.completeOnboarding() })
                     .transition(.opacity)
@@ -213,5 +259,34 @@ private struct MigrationView: View {
             }
             .padding(.horizontal, 40)
         }
+    }
+}
+
+/// Storage failure is a blocking boot destination. It offers no reset or delete action.
+private struct StorageFailureView: View {
+    let detail: String
+    let retry: () -> Void
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Image(systemName: "externaldrive.badge.exclamationmark")
+                    .font(.largeTitle)
+                    .foregroundStyle(Color.orAccent)
+                Text("Unable to open your workout data")
+                    .font(.title2.bold())
+                Text("Move: Feet cannot continue until its local storage is available. Retry after freeing device storage or restarting the app.")
+                Button("Retry", action: retry)
+                    .buttonStyle(.borderedProminent)
+                Text("If this keeps happening, contact support for recovery help. Keep the app installed to preserve its local data.")
+                Link("Contact support", destination: URL(string: "mailto:support@wavelength.computer?subject=Move:%20Feet%20storage%20recovery")!)
+                DisclosureGroup("Technical details") {
+                    Text(detail).font(.caption).textSelection(.enabled)
+                }
+            }
+            .foregroundStyle(Color.orPrimary)
+            .padding(28)
+        }
+        .background(Color.orBackground.ignoresSafeArea())
     }
 }

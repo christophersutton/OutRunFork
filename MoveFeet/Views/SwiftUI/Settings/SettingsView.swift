@@ -122,13 +122,16 @@ struct SettingsView: View {
         let needsScopedAccess = url.startAccessingSecurityScopedResource()
         isImportingBackup = true
 
-        BackupManager.insertBackup(from: url) { success, _, _ in
+        BackupManager.insertBackup(from: url) { (result: Result<DataManager.RestoreReport, Error>) in
             DispatchQueue.main.async {
                 if needsScopedAccess { url.stopAccessingSecurityScopedResource() }
                 isImportingBackup = false
-                backupResultMessage = success
-                    ? LS["Settings.ImportBackupData.Success"]
-                    : LS["Settings.ImportBackupData.Error"]
+                switch result {
+                case .success(let report):
+                    backupResultMessage = LS["Settings.ImportBackupData.Success"] + "\n\n" + report.summary
+                case .failure:
+                    backupResultMessage = LS["Settings.ImportBackupData.Error"]
+                }
                 showBackupResult = true
             }
         }
@@ -406,16 +409,14 @@ struct SettingsView: View {
     }
 
     private func deleteAllData() {
-        DataManager.deleteAll { success, _ in
+        DataManager.deleteAll { success, error in
             DispatchQueue.main.async {
-                if success {
-                    UserPreferences.reset()
-                    // Return the running app to onboarding (the SwiftUI shell has no window-root swap to rely
-                    // on, unlike the legacy UIKit shell which required a relaunch).
-                    NotificationCenter.default.post(name: .outRunDidResetData, object: nil)
-                } else {
-                    showDeleteError = true
-                }
+                SettingsDataReset.complete(
+                    success: success, error: error,
+                    resetPreferences: { UserPreferences.reset() },
+                    didReset: { NotificationCenter.default.post(name: .outRunDidResetData, object: nil) },
+                    showError: { showDeleteError = true }
+                )
             }
         }
     }
@@ -497,6 +498,21 @@ struct SettingsView: View {
             Text(detail)
                 .foregroundStyle(Color.orSecondary)
         }
+    }
+}
+
+/// Keep preferences and root routing tied to a confirmed complete database deletion.
+enum SettingsDataReset {
+    static func complete(
+        success: Bool, error: DataManager.DeleteError?,
+        resetPreferences: () -> Void, didReset: () -> Void, showError: () -> Void
+    ) {
+        guard success && error == nil else {
+            showError()
+            return
+        }
+        resetPreferences()
+        didReset()
     }
 }
 

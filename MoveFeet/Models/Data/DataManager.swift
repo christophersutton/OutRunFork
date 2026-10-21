@@ -144,6 +144,8 @@ struct DataManager {
     
     /// static optional instance of the local storage holding the workout data
     private static var storage: SQLiteStore?
+    private static var setupCompletions: [(SetupError?) -> Void] = []
+    private static var setupMigrations: [(Progress) -> Void] = []
     
     /// The size of the local storage in bytes; if `nil` it could not be calculated.
     public static var diskSize: Int? {
@@ -164,68 +166,47 @@ struct DataManager {
      - parameter dataModel: an `ORDataModel` conforming `Type` being used to setup the data management
      - parameter completion: the closure being called on a successful completion of setting up data management
      - parameter migration: the closure being called on the event of a migration happening, including a `Progress` object indicating the progress of the migration
-     - warning: If this method fails it does so in a fatal error, the app will crash as a result.
+     - note: Failed setup leaves the public stack unavailable. A later call retries the persisted migration stage without resetting storage.
      */
     public static func setup(dataModel: ORDataModel.Type = OutRunV4.self, completion: @escaping (DataManager.SetupError?) -> Void, migration: @escaping (Progress) -> Void) {
         
-        let completion = safeClosure(from: completion)
-        
-        // setup storage
-        let storage = SQLiteStore(
-            fileName: "OutRun.sqlite",
-            migrationMappingProviders: dataModel.migrationChain.compactMap(
-                { (type) -> CustomSchemaMappingProvider? in
-                    return type.mappingProvider
-                }
-            ),
-            localStorageOptions: .none
-        )
-        self.storage = storage
-        
-        // select relevant versions
-        let currentVersion = storage.currentORModel(from: dataModel.migrationChain)
-        var relevants = dataModel.migrationChain.filter { (type) -> Bool in
-            // relevent version should include the final type (dataModel) and all intermediate models, but it is important that they are successors of current version of the storage otherwise the models might be incompatible
-            type == dataModel || (currentVersion != nil ? type is ORIntermediateDataModel && (type.isSuccessor(to: currentVersion!) || type == currentVersion) : false)
-        }
-            
-        let destinationModel = relevants.removeFirst()
-        dataStack = DataStack(oRMigrationChain: dataModel.migrationChain, oRDataModel: destinationModel)
-        
-        // adding storage
-        if let progress = dataStack.addStorage(
-            storage,
-            completion: { result in
-                switch result {
-                case .success(_):
-                    
-                    if let intermediate = destinationModel as? ORIntermediateDataModel.Type {
-                        if !intermediate.intermediateMappingActions(dataStack) {
-                            print("[DataManager] Intermediate mapping actions of \(destinationModel) were unsuccessful")
-                            completion(.intermediateMappingActionsFailed(version: intermediate))
-                            return
-                        }
-                    }
-                    
-                    if relevants.first != nil {
-                        setup(dataModel: dataModel, completion: completion, migration: migration)
-                    } else {
-                        completion(nil)
-                    }
-                    
-                case .failure(let error):
-                    print("[DataManager] Failed to add storage for \(dataModel)\nError: \(error)")
-                    completion(.failedToAddStorage(error: error))
-                }
+        // Serialize setup/retry and coalesce concurrent callers. Never expose an intermediate stack.
+        DispatchQueue.main.async {
+            if dataStack != nil {
+                completion(nil)
+                return
             }
-        ) {
-            // handling migration
-            DispatchQueue.main.async {
-                migration(progress)
+            setupCompletions.append(completion)
+            setupMigrations.append(migration)
+            guard setupCompletions.count == 1 else { return }
+
+            let storage = SQLiteStore(
+                fileName: "OutRun.sqlite",
+                migrationMappingProviders: dataModel.migrationChain.compactMap { $0.mappingProvider },
+                localStorageOptions: .none
+            )
+            prepareStorage(dataModel: dataModel, storage: storage, migration: { progress in
+                setupMigrations.forEach { $0(progress) }
+            }) { result in
+                let error: SetupError?
+                switch result {
+                case .success(let stack):
+                    self.storage = storage
+                    dataStack = stack
+                    error = nil
+                case .failure(let setupError):
+                    self.storage = nil
+                    dataStack = nil
+                    error = setupError
+                }
+                let completions = setupCompletions
+                setupCompletions = []
+                setupMigrations = []
+                completions.forEach { $0(error) }
             }
         }
     }
-    
+
     // MARK: - Workout
     
     /**
@@ -316,68 +297,8 @@ struct DataManager {
                 routeSampleCount += routeData.count
                 heartRateSampleCount += heartRates.count
                 
-                let workout = transaction.create(Into<Workout>())
-                workout._uuid .= object.uuid ?? UUID()
-                workout._workoutType .= object.workoutType
-                workout._distance .= object.distance
-                workout._steps .= object.steps
-                workout._startDate .= object.startDate
-                workout._endDate .= object.endDate
-                workout._burnedEnergy .= object.burnedEnergy
-                workout._isRace .= object.isRace
-                workout._comment .= object.comment
-                workout._isUserModified .= object.isUserModified
-                workout._healthKitUUID .= object.healthKitUUID
-                
-                workout._ascend .= object.ascend
-                workout._descend .= object.descend
-                workout._activeDuration .= object.activeDuration
-                workout._pauseDuration .= object.pauseDuration
-                workout._dayIdentifier .= object.dayIdentifier
-                
-                for tempPause in pauses {
-                    let pause = transaction.create(Into<WorkoutPause>())
-                    pause._uuid .= tempPause.uuid ?? UUID()
-                    pause._startDate .= tempPause.startDate
-                    pause._endDate .= tempPause.endDate
-                    pause._pauseType .= tempPause.pauseType
-                    
-                    pause._workout .= workout
-                }
-                
-                for tempWorkoutEvent in workoutEvents {
-                    let workoutEvent = transaction.create(Into<WorkoutEvent>())
-                    workoutEvent._uuid .= tempWorkoutEvent.uuid ?? UUID()
-                    workoutEvent._eventType .= tempWorkoutEvent.eventType
-                    workoutEvent._timestamp .= tempWorkoutEvent.timestamp
-                    
-                    workoutEvent._workout .= workout
-                }
+                let workout = insertWorkout(object, in: transaction)
 
-                for tempSample in routeData {
-                    let routeSample = transaction.create(Into<WorkoutRouteDataSample>())
-                    routeSample._uuid .= tempSample.uuid ?? UUID()
-                    routeSample._latitude .= tempSample.latitude
-                    routeSample._longitude .= tempSample.longitude
-                    routeSample._altitude .= tempSample.altitude
-                    routeSample._timestamp .= tempSample.timestamp
-                    routeSample._horizontalAccuracy .= tempSample.horizontalAccuracy
-                    routeSample._verticalAccuracy .= tempSample.verticalAccuracy
-                    routeSample._speed .= tempSample.speed
-                    routeSample._direction .= tempSample.direction
-                    
-                    routeSample._workout .= workout
-                }
-                
-                for tempSample in heartRates {
-                    let heartRateSample = transaction.create(Into<WorkoutHeartRateDataSample>())
-                    heartRateSample._uuid .= tempSample.uuid ?? UUID()
-                    heartRateSample._heartRate .= tempSample.heartRate
-                    heartRateSample._timestamp .= tempSample.timestamp
-                    
-                    heartRateSample._workout .= workout
-                }
-                
                 workouts.append(workout)
                 
             }
@@ -560,6 +481,90 @@ struct DataManager {
         editHealthReference(for: workout, reference: nil)
     }
     
+    /// Shared transaction-scoped mapping for normal saves and atomic backup restores.
+    static func insertWorkout(_ object: ORWorkoutInterface, in transaction: AsynchronousDataTransaction) -> Workout {
+        let workout = transaction.create(Into<Workout>())
+        workout._uuid .= object.uuid ?? UUID()
+        workout._workoutType .= object.workoutType
+        workout._distance .= object.distance
+        workout._steps .= object.steps
+        workout._startDate .= object.startDate
+        workout._endDate .= object.endDate
+        workout._burnedEnergy .= object.burnedEnergy
+        workout._isRace .= object.isRace
+        workout._comment .= object.comment
+        workout._isUserModified .= object.isUserModified
+        workout._healthKitUUID .= object.healthKitUUID
+        workout._finishedRecording .= object.finishedRecording
+
+        workout._ascend .= object.ascend
+        workout._descend .= object.descend
+        workout._activeDuration .= object.activeDuration
+        workout._pauseDuration .= object.pauseDuration
+        workout._dayIdentifier .= object.dayIdentifier
+
+        for tempPause in object.pauses {
+            let pause = transaction.create(Into<WorkoutPause>())
+            pause._uuid .= tempPause.uuid ?? UUID()
+            pause._startDate .= tempPause.startDate
+            pause._endDate .= tempPause.endDate
+            pause._pauseType .= tempPause.pauseType
+
+            pause._workout .= workout
+        }
+
+        for tempWorkoutEvent in object.workoutEvents {
+            let workoutEvent = transaction.create(Into<WorkoutEvent>())
+            workoutEvent._uuid .= tempWorkoutEvent.uuid ?? UUID()
+            workoutEvent._eventType .= tempWorkoutEvent.eventType
+            workoutEvent._timestamp .= tempWorkoutEvent.timestamp
+
+            workoutEvent._workout .= workout
+        }
+
+        for tempSample in object.routeData {
+            let routeSample = transaction.create(Into<WorkoutRouteDataSample>())
+            routeSample._uuid .= tempSample.uuid ?? UUID()
+            routeSample._latitude .= tempSample.latitude
+            routeSample._longitude .= tempSample.longitude
+            routeSample._altitude .= tempSample.altitude
+            routeSample._timestamp .= tempSample.timestamp
+            routeSample._horizontalAccuracy .= tempSample.horizontalAccuracy
+            routeSample._verticalAccuracy .= tempSample.verticalAccuracy
+            routeSample._speed .= tempSample.speed
+            routeSample._direction .= tempSample.direction
+
+            routeSample._workout .= workout
+        }
+
+        for tempSample in object.heartRates {
+            let heartRateSample = transaction.create(Into<WorkoutHeartRateDataSample>())
+            heartRateSample._uuid .= tempSample.uuid ?? UUID()
+            heartRateSample._heartRate .= tempSample.heartRate
+            heartRateSample._timestamp .= tempSample.timestamp
+
+            heartRateSample._workout .= workout
+        }
+
+        return workout
+    }
+
+    static func insertEvent(_ object: OREventInterface, workoutIDs: [UUID], in transaction: AsynchronousDataTransaction) throws -> Event {
+        let workouts = try transaction.fetchAll(
+            From<Workout>()
+                .where({ Where<Workout>(workoutIDs.containsOptional($0.uuid)) })
+                .orderBy(.ascending(\._startDate))
+        )
+        let event = transaction.create(Into<Event>())
+        event._uuid .= object.uuid ?? UUID()
+        event._title .= object.title
+        event._comment .= object.comment
+        event._startDate .= object.startDate
+        event._endDate .= object.endDate
+        event._workouts .= workouts
+        return event
+    }
+
     // MARK: - Event
     
     /**
@@ -632,28 +637,8 @@ struct DataManager {
             
             for object in validatedObjects {
                 
-                let event = transaction.create(Into<Event>())
-                
-                event._uuid .= object.uuid ?? UUID()
-                event._title .= object.title
-                event._comment .= object.comment
-                event._startDate .= object.startDate
-                event._endDate .= object.endDate
-                
-                let workoutUUIDs = object.workouts.compactMap { (workout) -> UUID? in
-                    return workout.uuid
-                }
-                
-                if let workouts = try? transaction.fetchAll(
-                    From<Workout>()
-                        .where({
-                            Where<Workout>(workoutUUIDs.containsOptional($0.uuid))
-                        })
-                        .orderBy(.ascending(\._startDate))
-                ) {
-                    event._workouts .= workouts
-                }
-                
+                let event = try insertEvent(object, workoutIDs: object.workouts.compactMap { $0.uuid }, in: transaction)
+
                 events.append(event)
                 
             }
@@ -832,36 +817,40 @@ struct DataManager {
      */
     public static func deleteAll(completion: @escaping (_ success: Bool, _ error: DataManager.DeleteError?) -> Void) {
         
-        var deletionError: CoreStoreError?
-        
-        dataStack.perform(asynchronous: { (transaction) -> Void in
-            
-            do {
-                try transaction.deleteAll(From<Workout>())
-                try transaction.deleteAll(From<WorkoutPause>())
-                try transaction.deleteAll(From<WorkoutEvent>())
-                try transaction.deleteAll(From<WorkoutRouteDataSample>())
-                try transaction.deleteAll(From<WorkoutHeartRateDataSample>())
-                try transaction.deleteAll(From<Event>())
-            } catch {
-                deletionError = error as? CoreStoreError
-            }
-            
-        }) { (result) in
+        deleteAll(in: dataStack, completion: completion)
+    }
+
+    /// The transaction must throw on every failed stage so CoreStore rolls back all earlier deletes.
+    /// The scoped overload also lets tests exercise the real operation using a disposable store.
+    static func deleteAll(
+        in stack: DataStack,
+        afterStage: @escaping (Int) throws -> Void = { _ in },
+        completion: @escaping (Bool, DeleteError?) -> Void
+    ) {
+        let completion = safeClosure(from: completion)
+        stack.perform(asynchronous: { transaction -> Void in
+            try transaction.deleteAll(From<Workout>())
+            try afterStage(0)
+            try transaction.deleteAll(From<WorkoutPause>())
+            try afterStage(1)
+            try transaction.deleteAll(From<WorkoutEvent>())
+            try afterStage(2)
+            try transaction.deleteAll(From<WorkoutRouteDataSample>())
+            try afterStage(3)
+            try transaction.deleteAll(From<WorkoutHeartRateDataSample>())
+            try afterStage(4)
+            try transaction.deleteAll(From<Event>())
+            try afterStage(5)
+        }) { result in
             switch result {
-            case .success(_):
-                if let error = deletionError {
-                    completion(true, .databaseError(error: error))
-                } else {
-                    completion(true, nil)
-                }
+            case .success:
+                completion(true, nil)
             case .failure(let error):
                 completion(false, .databaseError(error: error))
             }
         }
-            
     }
-    
+
     // MARK: - Monitoring
     
     /// A `CoreStore.ListMonitor` observing database changes; consumed by `WorkoutStore` to republish
