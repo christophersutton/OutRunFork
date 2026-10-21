@@ -198,12 +198,10 @@ final class EditWorkoutState {
                     guard syncEnabled else { completion(uuid, nil); return }
                     HealthStoreManager.updateHealthWorkout(for: updated) { healthError in
                         DispatchQueue.main.async {
-                            if healthError != nil {
-                                // Drop the now-stale health reference (matches the legacy controller).
-                                if let healthKitUUID = updated.healthKitUUID {
-                                    DataManager.removeHealthReference(reference: healthKitUUID)
-                                }
-                                completion(uuid, LS["EditWorkoutController.AlterWorkout.AppleHealth.Error"])
+                            if let healthError {
+                                // A failed/partial sync does not prove the Health workout disappeared.
+                                // Retain its identity so retry cannot create a duplicate parent.
+                                completion(uuid, healthError.debugDescription)
                             } else {
                                 completion(uuid, nil)
                             }
