@@ -158,6 +158,7 @@
 		22DD15AE280C5CD1002CDB45 /* ApplicationStateObservationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD15AD280C5CD1002CDB45 /* ApplicationStateObservationTests.swift */; };
 		22DD15B1280C5CD2002CDB45 /* CoreStoreTempConversionThreadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD15B0280C5CD2002CDB45 /* CoreStoreTempConversionThreadingTests.swift */; };
 		22DD15B3280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD15B2280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift */; };
+		22DD15B5280C5CD4002CDB45 /* HomeChromeAppearanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DD15B4280C5CD4002CDB45 /* HomeChromeAppearanceTests.swift */; };
 		22E5056E25C96A7800DC9AC1 /* HKWorkoutEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E5056D25C96A7800DC9AC1 /* HKWorkoutEvent.swift */; };
 		22E5F415266689ED00D4B985 /* HealthStoreManager+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E5F414266689ED00D4B985 /* HealthStoreManager+Error.swift */; };
 		22E8969A23E6E6E40074D2BB /* Temp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E8969923E6E6E40074D2BB /* Temp.swift */; };
@@ -439,6 +440,7 @@
 		22DD15AD280C5CD1002CDB45 /* ApplicationStateObservationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationStateObservationTests.swift; sourceTree = "<group>"; };
 		22DD15B0280C5CD2002CDB45 /* CoreStoreTempConversionThreadingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreStoreTempConversionThreadingTests.swift; sourceTree = "<group>"; };
 		22DD15B2280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicTypeFontShapeTests.swift; sourceTree = "<group>"; };
+		22DD15B4280C5CD4002CDB45 /* HomeChromeAppearanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeChromeAppearanceTests.swift; sourceTree = "<group>"; };
 		22E5056D25C96A7800DC9AC1 /* HKWorkoutEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HKWorkoutEvent.swift; sourceTree = "<group>"; };
 		22E5F414266689ED00D4B985 /* HealthStoreManager+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthStoreManager+Error.swift"; sourceTree = "<group>"; };
 		22E8969923E6E6E40074D2BB /* Temp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temp.swift; sourceTree = "<group>"; };
@@ -1094,6 +1096,7 @@
 				22DD1593280C5CC5002CDB45 /* PrivacyManifestTests.swift */,
 				22DD1596280C5CC7002CDB45 /* CloseButtonAccessibilityTests.swift */,
 				22DD15B2280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift */,
+				22DD15B4280C5CD4002CDB45 /* HomeChromeAppearanceTests.swift */,
 				22DD1598280C5CC8002CDB45 /* MainActorIsolationTests.swift */,
 				22DD15AA280C5CD0002CDB45 /* DebugViewTaskTests.swift */,
 				22DD15AD280C5CD1002CDB45 /* ApplicationStateObservationTests.swift */,
@@ -1723,6 +1726,7 @@
 				22DD1592280C5CC5002CDB45 /* PrivacyManifestTests.swift in Sources */,
 				22DD1597280C5CC7002CDB45 /* CloseButtonAccessibilityTests.swift in Sources */,
 				22DD15B3280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift in Sources */,
+				22DD15B5280C5CD4002CDB45 /* HomeChromeAppearanceTests.swift in Sources */,
 				22DD1599280C5CC8002CDB45 /* MainActorIsolationTests.swift in Sources */,
 				22DD15AB280C5CD0002CDB45 /* DebugViewTaskTests.swift in Sources */,
 				22DD15AE280C5CD1002CDB45 /* ApplicationStateObservationTests.swift in Sources */,
