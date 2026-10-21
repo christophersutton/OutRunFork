@@ -36,6 +36,11 @@ enum Config {
     static var version: String {
         return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "error"
     }
+
+    static var versionAndBuild: String {
+        guard let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String else { return version }
+        return "\(version) (\(build))"
+    }
     
     static let versions: [String] = ["1.0", "1.1", "1.1.1", "1.1.2", "1.2", "1.2.1", "1.2.2"]
     

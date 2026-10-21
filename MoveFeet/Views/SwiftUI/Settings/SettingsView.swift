@@ -481,7 +481,7 @@ struct SettingsView: View {
             }
 
             detailRow(LS["Settings.License"], "GPLv3")
-            detailRow(LS["Settings.AppVersion"], Config.version)
+            detailRow(LS["Settings.AppVersion"], Config.versionAndBuild)
             detailRow(LS["Settings.ReleaseStatus"], Config.releaseStatus.rawValue)
         } header: {
             Text(LS["Settings.AppInfo"])
