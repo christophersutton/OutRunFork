@@ -52,7 +52,7 @@ extension DataManager {
             for object in events {
                 let ids = object.workouts
                 let linkedWorkouts = try transaction.fetchAll(
-                    From<Workout>().where({ Where<Workout>(ids.containsOptional($0.uuid)) })
+                    From<Workout>().where(Where<Workout>(\._uuid, isMemberOf: ids))
                 )
                 guard Set(linkedWorkouts.compactMap { $0._uuid.value }) == Set(ids) else {
                     throw BackupValidation.InvalidData(field: "missing event workout")

@@ -552,7 +552,7 @@ struct DataManager {
     static func insertEvent(_ object: OREventInterface, workoutIDs: [UUID], in transaction: AsynchronousDataTransaction) throws -> Event {
         let workouts = try transaction.fetchAll(
             From<Workout>()
-                .where({ Where<Workout>(workoutIDs.containsOptional($0.uuid)) })
+                .where(Where<Workout>(\._uuid, isMemberOf: workoutIDs))
                 .orderBy(.ascending(\._startDate))
         )
         let event = transaction.create(Into<Event>())
