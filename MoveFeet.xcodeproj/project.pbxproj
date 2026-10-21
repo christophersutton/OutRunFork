@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A412B201DB2749D4AA4285AA /* HealthPermissionsBehaviorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C4C3C215243DEBF616611 /* HealthPermissionsBehaviorTests.swift */; };
+		45BCB7759E3345EBB3DF0EDE /* HealthSyncBehaviorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9951BA16D1418FA3F52E81 /* HealthSyncBehaviorTests.swift */; };
+		2264E6BB9A514D86A34A5025 /* HealthStoreManager+Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE596CB7A514E3A9CBB28F7 /* HealthStoreManager+Export.swift */; };
+		394E8152CF534F9AA336747C /* HealthStoreManager+SyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37E8A9FE46A4D35BA0A52FC /* HealthStoreManager+SyncState.swift */; };
 		02D986E9FE1A788D2DF68AED /* WorkoutTimelineRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 310945F9B6C2BA4EF15E215A /* WorkoutTimelineRow.swift */; };
 		02FC87B0EA78F8D8740E9B11 /* EditWorkoutState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34556719D859341BB37E6DD7 /* EditWorkoutState.swift */; };
 		0563BD247295323AD3FD42A5 /* CoreStorePresentationSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 482E96B1483F125042919B4B /* CoreStorePresentationSnapshotTests.swift */; };
@@ -234,6 +238,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		420C4C3C215243DEBF616611 /* HealthPermissionsBehaviorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthPermissionsBehaviorTests.swift; sourceTree = "<group>"; };
+		6B9951BA16D1418FA3F52E81 /* HealthSyncBehaviorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSyncBehaviorTests.swift; sourceTree = "<group>"; };
+		7CE596CB7A514E3A9CBB28F7 /* HealthStoreManager+Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthStoreManager+Export.swift"; sourceTree = "<group>"; };
+		D37E8A9FE46A4D35BA0A52FC /* HealthStoreManager+SyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthStoreManager+SyncState.swift"; sourceTree = "<group>"; };
 		009326DFA9A337DBAC258D99 /* UnitSelectionView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UnitSelectionView.swift; path = MoveFeet/Views/SwiftUI/Settings/UnitSelectionView.swift; sourceTree = "<group>"; };
 		01563D5FDA74CCFB8208B0EB /* RootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RootView.swift; path = MoveFeet/Views/SwiftUI/Shell/RootView.swift; sourceTree = "<group>"; };
 		0A8812305808037BFA1F93A0 /* ChangelogView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChangelogView.swift; path = MoveFeet/Views/SwiftUI/ChangelogView.swift; sourceTree = "<group>"; };
@@ -633,6 +641,8 @@
 			children = (
 				2259A0282368D6EB00F70F96 /* HealthWorkout.swift */,
 				2298D2152345553F00344989 /* HealthStoreManager.swift */,
+				7CE596CB7A514E3A9CBB28F7 /* HealthStoreManager+Export.swift */,
+				D37E8A9FE46A4D35BA0A52FC /* HealthStoreManager+SyncState.swift */,
 				225AC6A7243FA088008D493D /* HealthStoreManager+Query.swift */,
 				225AC6A5243F9CC3008D493D /* HealthStoreManager+Observer.swift */,
 				22E5F414266689ED00D4B985 /* HealthStoreManager+Error.swift */,
@@ -1039,6 +1049,8 @@
 			children = (
 				22DD158B280C5BB4002CDB45 /* MigrationTests.swift */,
 				22DD1594280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift */,
+				420C4C3C215243DEBF616611 /* HealthPermissionsBehaviorTests.swift */,
+				6B9951BA16D1418FA3F52E81 /* HealthSyncBehaviorTests.swift */,
 				22DD1593280C5CC5002CDB45 /* PrivacyManifestTests.swift */,
 				22DD1596280C5CC7002CDB45 /* CloseButtonAccessibilityTests.swift */,
 				22DD15B2280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift */,
@@ -1542,6 +1554,8 @@
 				2226A3C1240C483400FF7A94 /* UITextView.swift in Sources */,
 				227ED84C240FAA9B0083EE96 /* WorkoutActionView.swift in Sources */,
 				2298D2162345553F00344989 /* HealthStoreManager.swift in Sources */,
+				2264E6BB9A514D86A34A5025 /* HealthStoreManager+Export.swift in Sources */,
+				394E8152CF534F9AA336747C /* HealthStoreManager+SyncState.swift in Sources */,
 				22834F7A2542239800057FEB /* HelperMethods.swift in Sources */,
 				22877540234A527C0078CE12 /* UITextField.swift in Sources */,
 				2229056F24DE14D80052ACFF /* TextBanner.swift in Sources */,
@@ -1646,6 +1660,8 @@
 			files = (
 				22DD158C280C5BB4002CDB45 /* MigrationTests.swift in Sources */,
 				22DD1595280C5CC6002CDB45 /* HealthKitBlockingQueryTests.swift in Sources */,
+				A412B201DB2749D4AA4285AA /* HealthPermissionsBehaviorTests.swift in Sources */,
+				45BCB7759E3345EBB3DF0EDE /* HealthSyncBehaviorTests.swift in Sources */,
 				22DD1592280C5CC5002CDB45 /* PrivacyManifestTests.swift in Sources */,
 				22DD1597280C5CC7002CDB45 /* CloseButtonAccessibilityTests.swift in Sources */,
 				22DD15B3280C5CD3002CDB45 /* DynamicTypeFontShapeTests.swift in Sources */,

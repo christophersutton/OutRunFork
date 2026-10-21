@@ -4,7 +4,7 @@
 //  OutRun
 //
 //  SwiftUI onboarding flow replacing the UIKit `StartScreenViewController` (welcome) + `SetupViewController`
-//  (the four-page pager). A welcome screen leads into a forward-only sequence of four gated steps —
+//  (the four-page pager). A welcome screen leads into a sequence of four gated steps —
 //  Formalities, User Info, Apple Health, Permissions — with a page indicator and a contextual
 //  Next/Skip/Finish button. On finish it persists the user's choices (`OnboardingState.finish()`) and calls
 //  `onComplete`, which flips the SwiftUI root (`RootRouter`) from onboarding to the main tab shell.
@@ -63,6 +63,12 @@ struct OnboardingView: View {
 
     private var bottomBar: some View {
         HStack {
+            if step != .formalities {
+                Button(LS["Back"]) {
+                    withAnimation { step = OnboardingStep(rawValue: step.rawValue - 1) ?? .formalities }
+                }
+                .foregroundStyle(Color.orAccent)
+            }
             PageIndicator(count: OnboardingStep.allCases.count, current: step.rawValue)
             Spacer()
             Button(nextButtonTitle) { advance() }

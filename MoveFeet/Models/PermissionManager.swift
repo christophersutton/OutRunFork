@@ -21,6 +21,7 @@
 import Foundation
 import CoreLocation
 import CoreMotion
+import HealthKit
 
 class PermissionManager: NSObject, CLLocationManagerDelegate {
     
@@ -33,16 +34,16 @@ class PermissionManager: NSObject, CLLocationManagerDelegate {
     
     // MARK: Apple Health
     
-    func checkHealthPermission(closure: @escaping (Bool) -> Void) {
-        let unauthorisedTypes = HealthStoreManager.HealthType.allImplementedTypes.filter {
-            HealthStoreManager.healthStore.authorizationStatus(for: $0) != .sharingAuthorized
-        }
-        guard unauthorisedTypes.count > 0 else { closure(true); return }
-        HealthStoreManager.gainAuthorisation(for: unauthorisedTypes, completion: { success, authorisedTypes in
-            closure(unauthorisedTypes == authorisedTypes)
-        })
+    /// Workouts and weight are independent features. Sheet completion does not
+    /// reveal read access, and optional write denials must not block onboarding.
+    func checkHealthPermission(workouts: Bool? = nil, weight: Bool? = nil, closure: @escaping (Bool) -> Void) {
+        let useWorkouts = workouts ?? UserPreferences.synchronizeWorkoutsWithAppleHealth.value
+        let useWeight = weight ?? UserPreferences.synchronizeWeightWithAppleHealth.value
+        let plan = HealthAccessPlan(workouts: useWorkouts, weight: useWeight)
+        HealthStoreManager.requestAuthorisation(read: plan.read.map(HealthStoreManager.healthType),
+                                               write: plan.write.map(HealthStoreManager.healthType), completion: closure)
     }
-    
+
     // MARK: Location
     
     private let locationManager = CLLocationManager()
