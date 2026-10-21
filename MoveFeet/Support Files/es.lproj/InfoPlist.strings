@@ -22,5 +22,5 @@
 "NSLocationWhenInUseUsageDescription" = "Esta aplicación necesita tu ubicación para realizar un seguimiento de los entrenamientos";
 "NSLocationAlwaysUsageDescription" = "Esta aplicación necesita tu ubicación para realizar un seguimiento de los entrenamientos";
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "Esta aplicación necesita tu ubicación para realizar un seguimiento de los entrenamientos";
-"NSHealthUpdateUsageDescription" = "Esta aplicación necesita acceso a sus datos de salud para leer y corregir posibles entrenamientos construidos por esta aplicación";
-"NSHealthShareUsageDescription" = "Esta aplicación necesita acceso a sus datos de salud para guardar los entrenamientos construidos por esta aplicación";
+"NSHealthShareUsageDescription" = "Esta aplicación necesita acceso a sus datos de salud para leer y corregir posibles entrenamientos construidos por esta aplicación";
+"NSHealthUpdateUsageDescription" = "Esta aplicación necesita acceso a sus datos de salud para guardar los entrenamientos construidos por esta aplicación";

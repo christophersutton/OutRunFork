@@ -19,6 +19,7 @@
 //
 
 import XCTest
+@testable import MoveFeet
 
 final class PolicyManagerNetworkingTests: XCTestCase {
 
@@ -49,6 +50,22 @@ final class PolicyManagerNetworkingTests: XCTestCase {
             source.contains("static let session = URLSession.shared") || source.contains("URLSession.shared.dataTask"),
             "PolicyManager should use URLSession.shared or a static shared session for policy queries."
         )
+    }
+
+    func testOnlySuccessfulNonemptyPlainTextPoliciesAreAccepted() {
+        let url = URL(string: "https://example.com/policy")!
+        func response(_ status: Int, _ type: String) -> HTTPURLResponse {
+            HTTPURLResponse(url: url, statusCode: status, httpVersion: nil,
+                            headerFields: ["Content-Type": type])!
+        }
+        XCTAssertEqual(PolicyManager.validatedText(data: Data("Privacy text".utf8), response: response(200, "text/plain")), "Privacy text")
+        XCTAssertNil(PolicyManager.validatedText(data: Data("Not found".utf8), response: response(404, "text/plain")))
+        XCTAssertNil(PolicyManager.validatedText(data: Data("<html>Error</html>".utf8), response: response(200, "text/html")))
+        XCTAssertNil(PolicyManager.validatedText(data: Data("<html>Error</html>".utf8), response: response(200, "text/plain")))
+        XCTAssertNil(PolicyManager.validatedText(data: Data("  \n".utf8), response: response(200, "text/plain")))
+        XCTAssertNil(PolicyManager.validatedText(data: nil, response: nil))
+        XCTAssertTrue(PolicyManager.PolicyType.privacyPolicy.bundledText.contains("Apple Health"))
+        XCTAssertTrue(PolicyManager.PolicyType.termsOfService.bundledText.contains("GNU General Public License"))
     }
 
     private func policyManagerSource() throws -> String {

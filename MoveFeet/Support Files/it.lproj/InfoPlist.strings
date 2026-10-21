@@ -5,5 +5,5 @@
 "NSLocationWhenInUseUsageDescription" = "Questa applicazione ha bisogno della tua posizione per tenere traccia degli allenamenti";
 "NSLocationAlwaysUsageDescription" = "Questa applicazione ha bisogno della tua posizione per tenere traccia degli allenamenti";
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "Questa applicazione ha bisogno della tua posizione per tenere traccia degli allenamenti";
-"NSHealthUpdateUsageDescription" = "Questa app ha bisogno di accedere ai vostri dati sanitari per leggere ed eventuali allenamenti corretti costruiti da questa app";
-"NSHealthShareUsageDescription" = "Questa app ha bisogno di accedere ai vostri dati sanitari per salvare gli allenamenti costruiti da questa app";
+"NSHealthShareUsageDescription" = "Questa app ha bisogno di accedere ai vostri dati sanitari per leggere ed eventuali allenamenti corretti costruiti da questa app";
+"NSHealthUpdateUsageDescription" = "Questa app ha bisogno di accedere ai vostri dati sanitari per salvare gli allenamenti costruiti da questa app";

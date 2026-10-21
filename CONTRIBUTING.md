@@ -8,15 +8,15 @@ Setting up the project is simple, just follow these steps:
 
 1. **Clone the repository**
 
-    To clone the repository either use a git client and paste the repository's URL [https://github.com/timfraedrich/OutRun.git](https://github.com/timfraedrich/OutRun.git) or clone it via the command line:
+    To clone the repository either use a git client and paste the repository's URL [https://github.com/christophersutton/OutRunFork.git](https://github.com/christophersutton/OutRunFork.git) or clone it via the command line:
 
-        git clone https://github.com/timfraedrich/OutRun.git
+        git clone https://github.com/christophersutton/OutRunFork.git
 
 2. **Setup needed libraries**
 
-    OutRun uses CocaoPods for external libraries. To setup CocaoPods either use their desktop client or the command line. For the command line first navigate to the just cloned repository
+    Feet uses CocoaPods for external libraries. To set up CocoaPods either use their desktop client or the command line. For the command line first navigate to the just cloned repository
 
-        cd OutRun
+        cd OutRunFork
 
     And then simply run
 
@@ -24,9 +24,9 @@ Setting up the project is simple, just follow these steps:
 
 3. **Change XCode Project settings**
 
-    First open the just generated `OutRun.xcworkspace`. This will be the file to open to get to work on the project in the future.
+    First open the just generated `MoveFeet.xcworkspace`. This will be the file to open to get to work on the project in the future.
 
-    NOTE: Do not use the `OutRun.xcodeproj` file, it does not include the libraries needed in the project and you will not get it to compile without these
+    NOTE: Do not use the `MoveFeet.xcodeproj` file, it does not include the libraries needed in the project and you will not get it to compile without these
 
     Since you will not use the same developer account as when the app gets published just remove the `Team` attribute in `Project Settings > Signing and Capabilities` or change it to your own if you want to install the app on anything other than a simulator.
 
@@ -34,7 +34,7 @@ Setting up the project is simple, just follow these steps:
 
 **Finished.** You now have a working version of the project on your computer.
 
-Should there be any issues while setting up the project just create an issue on the [issue page](https://github.com/timfraedrich/OutRun/issues) we can probably sort it out.
+Should there be any issues while setting up the project just create an issue on the [issue page](https://github.com/christophersutton/OutRunFork/issues) we can probably sort it out.
 
 ## Rules for contribution
 
@@ -97,7 +97,7 @@ There are no solid rules for contribution yet, that will probably be a community
 
 Now that you have a working instance of the project and know the small subset of rules to look out for you can basically get started.
 
-To get a task you can visit the [issue page](https://github.com/timfraedrich/OutRun/issues) and look for an appropriate issue for you.
+To get a task you can visit the [issue page](https://github.com/christophersutton/OutRunFork/issues) and look for an appropriate issue for you.
 
 Once you feel like sharing your code, even if it is just to get some feedback, just open a pull request.
 

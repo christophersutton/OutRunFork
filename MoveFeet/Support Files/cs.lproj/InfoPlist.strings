@@ -5,5 +5,5 @@
 "NSLocationWhenInUseUsageDescription" = "Aplikace potřebuje Vaši polohu ke stopování tréninků";
 "NSLocationAlwaysUsageDescription" = "Aplikace potřebuje Vaši polohu ke stopování tréninků";
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "Aplikace potřebuje Vaši polohu ke stopování tréninků";
-"NSHealthUpdateUsageDescription" = "Aplikace potřebuje přístup k Vašim zdravotním datům, aby mohla číst a případně opravit data, která vytvořila";
-"NSHealthShareUsageDescription" = "Aplikace potřebuje přístup k Vašim zdravotním datům, aby do nich mohla ukládat Vaše tréninky";
+"NSHealthShareUsageDescription" = "Aplikace potřebuje přístup k Vašim zdravotním datům, aby mohla číst a případně opravit data, která vytvořila";
+"NSHealthUpdateUsageDescription" = "Aplikace potřebuje přístup k Vašim zdravotním datům, aby do nich mohla ukládat Vaše tréninky";

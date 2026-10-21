@@ -5,5 +5,5 @@
 "NSLocationWhenInUseUsageDescription" = "Tämä sovellus tarvitsee sijaintisi seurata liikuntaa";
 "NSLocationAlwaysUsageDescription" = "Tämä sovellus tarvitsee sijaintisi seurata liikuntaa";
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "Tämä sovellus tarvitsee sijaintisi seurata liikuntaa";
-"NSHealthUpdateUsageDescription" = "Tämä sovellus tarvitsee pääsyn terveystietoihisi lukeaksesi ja mahdolliset oikeat harjoitukset, jotka Tämä sovellus on rakentanut";
-"NSHealthShareUsageDescription" = "Tämä sovellus tarvitsee pääsyn terveystietoihisi tallentaaksesi tämän sovelluksen rakentamat harjoitukset";
+"NSHealthShareUsageDescription" = "Tämä sovellus tarvitsee pääsyn terveystietoihisi lukeaksesi ja mahdolliset oikeat harjoitukset, jotka Tämä sovellus on rakentanut";
+"NSHealthUpdateUsageDescription" = "Tämä sovellus tarvitsee pääsyn terveystietoihisi tallentaaksesi tämän sovelluksen rakentamat harjoitukset";

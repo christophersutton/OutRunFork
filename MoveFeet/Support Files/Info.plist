@@ -36,9 +36,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSHealthShareUsageDescription</key>
-	<string>This app needs access to your health data to save workouts constructed by this app</string>
+	<string>Feet reads workouts and measurements from Apple Health when you enable Health integration.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>This app needs access to your health data to read and possible correct workouts constructed by this app</string>
+	<string>Feet saves workouts and measurements to Apple Health when you enable Health integration.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs your location to track workouts</string>
 	<key>NSLocationAlwaysUsageDescription</key>

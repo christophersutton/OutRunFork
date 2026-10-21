@@ -4,5 +4,5 @@
 "NSLocationWhenInUseUsageDescription" = "Este aplicativo precisa de sua localização para monitorar seus exercícios";
 "NSLocationAlwaysUsageDescription" = "Este aplicativo precisa de sua localização para monitorar seus exercícios";
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "Este aplicativo precisa de sua localização para monitorar seus exercícios";
-"NSHealthUpdateUsageDescription" = "Este aplicativo precisa de acesso aos seus dados de saúde para ler e possivelmente corrigir exercícios criados por este aplicativo";
-"NSHealthShareUsageDescription" = "Este aplicativo precisa de acesso aos seus dados de saúde para salvar exercícios criados por este app";
+"NSHealthShareUsageDescription" = "Este aplicativo precisa de acesso aos seus dados de saúde para ler e possivelmente corrigir exercícios criados por este aplicativo";
+"NSHealthUpdateUsageDescription" = "Este aplicativo precisa de acesso aos seus dados de saúde para salvar exercícios criados por este app";

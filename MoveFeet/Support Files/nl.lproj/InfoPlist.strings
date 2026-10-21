@@ -22,5 +22,5 @@
 "NSLocationWhenInUseUsageDescription" = "Deze app heeft je locatie nodig om trainingen te volgen";
 "NSLocationAlwaysUsageDescription" = "Deze app heeft je locatie nodig om trainingen te volgen";
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "Deze app heeft je locatie nodig om trainingen te volgen";
-"NSHealthUpdateUsageDescription" = "Deze app heeft toegang nodig tot je gezondheidsgegevens om ze te kunnen lezen en eventueel gemaakte trainingen van deze app te corrigeren";
-"NSHealthShareUsageDescription" = "Deze app heeft toegang nodig tot je gezondheidsgegevens om de gemaakte trainingen op te slaan";
+"NSHealthShareUsageDescription" = "Deze app heeft toegang nodig tot je gezondheidsgegevens om ze te kunnen lezen en eventueel gemaakte trainingen van deze app te corrigeren";
+"NSHealthUpdateUsageDescription" = "Deze app heeft toegang nodig tot je gezondheidsgegevens om de gemaakte trainingen op te slaan";
