@@ -36,6 +36,7 @@ final class RootRouter {
 
     @ObservationIgnored private var didBoot = false
     @ObservationIgnored private var didScheduleHealthObservers = false
+    @ObservationIgnored private var didOfferRecordingRecovery = false
     @ObservationIgnored private var resetObserver: NSObjectProtocol?
 
     deinit {
@@ -134,7 +135,30 @@ final class RootRouter {
         }
     }
 
+    /// Runs only after storage boot and permission/changelog presentation have finished.
+    func offerRecordingRecovery() {
+        guard phase == .main, changelogText == nil, !didOfferRecordingRecovery,
+              RecordingCheckpointStore<TempWorkout>(url: WorkoutBuilder.recoveryURL).exists else { return }
+        didOfferRecordingRecovery = true
+        Task { @MainActor in
+            // UIKit dismissal and SwiftUI root transitions need a presentation turn.
+            for _ in 0..<40 {
+                try? await Task.sleep(nanoseconds: 250_000_000)
+                guard phase == .main, changelogText == nil else { return }
+                guard let presenter = UIApplication.shared.topMostViewController else { continue }
+                if presenter is NewWorkoutViewController { return }
+                guard !(presenter is UIAlertController), presenter.presentingViewController == nil,
+                      !presenter.isBeingDismissed, presenter.viewIfLoaded?.window != nil else { continue }
+                // Recording owns Review / confirmed Discard / Later and UUID deduplication.
+                presenter.present(NewWorkoutViewController(), animated: true)
+                return
+            }
+            // A user-opened modal may delay this beyond launch. The normal + path still offers recovery.
+        }
+    }
+
     private func presentChangelogIfNeeded() {
+        defer { if changelogText == nil { offerRecordingRecovery() } }
         if AppDelegate.lastVersion.value != Config.version && AppDelegate.lastVersion.value != nil {
             if let changeLog = Config.changeLogs[Config.version] {
                 changelogText = changeLog
@@ -169,7 +193,7 @@ struct RootView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: router.phase)
         .task { router.boot() }
-        .fullScreenCover(isPresented: changelogPresented) {
+        .fullScreenCover(isPresented: changelogPresented, onDismiss: { router.offerRecordingRecovery() }) {
             ChangelogView(changelog: router.changelogText ?? "")
                 .presentationBackground(.clear)   // let the changelog's own dimming show the app behind it
         }

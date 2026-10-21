@@ -359,8 +359,8 @@ struct SettingsView: View {
     private func syncAllUnsyncedWorkouts() {
         HealthStoreManager.saveAllWorkouts { error, allSavedAlready in
             DispatchQueue.main.async {
-                if error != nil {
-                    syncResultMessage = LS["Settings.SyncAll.Error"]
+                if let error {
+                    syncResultMessage = error.debugDescription
                 } else if allSavedAlready {
                     syncResultMessage = LS["Settings.SyncAll.AllSyncedAlready"]
                 } else {
