@@ -54,6 +54,9 @@ struct WorkoutTimelineView: View {
                             Text(sortField.label + (sortDescending ? " ↓" : " ↑"))
                                 .font(.system(.body, weight: .semibold))
                         }
+                        // The app's orange accent has low text contrast on the light toolbar.
+                        // Keep this navigation control readable as the system appearance changes.
+                        .tint(Color.orPrimary)
                     }
                 }
                 .sheet(isPresented: $showSortSheet) {
