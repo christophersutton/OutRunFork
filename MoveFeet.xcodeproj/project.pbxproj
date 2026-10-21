@@ -200,6 +200,11 @@
 		EB19CEFDBAA38F4005099E50 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724F1B8CE3D9A6A7B1E7FF13 /* Color+Theme.swift */; };
 		EFAD12F03BDC4780B39EB91B /* WorkoutDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2671425E51D73B9F85E13A95 /* WorkoutDetailView.swift */; };
 		FF7A2B894B89699365C21400 /* PolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527830B391FBD6E449D2B281 /* PolicyView.swift */; };
+		FE10210000000000000001A1 /* RecordingCheckpointStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10210000000000000000A1 /* RecordingCheckpointStore.swift */; };
+		FE10210000000000000001A2 /* RecordingLocationGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10210000000000000000A2 /* RecordingLocationGate.swift */; };
+		FE10210000000000000001A3 /* RecordingSaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10210000000000000000A3 /* RecordingSaveOperation.swift */; };
+		FE10210000000000000001A4 /* RecordingDurabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10210000000000000000A4 /* RecordingDurabilityTests.swift */; };
+		FE10210000000000000001A5 /* FeetRecordingBehaviorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10210000000000000000A5 /* FeetRecordingBehaviorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -473,6 +478,11 @@
 		EF9F4881D3C0ABDB9F29D9F1 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = MoveFeet/Views/SwiftUI/Settings/SettingsView.swift; sourceTree = "<group>"; };
 		F5A11FA4EE6ACEFA03DDFD3B /* EditWorkoutForm.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EditWorkoutForm.swift; path = MoveFeet/Views/SwiftUI/EditWorkout/EditWorkoutForm.swift; sourceTree = "<group>"; };
 		F5A467FF576C5E482C1FFD0B /* WorkoutEditSnapshot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutEditSnapshot.swift; path = MoveFeet/Models/Data/Snapshots/WorkoutEditSnapshot.swift; sourceTree = "<group>"; };
+		FE10210000000000000000A1 /* RecordingCheckpointStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingCheckpointStore.swift; sourceTree = "<group>"; };
+		FE10210000000000000000A2 /* RecordingLocationGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingLocationGate.swift; sourceTree = "<group>"; };
+		FE10210000000000000000A3 /* RecordingSaveOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingSaveOperation.swift; sourceTree = "<group>"; };
+		FE10210000000000000000A4 /* RecordingDurabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingDurabilityTests.swift; sourceTree = "<group>"; };
+		FE10210000000000000000A5 /* FeetRecordingBehaviorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeetRecordingBehaviorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1051,6 +1061,8 @@
 				22DD15A0280C5CCC002CDB45 /* TemporaryExportFileProtectionTests.swift */,
 				22DD15A4280C5CCD002CDB45 /* PolicyManagerNetworkingTests.swift */,
 				22DD15A6280C5CCE002CDB45 /* LiveStatsTimerTests.swift */,
+				FE10210000000000000000A5 /* FeetRecordingBehaviorTests.swift */,
+				FE10210000000000000000A4 /* RecordingDurabilityTests.swift */,
 				22DD15A8280C5CCF002CDB45 /* MapImageRenderSuspensionTests.swift */,
 				22DD15B0280C5CD2002CDB45 /* CoreStoreTempConversionThreadingTests.swift */,
 				482E96B1483F125042919B4B /* CoreStorePresentationSnapshotTests.swift */,
@@ -1113,6 +1125,9 @@
 			isa = PBXGroup;
 			children = (
 				22B6CF6F22CA08C9002D2FB0 /* WorkoutBuilder.swift */,
+				FE10210000000000000000A3 /* RecordingSaveOperation.swift */,
+				FE10210000000000000000A2 /* RecordingLocationGate.swift */,
+				FE10210000000000000000A1 /* RecordingCheckpointStore.swift */,
 				2230925E24D6F6A700A3F636 /* WorkoutBuilder+Status.swift */,
 				2230925D24D6F66000A3F636 /* Components */,
 			);
@@ -1566,6 +1581,9 @@
 				22B1DD93253F91380093822B /* OutRunV4.swift in Sources */,
 				22FEA0B124CDDFF80007CA9C /* CustomByteFormatting.swift in Sources */,
 				22B6CF7022CA08C9002D2FB0 /* WorkoutBuilder.swift in Sources */,
+				FE10210000000000000001A3 /* RecordingSaveOperation.swift in Sources */,
+				FE10210000000000000001A2 /* RecordingLocationGate.swift in Sources */,
+				FE10210000000000000001A1 /* RecordingCheckpointStore.swift in Sources */,
 				221436BB244356A90010D82B /* Array.swift in Sources */,
 				22CBE0D4244864970009D9A7 /* SmallStatView.swift in Sources */,
 				221436B72442368E0010D82B /* NewWorkoutControllerActionButton.swift in Sources */,
@@ -1658,6 +1676,8 @@
 				22DD15A1280C5CCC002CDB45 /* TemporaryExportFileProtectionTests.swift in Sources */,
 				22DD15A5280C5CCD002CDB45 /* PolicyManagerNetworkingTests.swift in Sources */,
 				22DD15A7280C5CCE002CDB45 /* LiveStatsTimerTests.swift in Sources */,
+				FE10210000000000000001A5 /* FeetRecordingBehaviorTests.swift in Sources */,
+				FE10210000000000000001A4 /* RecordingDurabilityTests.swift in Sources */,
 				22DD15A9280C5CCF002CDB45 /* MapImageRenderSuspensionTests.swift in Sources */,
 				22DD15B1280C5CD2002CDB45 /* CoreStoreTempConversionThreadingTests.swift in Sources */,
 				0563BD247295323AD3FD42A5 /* CoreStorePresentationSnapshotTests.swift in Sources */,

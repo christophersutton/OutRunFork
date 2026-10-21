@@ -88,7 +88,7 @@ public class AutoPauseDetection: WorkoutBuilderComponent {
     
     public func bind(builder: WorkoutBuilder) {
         
-        let input = Input(statusSuggestion: statusSuggestionRelay.asBackgroundPublisher())
+        let input = Input(statusSuggestion: statusSuggestionRelay.eraseToAnyPublisher())
         let output = builder.tranform(input)
         
         output.status.sink(receiveValue: statusBinder).store(in: &cancellables)

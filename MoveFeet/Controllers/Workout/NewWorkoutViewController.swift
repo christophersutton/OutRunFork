@@ -47,10 +47,12 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
     
     let readinessIndicatorView = WorkoutBuilderReadinessIndicationView()
     lazy var typeView = FloatingButton(title: workoutTypeSubject.value.description) { [weak self] button in
-        guard let self else { return }
+        guard let self, !self.builder.status.isActiveStatus, !self.builder.status.isReviewingStatus,
+              !self.builder.hasRecovery else { return }
         let alert = WorkoutTypeAlert { [weak self, weak button] type in
-            self?.workoutTypeSubject.send(type)
-            button?.setTitle(type.description.uppercased(), for: .normal)
+            guard let self, !self.builder.status.isActiveStatus, !self.builder.status.isReviewingStatus else { return }
+            self.workoutTypeSubject.send(type)
+            button?.setTitle(self.builder.selectedWorkoutType.description.uppercased(), for: .normal)
         }
         alert.present(on: self)
     }
@@ -79,7 +81,7 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
         case .stop:
             self.suggestNewStatusSubject.send(.reviewing)
         case .pauseOrContinue:
-            self.suggestNewStatusSubject.send(.paused)
+            self.builder.togglePause()
         }
     }
     
@@ -125,6 +127,47 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
 
         prepareLayout()
         prepareBindings()
+        builder.checkpointError = { [weak self] _ in
+            guard let self, !self.didShowCheckpointError else { return }
+            self.didShowCheckpointError = true
+            self.displayError(withMessage: "Recording recovery could not be updated. Keep Feet open and save this workout before closing the app.")
+        }
+    }
+
+    private var didShowCheckpointError = false
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard builder.hasRecovery, presentedViewController == nil else { return }
+        let alert = UIAlertController(title: "Recover workout?",
+            message: "Feet has an unfinished recording. Review it to save or continue. Time while Feet was closed will be excluded.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Review workout", style: .default) { [weak self] _ in
+            guard let self else { return }
+            do {
+                let recovered = try self.builder.recoverWorkout(isLocallySaved: { id in
+                    let saved: Workout? = DataManager.queryObject(from: id)
+                    return saved != nil
+                })
+                if !recovered {
+                    self.apply(status: self.builder.status)
+                    let banner = TextBanner(text: "This recording is already saved on this iPhone.")
+                    banner.show()
+                }
+            }
+            catch { self.displayError(withMessage: "The recording checkpoint could not be read. It has been kept. Reopen recording to retry or explicitly discard it.") }
+        })
+        alert.addAction(UIAlertAction(title: "Discard recording", style: .destructive) { [weak self] _ in
+            self?.confirmRecoveryDiscard()
+        })
+        alert.addAction(UIAlertAction(title: "Later", style: .cancel) { [weak self] _ in self?.dismiss(animated: true) })
+        present(alert, animated: true)
+    }
+
+    private func confirmRecoveryDiscard() {
+        let alert = UIAlertController(title: "Discard unfinished recording?", message: "This permanently removes the unsaved recording.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Discard", style: .destructive) { [weak self] _ in self?.builder.discardWorkout() })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
     }
     
     @objc func displayIndicationAlert() {
@@ -373,8 +416,12 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
     }
 
     private func apply(status: WorkoutBuilder.Status) {
+        typeView.isEnabled = !status.isActiveStatus && !status.isReviewingStatus && !builder.hasRecovery
+        typeView.setTitle(builder.selectedWorkoutType.description.uppercased(), for: .normal)
         readinessIndicatorView.status = status
         actionButton.transition(to: status)
+        actionButton.startButton.isEnabled = status == .ready && !builder.hasRecovery
+        actionButton.startButton.isUserInteractionEnabled = status == .ready && !builder.hasRecovery
         isModalInPresentation = status.isActiveStatus || status.isReviewingStatus
     }
 

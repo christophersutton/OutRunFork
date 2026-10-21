@@ -115,26 +115,8 @@ class NewWorkoutControllerActionButton: UIView {
             return
         }
 
-        switch (lastStatus, status) {
-        case (.waiting, .ready), (.ready, .waiting):
-            self.startButton.backgroundColor = status == .waiting ? .gray : .accentColor
-            self.startButton.isEnabled = status == .ready
-            self.startButton.isUserInteractionEnabled = status == .ready
-        case (.recording, .paused), (.paused, .recording), (.autoPaused, .paused):
-            self.pauseOrContinueButton.setImage(status == .paused ? .play : .pause, for: .normal)
-        case (.recording, .reviewing), (.paused, .reviewing), (.autoPaused, .reviewing),
-            (.reviewing, .ready), (.reviewing, .waiting), (.reviewing, .recording),
-            (.recording, .ready), (.paused, .ready), (.autoPaused, .ready), (.ready, .recording),
-            (.recording, .waiting), (.paused, .waiting), (.autoPaused, .waiting), (.waiting, .recording):
-            break
-        case (.recording, .autoPaused), (.autoPaused, .recording):
-            break
-        case (.ready, .autoPaused), (.ready, .paused):
-            self.pauseOrContinueButton.setImage(status == .paused ? .play : .pause, for: .normal)
-        default:
-            print("[NewWorkoutControllerActionButton] invalid transition: (oldStatus: \(self.lastStatus), newStatus: \(status)")
-            return
-        }
+        // Builder validates transitions. Recovery may arrive directly in review.
+        pauseOrContinueButton.setImage(status.isPausedStatus ? .play : .pause, for: .normal)
 
         self.lastStatus = status
         applyButtonVisibility(for: status)

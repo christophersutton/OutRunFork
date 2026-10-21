@@ -89,8 +89,7 @@ class WorkoutCompletionActionView: UIView {
     }
     
     @objc private func continueWorkout() {
-        handler.continueWorkout()
-        onFinish?()
+        if handler.continueWorkout() { onFinish?() }
     }
     
     @objc private func discardWorkout() {
@@ -102,8 +101,7 @@ class WorkoutCompletionActionView: UIView {
             return
         }
 
-        handler.discardWorkout()
-        onFinish?()
+        if handler.discardWorkout() { onFinish?() }
     }
 
     private func setSaving(_ isSaving: Bool) {

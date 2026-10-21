@@ -30,6 +30,7 @@ class StepCounter: WorkoutBuilderComponent {
     private var stepsBeforeLastPause: Int? = nil
     /// A boolean indicating whether steps should be recorded.
     private var shouldRecord: Bool = false
+    private var updateGeneration = 0
     /// The pedometer instance used to count the steps.
     private let pedometer: CMPedometer = CMPedometer()
     
@@ -44,16 +45,15 @@ class StepCounter: WorkoutBuilderComponent {
             return
         }
         
-        self.pedometer.startUpdates(from: date) { (data, error) in
-            
-            guard self.shouldRecord else {
-                self.stepsBeforeLastPause = self.stepsRelay.value
-                self.pedometer.stopUpdates()
-                return
+        updateGeneration += 1
+        let generation = updateGeneration
+        self.pedometer.startUpdates(from: date) { [weak self] data, error in
+            let count = data.map { Int(truncating: $0.numberOfSteps) }
+            DispatchQueue.main.async {
+                guard let self, self.shouldRecord, self.updateGeneration == generation,
+                      let count else { return }
+                self.stepsRelay.accept(count + (self.stepsBeforeLastPause ?? 0))
             }
-            
-            let steps = Int(truncating: data?.numberOfSteps ?? 0) + (self.stepsBeforeLastPause ?? 0)
-            self.stepsRelay.accept(steps)
         }
     }
     
@@ -75,7 +75,12 @@ class StepCounter: WorkoutBuilderComponent {
             guard let self else { return }
             self.shouldRecord = newStatus == .recording
             
-            guard newStatus == .recording else { return }
+            guard newStatus == .recording else {
+                self.updateGeneration += 1
+                self.stepsBeforeLastPause = self.stepsRelay.value
+                self.pedometer.stopUpdates()
+                return
+            }
             self.startUpdating(from: Date())
         }
     }
@@ -86,13 +91,9 @@ class StepCounter: WorkoutBuilderComponent {
             guard let self else { return }
             self.stepsRelay.accept(snapshot?.steps)
             self.stepsBeforeLastPause = snapshot?.steps
-            self.shouldRecord = snapshot != nil
-            
-            if snapshot != nil { // continue
-                self.startUpdating(from: Date())
-            } else {
-                self.pedometer.stopUpdates()
-            }
+            self.updateGeneration += 1
+            self.shouldRecord = false
+            self.pedometer.stopUpdates()
         }
     }
     
@@ -105,8 +106,8 @@ class StepCounter: WorkoutBuilderComponent {
     func bind(builder: WorkoutBuilder) {
         
         let input = Input(
-            insufficientPermission: insufficientPermissionRelay.asBackgroundPublisher(),
-            steps: stepsRelay.asBackgroundPublisher()
+            insufficientPermission: insufficientPermissionRelay.eraseToAnyPublisher(),
+            steps: stepsRelay.eraseToAnyPublisher()
         )
         
         let output = builder.tranform(input)
