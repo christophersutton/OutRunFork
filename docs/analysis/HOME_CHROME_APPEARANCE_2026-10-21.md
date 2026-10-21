@@ -58,3 +58,9 @@ unchanged because their compiled interpretation was not established; the native
 UIColor contrast test will check the actual compiled home palette. If runtime
 shows a wrong toolbar surface, capture top/scrolled and live-transition evidence
 before introducing a scoped surface fix.
+
+## Main runtime verification
+
+Reproduced before the fix on iOS 26.2: the home Timeline and Settings icons stayed black in dark mode while Stats and the add button adapted. At source `45c5109`, all **141 native XCTest cases pass**, including the three new appearance cases. Screenshot checks show the selected Timeline icon orange and the unselected Settings icon white in dark mode; switching the running app to light mode changes the unselected icon and sort control to black. The sort control is white in dark mode. No appearance override was introduced.
+
+Feet 1.3 **build 2** compiled and passed strict signature verification. It was installed successfully on the owner’s phone. Automatic launch was blocked because the phone had locked; opening Feet manually will launch the installed update. Settings now displays the actual version and build. The prior build-1 installation and launch were verified, and its post-launch database matched the fresh private backup exactly. This follow-up changes appearance and build identification only; no database replacement was performed.
