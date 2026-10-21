@@ -1,6 +1,6 @@
 # Move: Feet
 
-Move: Feet is an iOS app for recording and viewing your outdoor workouts — running, walking, hiking, cycling and skating. It is a fork of [OutRun](https://github.com/timfraedrich/OutRun) by Tim Fraedrich.
+Move: Feet is an iOS app for recording and viewing your outdoor workouts — running, walking and hiking. It is a fork of [OutRun](https://github.com/timfraedrich/OutRun) by Tim Fraedrich.
 
 This project is fully open-source (GPL-3.0-or-later) and ad-free.
 
@@ -13,7 +13,7 @@ Move: Feet is a fork of [OutRun](https://github.com/timfraedrich/OutRun) by Tim 
 Feet retains OutRun’s focus on customisation and privacy. The list of features includes:
 
 - Keep full control over your data
-- Record your outdoor workouts (Running, Walking, Hiking, Cycling and Skating)
+- Record your outdoor workouts (Running, Walking and Hiking)
 - View detailed statistics
 - Export your workouts as GPX or OutRun-Backup (.orbup)
 - Fully customise the recording process
