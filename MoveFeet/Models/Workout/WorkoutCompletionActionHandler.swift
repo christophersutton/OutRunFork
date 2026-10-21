@@ -22,208 +22,99 @@ import Foundation
 import UIKit
 
 class WorkoutCompletionActionHandler {
-
-    private typealias SnapshotProvider = () -> TempWorkout?
-
-    private final class SnapshotResolver: @unchecked Sendable {
-        private let snapshotProvider: SnapshotProvider
-        private let lock = NSLock()
-        private var snapshot: TempWorkout?
-
-        init(snapshot: TempWorkout) {
-            self.snapshotProvider = { Optional(snapshot) }
-            self.snapshot = snapshot
-        }
-
-        init(snapshotProvider: @escaping SnapshotProvider) {
-            self.snapshotProvider = snapshotProvider
-        }
-
-        func resolveSnapshot() -> TempWorkout? {
-            lock.lock()
-            defer { lock.unlock() }
-
-            if let snapshot = snapshot {
-                return snapshot
-            }
-
-            guard let snapshot = snapshotProvider() else {
-                return nil
-            }
-
-            self.snapshot = snapshot
-            return snapshot
-        }
-    }
-
-    private final class BuilderReference: @unchecked Sendable {
-        private weak var builder: WorkoutBuilder?
-
-        init(builder: WorkoutBuilder) {
-            self.builder = builder
-        }
-
-        @MainActor
-        func continueWorkout(from snapshot: TempWorkout) -> Bool {
-            guard let builder else {
-                return false
-            }
-
-            builder.continueWorkout(from: snapshot)
-            return true
-        }
-
-        @MainActor
-        func discardWorkout() {
-            builder?.discardWorkout()
-        }
-    }
-    
-    /// Builds the `TempWorkout` only for actions that actually need it.
-    private let snapshotResolver: SnapshotResolver
-    private let snapshotQueue = DispatchQueue(label: "outrun.workout.completion.snapshot", qos: .userInitiated)
-    
-    /// A weak reference to a `WorkoutBuilder` to continue the workout
-    private let builderReference: BuilderReference
-    
-    /// If `true` the `WorkoutCompletionActionHandler` did already perform an action, so no additional action should be taken
-    private var didPerformAction: Bool = false
+    private let snapshotProvider: () -> TempWorkout?
+    private var snapshot: TempWorkout?
+    private weak var builder: WorkoutBuilder?
+    private var didPerformAction = false
+    private var saveOperation: RecordingSaveOperation<Workout>?
     var onFinalAction: (() -> Void)?
-    
-    /**
-     Initialises the `WorkoutCompletionActionHandler` with the needed snapshot of an `TempWorkout`
-     - parameter snapshot: a `TempWorkout` object to be saved, discarded or continued
-     */
-    public init(snapshot: TempWorkout, builder: WorkoutBuilder) {
-        
-        self.snapshotResolver = SnapshotResolver(snapshot: snapshot)
-        self.builderReference = BuilderReference(builder: builder)
-        
+
+    init(snapshot: TempWorkout, builder: WorkoutBuilder) {
+        self.snapshot = snapshot
+        self.snapshotProvider = { snapshot }
+        self.builder = builder
     }
 
-    public init(snapshotProvider: @escaping () -> TempWorkout?, builder: WorkoutBuilder) {
-
-        self.snapshotResolver = SnapshotResolver(snapshotProvider: snapshotProvider)
-        self.builderReference = BuilderReference(builder: builder)
-
+    init(snapshotProvider: @escaping () -> TempWorkout?, builder: WorkoutBuilder) {
+        self.snapshotProvider = snapshotProvider
+        self.builder = builder
     }
 
-    private static func showBanner(messageKey: String) {
+    private func resolveSnapshot() -> TempWorkout? {
+        if let snapshot { return snapshot }
+        snapshot = snapshotProvider()
+        return snapshot
+    }
 
+    private func showBanner(_ text: String) {
         Task { @MainActor in
-            let banner = TextBanner(text: LS[messageKey])
+            let banner = TextBanner(text: text)
             banner.duration = 5
             banner.show()
         }
-
     }
-    
-    /**
-     Saves the workout if no other action was already performed
-     */
-    public func saveWorkout(completion: @escaping (Bool) -> Void = { _ in }) {
-        
-        guard !self.didPerformAction else {
+
+    func saveWorkout(completion: @escaping (Bool) -> Void = { _ in }) {
+        guard !didPerformAction else { return }
+        guard let snapshot = resolveSnapshot(), let id = snapshot.uuid else {
+            builder?.saveFailed()
+            showBanner(LS["NewWorkoutCompletion.Save.Error"])
+            completion(false)
             return
         }
-        
-        self.didPerformAction = true
-        onFinalAction?()
-
-        let snapshotResolver = self.snapshotResolver
-        snapshotQueue.async {
-
-            guard let snapshot = snapshotResolver.resolveSnapshot() else {
-                Self.showBanner(messageKey: "NewWorkoutCompletion.Save.Error")
-                Task { @MainActor in
-                    self.didPerformAction = false
-                    completion(false)
+        didPerformAction = true
+        let operation = RecordingSaveOperation<Workout>(
+            lookup: { DataManager.queryObject(from: $0) as Workout? },
+            save: { callback in
+                DataManager.saveWorkout(object: snapshot) { success, error, saved in
+                    DispatchQueue.main.async { callback(success && error == nil ? saved : nil) }
                 }
+            },
+            export: { saved, callback in
+                HealthStoreManager.saveHealthWorkout(for: saved) { error, healthWorkout in
+                    DispatchQueue.main.async { callback(error == nil && healthWorkout != nil) }
+                }
+            },
+            didSaveLocally: { [weak self] in self?.builder?.didSaveLocally() }
+        )
+        saveOperation = operation
+        operation.begin(id: id, healthEnabled: UserPreferences.synchronizeWorkoutsWithAppleHealth.value) { [self] outcome in
+            guard outcome != .localFailure else {
+                didPerformAction = false
+                builder?.saveFailed()
+                showBanner(LS["NewWorkoutCompletion.Save.Error"])
+                completion(false)
                 return
             }
-
-            DataManager.saveWorkout(object: snapshot) { (success, error, workout) in
-
-                Task { @MainActor in
-                    if !success {
-                        self.didPerformAction = false
-                    }
-
-                    let banner = TextBanner(text: LS["NewWorkoutCompletion.Save." + (success ? "Success" : "Error")])
-                    banner.duration = 5
-                    banner.show()
-
-                    completion(success)
-
-                    guard success else { return }
-                    UIApplication.shared.topMostViewController?.dismiss(animated: true)
-                }
-
+            onFinalAction?()
+            // Health's adapter may report partial authorization as an error. Do not imply
+            // that local save failed or offer another local insert in that case.
+            if outcome == .savedHealthFailure {
+                showBanner("Workout saved on this iPhone. Apple Health export failed or is incomplete. You can retry Health sync later.")
+            } else {
+                showBanner(LS["NewWorkoutCompletion.Save.Success"])
             }
-            
-        }
-        
-    }
-    
-    /**
-     Continues the workout if no other action was already performed and the builder is still active
-     */
-    @MainActor
-    public func continueWorkout() {
-        
-        guard !self.didPerformAction else {
-            return
-        }
-        
-        self.didPerformAction = true
-
-        let snapshotResolver = self.snapshotResolver
-        let builderReference = self.builderReference
-        snapshotQueue.async {
-
-            guard let snapshot = snapshotResolver.resolveSnapshot() else {
-                Self.showBanner(messageKey: "NewWorkoutCompletion.Continue.Error")
-                return
-            }
-
+            completion(true)
             Task { @MainActor in
-                var messageKey = ""
-
-                if builderReference.continueWorkout(from: snapshot) {
-
-                    messageKey = "NewWorkoutCompletion.Continue.Success"
-
-                } else {
-
-                    messageKey = "NewWorkoutCompletion.Continue.Error"
-
-                }
-
-                let banner = TextBanner(text: LS[messageKey])
-                banner.duration = 5
-                banner.show()
+                UIApplication.shared.topMostViewController?.dismiss(animated: true)
             }
+        }
+    }
 
-        }
-        
+    @discardableResult
+    func continueWorkout() -> Bool {
+        guard !didPerformAction, let snapshot = resolveSnapshot(), let builder else { return false }
+        didPerformAction = true
+        builder.continueWorkout(from: snapshot)
+        showBanner(LS["NewWorkoutCompletion.Continue.Success"])
+        return true
     }
-    
-    /**
-     Discards the workout if no other action was already performed
-     */
-    public func discardWorkout() {
-        
-        guard !self.didPerformAction else {
-            return
-        }
-        
-        self.didPerformAction = true
+
+    @discardableResult
+    func discardWorkout() -> Bool {
+        guard !didPerformAction, let builder, builder.discardWorkout() else { return false }
+        didPerformAction = true
         onFinalAction?()
-        let builderReference = self.builderReference
-        Task { @MainActor in
-            builderReference.discardWorkout()
-        }
-        
+        return true
     }
-    
 }

@@ -28,6 +28,7 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
     
     /// An instance of `CLLocationManager` used as the data source for locations.
     private var locationManager: CLLocationManager = CLLocationManager()
+    private let prepareSensors: Bool
     /// A boolean indicating whether locations should be recorded.
     private var shouldRecord: Bool = false
     /// A boolean indicating whether the distance should be updated.
@@ -38,6 +39,10 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
     private var averageAccuracy: Double = 0
     /// An array of altitude samples provided by the `WorkoutBuilder`.
     private var altitudeData: [AltitudeManagement.AltitudeSample] = []
+
+    private var locationGate = RecordingLocationGate()
+    private var distanceAnchor: CLLocation?
+    private var recordingStart: Date?
 
     static func locationUpdatesEnabled(forGPSAccuracyPreference gpsAccuracyPreference: Double?) -> Bool {
         gpsAccuracyPreference != -1
@@ -55,6 +60,7 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
     }
 
     private func startLocationUpdatesIfEnabled() {
+        guard prepareSensors else { return }
         guard Self.locationUpdatesEnabled(forGPSAccuracyPreference: UserPreferences.gpsAccuracy.value) else {
             locationManager.stopUpdatingLocation()
             readinessRelay.accept(.ready(LocationManagement.self))
@@ -127,6 +133,7 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
     private var statusBinder: (WorkoutBuilder.Status) -> Void {
         return { [weak self] newStatus in
             guard let self else { return }
+            if newStatus != .recording { self.distanceAnchor = nil }
             self.shouldRecord = newStatus.isActiveStatus
             self.shouldUpdateDistance = newStatus.isActiveStatus && !newStatus.isPausedStatus
         }
@@ -159,6 +166,7 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
             self.locationsRelay.accept(snapshot?.routeData.map { .init(from: $0) } ?? [])
             self.distanceRelay.accept(snapshot?.distance ?? 0)
             self.currentLocationRelay.accept(nil)
+            self.distanceAnchor = nil
             self.startLocationUpdatesIfEnabled()
         }
     }
@@ -166,24 +174,34 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
     
     // MARK: WorkoutBuilderComponent
     
-    public required init(builder: WorkoutBuilder) {
+    public required convenience init(builder: WorkoutBuilder) {
+        self.init(builder: builder, prepareSensors: true)
+    }
+
+    init(builder: WorkoutBuilder, prepareSensors: Bool) {
+        self.prepareSensors = prepareSensors
         super.init()
         self.bind(builder: builder)
-        prepare()
+        if prepareSensors { prepare() }
+        else {
+            desiredAccuracy = 20
+            readinessRelay.accept(.ready(LocationManagement.self))
+        }
     }
     
     public func bind(builder: WorkoutBuilder) {
         
         let input = Input(
-            readiness: readinessRelay.asBackgroundPublisher(),
-            insufficientPermission: insufficientPermissionRelay.asBackgroundPublisher(),
-            distance: distanceRelay.asBackgroundPublisher(),
-            currentLocation: currentLocationRelay.asBackgroundPublisher(),
-            locations: locationsRelay.asBackgroundPublisher()
+            readiness: readinessRelay.eraseToAnyPublisher(),
+            insufficientPermission: insufficientPermissionRelay.eraseToAnyPublisher(),
+            distance: distanceRelay.eraseToAnyPublisher(),
+            currentLocation: currentLocationRelay.eraseToAnyPublisher(),
+            locations: locationsRelay.eraseToAnyPublisher()
         )
         
         let output = builder.tranform(input)
      
+        output.startDate.sink { [weak self] in self?.recordingStart = $0 }.store(in: &cancellables)
         output.status.sink(receiveValue: statusBinder).store(in: &cancellables)
         output.altitudes.sink(receiveValue: altitudesBinder).store(in: &cancellables)
         output.isSuspended.sink(receiveValue: isSuspendedBinder).store(in: &cancellables)
@@ -224,30 +242,34 @@ public class LocationManagement: NSObject, WorkoutBuilderComponent, CLLocationMa
             return
         }
 
-        updateDesiredAccuracy(from: locations)
+        // CLLocationManager is created on main; all recording mutations stay on that thread.
+        process(locations, now: Date())
+    }
 
-        guard self.shouldRecord else {
-            if let lastLocation = locations.last {
-                currentLocationRelay.accept(lastLocation.asTemp)
-            }
-            let isReady = locations.contains { checkForAppropriateAccuracy($0) }
-            let newStatus: WorkoutBuilderComponentStatus = isReady ? .ready(LocationManagement.self) : .preparing(LocationManagement.self)
-            
-            guard readinessRelay.value != newStatus else { return }
-            readinessRelay.accept(newStatus)
-            return
+    func process(_ locations: [CLLocation], now: Date) {
+        let valid = locations.filter { location in
+            location.altitude.isFinite && location.speed.isFinite && location.course.isFinite
+                && locationGate.accept(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude,
+                accuracy: location.horizontalAccuracy, timestamp: location.timestamp, now: now)
         }
-        
-        // recording
-        for location in locations where checkForAppropriateAccuracy(location) {
-            
-            let location = refineLocation(location)
-            locationsRelay.accept(locationsRelay.value + [location.asTemp])
-            
-            let lastIndex = self.locationsRelay.value.count - 2
-            guard shouldUpdateDistance, let lastLocation = locationsRelay.value.safeValue(for: lastIndex) else { continue }
-            let newDistance = location.distance(from: lastLocation.clLocation) + distanceRelay.value
-            distanceRelay.accept(newDistance)
+        updateDesiredAccuracy(from: valid)
+        for rawLocation in valid {
+            let appropriateAccuracy = checkForAppropriateAccuracy(rawLocation)
+            let location = refineLocation(rawLocation)
+            if shouldRecord, appropriateAccuracy, recordingStart.map({ location.timestamp >= $0 }) ?? false {
+                // Distance and route are delivered synchronously before Stop can capture a snapshot.
+                if shouldUpdateDistance, let anchor = distanceAnchor {
+                    distanceRelay.accept(distanceRelay.value + location.distance(from: anchor))
+                }
+                distanceAnchor = shouldUpdateDistance ? location : nil
+                locationsRelay.accept(locationsRelay.value + [location.asTemp])
+            }
+            // Publish throughout recording, including while paused. Auto-pause can synchronously
+            // change status here, so finish storing this sample before publishing it.
+            currentLocationRelay.accept(location.asTemp)
+            if !shouldRecord {
+                readinessRelay.accept(appropriateAccuracy ? .ready(LocationManagement.self) : .preparing(LocationManagement.self))
+            }
         }
     }
     

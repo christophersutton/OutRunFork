@@ -170,7 +170,7 @@ class LiveStats: WorkoutBuilderComponent {
             .share()
 
         liveStatsTimer
-            .combineLatest(output.startDate, output.pauses, output.endDate)
+            .combineLatest(output.startDate, output.pauses, output.durationEndDate)
             .map(durationMapper)
             .sink(receiveValue: durationRelay.accept)
             .store(in: &cancellables)

@@ -23,6 +23,9 @@ import CoreLocation
 import Combine
 import CombineExt
 
+/// Recording inputs, components and actions are synchronous on the main thread. Sensors
+/// hop to main before publishing. Keep this path free of asynchronous Combine delivery:
+/// Stop must see every route/distance/step update already delivered to the builder.
 public class WorkoutBuilder: ApplicationStateObserver {
     
     // MARK: Public
@@ -44,13 +47,36 @@ public class WorkoutBuilder: ApplicationStateObserver {
      - parameter workoutType: an optional of the type of workout that is supposed to be recorded; if `nil` the `WorkoutBuilder` sets it appropriately from `UserPreferences.standardWorkoutType`
      - parameter delegate: the delegate that is supposed to receive updates
      */
-    public init(workoutType: Workout.WorkoutType? = nil) {
+    typealias CheckpointStore = RecordingCheckpointStore<TempWorkout>
+    private let checkpointStore: CheckpointStore
+    private let now: () -> Date
+    private var sessionID = UUID()
+    private var finalized = false
+    private var checkpointTimer: AnyCancellable?
+    var checkpointError: ((Error) -> Void)?
+    var hasRecovery: Bool { checkpointStore.exists && startDateRelay.value == nil }
+    var selectedWorkoutType: Workout.WorkoutType { workoutTypeRelay.value }
+
+    static var recoveryURL: URL {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("Recording/current-session.json")
+    }
+
+    public convenience init(workoutType: Workout.WorkoutType? = nil) {
+        self.init(workoutType: workoutType, checkpointStore: CheckpointStore(url: Self.recoveryURL))
+    }
+
+    init(workoutType: Workout.WorkoutType? = nil, checkpointStore: CheckpointStore, now: @escaping () -> Date = Date.init) {
+        self.checkpointStore = checkpointStore
+        self.now = now
         
         let workoutType = workoutType ?? Workout.WorkoutType(rawValue: UserPreferences.standardWorkoutType.value)
         self.workoutTypeRelay = CurrentValueRelay(workoutType)
         
         self.prepareBindings()
         self.startObservingApplicationState()
+        checkpointTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
+            .sink { [weak self] _ in self?.checkpoint() }
     }
 
     deinit {
@@ -63,33 +89,28 @@ public class WorkoutBuilder: ApplicationStateObserver {
         
         // reacting to status changes
         statusRelay.sink(receiveValue: { [weak self] newStatus in
-            guard let self else { return }
-            let timestamp = Date()
+            guard let self, !self.restoring else { return }
+            let timestamp = self.now()
             
             switch newStatus {
             case .recording: // starting / resuming workout
                 if self.startDateRelay.value == nil {
+                    self.finalized = false
+                    self.sessionID = UUID()
                     self.startDateRelay.accept(timestamp)
                     
                 } else if let lastPause = self.lastPause {
                     self.lastPause = nil
-                    if lastPause.type == .automatic, lastPause.startingAt.distance(to: timestamp) < 3 {
-                        return // to eliminate short auto pauses
-                    }
                     let pause = TempWorkoutPause(uuid: nil, startDate: lastPause.startingAt, endDate: timestamp, pauseType: lastPause.type)
                     let pauses = self.pausesRelay.value + [pause]
                     self.pausesRelay.accept(pauses)
                 }
+                self.openPauseStartRelay.accept(nil)
             
             case .paused, .autoPaused: // (auto) pausing workout
                 let pauseType = newStatus == .paused ? WorkoutPause.WorkoutPauseType.manual : .automatic
-                if let lastPauseObject = self.pausesRelay.value.last, lastPauseObject.pauseType == pauseType, lastPauseObject.endDate.distance(to: timestamp) < 3 {
-                    // last pause is of same type and under three seconds in the past -> merge
-                    self.lastPause = (type: pauseType, startingAt: lastPauseObject.startDate)
-                } else {
-                    // normal pause will be created
-                    self.lastPause = (type: pauseType, startingAt: self.lastPause?.startingAt ?? timestamp)
-                }
+                self.lastPause = (type: pauseType, startingAt: self.lastPause?.startingAt ?? timestamp)
+                self.openPauseStartRelay.accept(self.lastPause?.startingAt)
                 
             case .reviewing: // stopping workout for save/discard/continue review
                 guard self.startDateRelay.value != nil else { return }
@@ -102,7 +123,9 @@ public class WorkoutBuilder: ApplicationStateObserver {
                 }
                 
                 self.endDateRelay.accept(timestamp)
+                self.openPauseStartRelay.accept(nil)
                 
+                self.checkpoint(phase: .reviewing)
                 if let snapshotProvider = self.createSnapshotProvider() {
                     let actionHandler = WorkoutCompletionActionHandler(snapshotProvider: snapshotProvider, builder: self)
                     self.completionActionHandlerRelay.accept(actionHandler)
@@ -111,6 +134,7 @@ public class WorkoutBuilder: ApplicationStateObserver {
             default: // ignore everything else
                 break
             }
+            self.checkpoint()
         }).store(in: &cancellables)
         
     }
@@ -126,7 +150,9 @@ public class WorkoutBuilder: ApplicationStateObserver {
     private let workoutTypeRelay: CurrentValueRelay<Workout.WorkoutType>
     /// The relay to publish the date the recorded workout was started.
     private let startDateRelay = CurrentValueRelay<Date?>(nil)
-    /// The relay to publish the date the recorded workout was stopped.
+    /// Freezes live duration while a pause is still open.
+    private let openPauseStartRelay = CurrentValueRelay<Date?>(nil)
+    /// The final end date, set only when entering review.
     private let endDateRelay = CurrentValueRelay<Date?>(nil)
     /// The relay to publish the distance shared by components.
     private let distanceRelay = CurrentValueRelay<Double>(0)
@@ -197,6 +223,7 @@ public class WorkoutBuilder: ApplicationStateObserver {
         let workoutType: AnyPublisher<Workout.WorkoutType, Never>
         let startDate: AnyPublisher<Date?, Never>
         let endDate: AnyPublisher<Date?, Never>
+        let durationEndDate: AnyPublisher<Date?, Never>
         let distance: AnyPublisher<Double, Never>
         let steps: AnyPublisher<Int?, Never>
         let pauses: AnyPublisher<[TempWorkoutPause], Never>
@@ -218,32 +245,55 @@ public class WorkoutBuilder: ApplicationStateObserver {
      */
     public func tranform(_ input: WorkoutBuilder.Input) -> Output {
         
+        input.workoutType?.sink { [weak self] type in
+            guard let self, self.startDateRelay.value == nil, !self.hasRecovery else { return }
+            self.workoutTypeRelay.accept(type)
+        }.store(in: &cancellables)
         input.readiness?.sink(receiveValue: readinessBinder).store(in: &cancellables)
         input.statusSuggestion?.sink(receiveValue: statusSuggestionBinder).store(in: &cancellables)
         input.insufficientPermission?.sink(receiveValue: insufficientPermissionRelay.accept).store(in: &cancellables)
-        input.distance?.sink(receiveValue: distanceRelay.accept).store(in: &cancellables)
-        input.steps?.sink(receiveValue: stepsRelay.accept).store(in: &cancellables)
-        input.currentLocation?.sink(receiveValue: currentLocationRelay.accept).store(in: &cancellables)
-        input.locations?.sink(receiveValue: locationsRelay.accept).store(in: &cancellables)
+        input.distance?.sink { [weak self] value in
+            guard let self, !self.status.isReviewingStatus else { return }
+            self.distanceRelay.accept(value)
+        }.store(in: &cancellables)
+        input.steps?.sink { [weak self] value in
+            guard let self, !self.status.isReviewingStatus else { return }
+            self.stepsRelay.accept(value)
+            self.checkpoint()
+        }.store(in: &cancellables)
+        input.currentLocation?.sink { [weak self] value in
+            guard let self else { return }
+            self.currentLocationRelay.accept(value)
+            self.checkpoint()
+        }.store(in: &cancellables)
+        input.locations?.sink { [weak self] value in
+            guard let self, !self.status.isReviewingStatus else { return }
+            self.locationsRelay.accept(value)
+        }.store(in: &cancellables)
         input.altitudes?.sink(receiveValue: altitudesRelay.accept).store(in: &cancellables)
-        input.heartRates?.sink(receiveValue: heartRatesRelay.accept).store(in: &cancellables)
+        input.heartRates?.sink { [weak self] value in
+            guard let self, !self.status.isReviewingStatus else { return }
+            self.heartRatesRelay.accept(value)
+            self.checkpoint()
+        }.store(in: &cancellables)
         
         return Output(
-            status: statusRelay.asBackgroundPublisher(),
-            workoutType: workoutTypeRelay.asBackgroundPublisher(),
-            startDate: startDateRelay.asBackgroundPublisher(),
-            endDate: endDateRelay.asBackgroundPublisher(),
-            distance: distanceRelay.asBackgroundPublisher(),
-            steps: stepsRelay.asBackgroundPublisher(),
-            pauses: pausesRelay.asBackgroundPublisher(),
-            currentLocation: currentLocationRelay.asBackgroundPublisher(),
-            locations: locationsRelay.asBackgroundPublisher(),
-            altitudes: altitudesRelay.asBackgroundPublisher(),
-            heartRates: heartRatesRelay.asBackgroundPublisher(),
-            insufficientPermission: insufficientPermissionRelay.asBackgroundPublisher(),
-            isUISuspended: uiSuspensionRelay.asBackgroundPublisher(),
-            isSuspended: suspensionRelay.asBackgroundPublisher(),
-            onReset: resetRelay.asBackgroundPublisher(),
+            status: statusRelay.eraseToAnyPublisher(),
+            workoutType: workoutTypeRelay.eraseToAnyPublisher(),
+            startDate: startDateRelay.eraseToAnyPublisher(),
+            endDate: endDateRelay.eraseToAnyPublisher(),
+            durationEndDate: endDateRelay.combineLatest(openPauseStartRelay).map { $0 ?? $1 }.eraseToAnyPublisher(),
+            distance: distanceRelay.eraseToAnyPublisher(),
+            steps: stepsRelay.eraseToAnyPublisher(),
+            pauses: pausesRelay.eraseToAnyPublisher(),
+            currentLocation: currentLocationRelay.eraseToAnyPublisher(),
+            locations: locationsRelay.eraseToAnyPublisher(),
+            altitudes: altitudesRelay.eraseToAnyPublisher(),
+            heartRates: heartRatesRelay.eraseToAnyPublisher(),
+            insufficientPermission: insufficientPermissionRelay.eraseToAnyPublisher(),
+            isUISuspended: uiSuspensionRelay.eraseToAnyPublisher(),
+            isSuspended: suspensionRelay.eraseToAnyPublisher(),
+            onReset: resetRelay.eraseToAnyPublisher(),
             completionActionHandler: completionActionHandlerRelay.eraseToAnyPublisher()
         )
     }
@@ -278,9 +328,16 @@ public class WorkoutBuilder: ApplicationStateObserver {
         }
     }
     
+    /// Shared by the Pause/Play control and behavioral tests.
+    func togglePause() {
+        statusSuggestionBinder(status.isPausedStatus ? .recording : .paused)
+    }
+
     // MARK: - Create Snapshot
 
     private struct SnapshotValues {
+        let sessionID: UUID
+        let heartRates: [TempWorkoutHeartRateDataSample]
         let workoutType: Workout.WorkoutType
         let distance: Double
         let steps: Int?
@@ -290,7 +347,7 @@ public class WorkoutBuilder: ApplicationStateObserver {
         let pauses: [TempWorkoutPause]
 
         func makeSnapshot() -> TempWorkout {
-            NewWorkout(
+            let snapshot = NewWorkout(
                 workoutType: workoutType,
                 distance: distance,
                 steps: steps,
@@ -300,11 +357,13 @@ public class WorkoutBuilder: ApplicationStateObserver {
                 comment: nil,
                 isUserModified: false,
                 finishedRecording: true,
-                heartRates: [],
+                heartRates: heartRates,
                 routeData: routeData,
                 pauses: pauses,
                 workoutEvents: []
             )
+            snapshot.uuid = sessionID
+            return snapshot
         }
     }
     
@@ -312,11 +371,13 @@ public class WorkoutBuilder: ApplicationStateObserver {
      Captures the values needed to create a final snapshot later.
      - returns: a provider that constructs the recorded workout; will be `nil` when start or end cannot be determined
      */
-    private func createSnapshotProvider() -> (() -> TempWorkout?)? {
+    func createSnapshotProvider() -> (() -> TempWorkout?)? {
         
         guard let start = startDateRelay.value, let end = endDateRelay.value else { return nil }
 
         let values = SnapshotValues(
+            sessionID: sessionID,
+            heartRates: heartRatesRelay.value,
             workoutType: workoutTypeRelay.value,
             distance: distanceRelay.value,
             steps: stepsRelay.value,
@@ -341,15 +402,84 @@ public class WorkoutBuilder: ApplicationStateObserver {
     private func reset() {
         
         startDateRelay.accept(nil)
+        distanceRelay.accept(0)
+        stepsRelay.accept(nil)
+        locationsRelay.accept([])
+        heartRatesRelay.accept([])
         endDateRelay.accept(nil)
         lastPause = nil
+        openPauseStartRelay.accept(nil)
         pausesRelay.accept([])
         resetRelay.accept(nil)
         statusRelay.accept(readinessStatus)
     }
 
-    public func discardWorkout() {
-        reset()
+    @discardableResult
+    public func discardWorkout() -> Bool {
+        do {
+            try checkpointStore.discard()
+            reset()
+            return true
+        } catch {
+            checkpointError?(error)
+            return false
+        }
+    }
+
+    /// Called only after the local record is known to exist, never after a Health failure.
+    func didSaveLocally() {
+        finalized = true
+        do { try checkpointStore.clear(sessionID: sessionID) }
+        catch { checkpointError?(error) }
+    }
+
+    func saveFailed() { checkpoint(phase: .failedSave) }
+
+    /// Recovery always opens in review at the durable end time. Continue adds the entire
+    /// interruption as a pause; neither launch nor a failed save starts an elapsed-time clock.
+    @discardableResult
+    func recoverWorkout(isLocallySaved: (UUID) -> Bool) throws -> Bool {
+        guard let checkpoint = try checkpointStore.load() else { return false }
+        // A crash after commit must not offer Continue on a record already saved locally.
+        if isLocallySaved(checkpoint.sessionID) {
+            try checkpointStore.clear(sessionID: checkpoint.sessionID)
+            return false
+        }
+        sessionID = checkpoint.sessionID
+        let snapshot = checkpoint.snapshot
+        guard snapshot.uuid == sessionID else { throw CocoaError(.coderReadCorrupt) }
+        workoutTypeRelay.accept(snapshot.workoutType)
+        startDateRelay.accept(snapshot.startDate)
+        endDateRelay.accept(snapshot.endDate)
+        pausesRelay.accept(snapshot.pauses.map { .init(from: $0) })
+        distanceRelay.accept(snapshot.distance)
+        stepsRelay.accept(snapshot.steps)
+        locationsRelay.accept(snapshot.routeData.map { .init(from: $0) })
+        heartRatesRelay.accept(snapshot.heartRates.map { .init(from: $0) })
+        lastPause = nil
+        // Do not re-run the reviewing transition, which would replace the durable end date.
+        restoring = true
+        statusRelay.accept(.reviewing)
+        restoring = false
+        completionActionHandlerRelay.accept(WorkoutCompletionActionHandler(snapshot: snapshot, builder: self))
+        return true
+    }
+
+    private var restoring = false
+
+    func checkpoint(phase: CheckpointStore.Phase? = nil) {
+        guard !finalized, !restoring, (!status.isReviewingStatus || phase != nil), let start = startDateRelay.value else { return }
+        let timestamp = endDateRelay.value ?? now()
+        var pauses = pausesRelay.value
+        if let pause = lastPause {
+            pauses.append(TempWorkoutPause(uuid: nil, startDate: pause.startingAt, endDate: timestamp, pauseType: pause.type))
+        }
+        let snapshot = SnapshotValues(sessionID: sessionID, heartRates: heartRatesRelay.value,
+            workoutType: workoutTypeRelay.value, distance: distanceRelay.value, steps: stepsRelay.value,
+            startDate: start, endDate: timestamp, routeData: locationsRelay.value, pauses: pauses).makeSnapshot()
+        let phase = phase ?? (status.isReviewingStatus ? .reviewing : status.isPausedStatus ? .paused : .recording)
+        do { try checkpointStore.save(.init(sessionID: sessionID, phase: phase, capturedAt: timestamp, snapshot: snapshot)) }
+        catch { checkpointError?(error) }
     }
     
     /**
@@ -358,6 +488,11 @@ public class WorkoutBuilder: ApplicationStateObserver {
      */
     public func continueWorkout(from snapshot: TempWorkout) {
         
+        workoutTypeRelay.accept(snapshot.workoutType)
+        distanceRelay.accept(snapshot.distance)
+        stepsRelay.accept(snapshot.steps)
+        locationsRelay.accept(snapshot.routeData.map { .init(from: $0) })
+        heartRatesRelay.accept(snapshot.heartRates.map { .init(from: $0) })
         startDateRelay.accept(snapshot.startDate)
         endDateRelay.accept(nil)
         pausesRelay.accept(snapshot.pauses.map { TempWorkoutPause(uuid: $0.uuid, startDate: $0.startDate, endDate: $0.endDate, pauseType: $0.pauseType) })
@@ -383,7 +518,7 @@ public class WorkoutBuilder: ApplicationStateObserver {
         var isValid = false
         
         switch newStatus {
-        case .recording: isValid = [.ready, .paused, .autoPaused, .reviewing].contains(oldStatus)
+        case .recording: isValid = !hasRecovery && [.ready, .paused, .autoPaused, .reviewing].contains(oldStatus)
         case .paused: isValid = [.recording, .autoPaused].contains(oldStatus)
         case .waiting: isValid = oldStatus == .ready
         case .ready: isValid = oldStatus == .waiting
@@ -398,6 +533,7 @@ public class WorkoutBuilder: ApplicationStateObserver {
     
     /// Implementation of the `ApplicationStateObserver` protocol sending a suspension command to all subscribers when not recording to save battery life.
     func didUpdateApplicationState(to state: ApplicationState) {
+        checkpoint()
         self.uiSuspensionRelay.accept(state == .background)
         guard !self.statusRelay.value.isActiveStatus else { return }
         self.suspensionRelay.accept(state == .background)

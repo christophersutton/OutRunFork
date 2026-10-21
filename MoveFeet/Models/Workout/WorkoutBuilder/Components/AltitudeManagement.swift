@@ -91,8 +91,8 @@ public class AltitudeManagement: WorkoutBuilderComponent {
     public func bind(builder: WorkoutBuilder) {
         
         let input = Input(
-            insufficientPermission: insufficientPermissionRelay.asBackgroundPublisher(),
-            altitudes: altitudesRelay.asBackgroundPublisher()
+            insufficientPermission: insufficientPermissionRelay.eraseToAnyPublisher(),
+            altitudes: altitudesRelay.eraseToAnyPublisher()
         )
         
         let output = builder.tranform(input)
