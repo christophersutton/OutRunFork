@@ -46,11 +46,12 @@ final class HomeChromeAppearanceTests: XCTestCase {
         // of the process's initial UIKit appearance.
         let lightValue = foreground.resolve(in: light)
         let darkValue = foreground.resolve(in: dark)
+        // Move ink is near-black in light and near-white in dark, not pure black/white.
         for component in [lightValue.red, lightValue.green, lightValue.blue] {
-            XCTAssertEqual(component, 0, accuracy: 0.001)
+            XCTAssertLessThan(component, 0.1)
         }
         for component in [darkValue.red, darkValue.green, darkValue.blue] {
-            XCTAssertEqual(component, 1, accuracy: 0.001)
+            XCTAssertGreaterThan(component, 0.9)
         }
         XCTAssertEqual(foreground.resolve(in: light), lightValue)
     }
