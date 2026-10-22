@@ -49,3 +49,22 @@ The final merged source at `42c68ab` passed **138 native XCTest cases with zero 
 All portable suites passed again: recording 12, Health 33, storage 19. `scripts/install-movefeet.sh --build-only` completed in Grogu’s desktop Terminal session after SSH signing encountered a locked-keychain interaction restriction. The resulting app and extension pass strict signature verification; both provisioning profiles include the selected phone. Artifact version: 1.3 (1), source `42c68ab`. Device installation and outdoor/Health/lifecycle checks are tracked separately; native tests do not establish those behaviors.
 
 Physical installation and launch succeeded on October 21 after a fresh private container backup. All ten SQLite tables, including 133 workouts and 256,279 route samples, match the pre-upgrade backup row-for-row after launch. No restoration or data cleanup was performed. The signed artifact is retained privately (ZIP SHA-256 `46a688df32df2ef7c0cbe95dafbe9a5e54dadd3777fbaeae126b090db289e776`). Outdoor recording, physical Health permission behavior and locked-screen continuity still need a real session.
+
+## Startup regression follow-up — build 3
+
+The owner reported a slow launch after build 2. The newly added `WorkoutSnapshot.hasRouteData` evaluated `!workout._routeData.value.isEmpty` during every main-actor `WorkoutStore` rebuild. CoreStore first bridges every related managed object into a Swift wrapper. A startup CPU sample confirmed that path dominated snapshot work with the owner’s 133-workout / 256,279-route-point backup.
+
+Changed the check to Core Data relationship object IDs, using CoreStore’s relationship key and the existing object’s designated queue. This preserves route/no-route behavior and pending relationship edits without materializing route sample objects. No schema or stored-data change was needed.
+
+| Same Debug simulator, same private backup, new app process | Home-list snapshot rebuild |
+| --- | --- |
+| Before, run 1 | 7,300.3 ms |
+| Before, run 2 (CPU sampled) | 7,556.2 ms |
+| After, run 1 | 674.6 ms |
+| After, run 2 | 483.7 ms |
+
+These are snapshot-work measurements, not whole-launch timings or measurements on the physical phone. The iOS 27 store copy opened on the iOS 26.2 simulator with a persistence-version warning; both before/after used the same copy/environment. The original phone store was never replaced. Health synchronization was disabled in the simulator. The private benchmark database and map caches were cleared afterward and the original synthetic simulator store restored.
+
+All **144 native tests pass**. New tests cover 25,000 samples across a 133-workout synthetic cold SQLite timeline with zero registered route sample objects, unsaved additions/removals/reassignments, deleted final samples, missing identifiers, and rollback. The first test attempt exposed a fixture issue: context retention must be configured before any objects are registered. That was repaired before the passing run.
+
+An optimized **Release** build, version **1.3 (3)**, compiled from production source `bae413d`, passed signature and device provisioning checks, and was installed and launched successfully. Its process was verified. The repository installer now defaults to Release (`df5e029`); Debug remains available explicitly for diagnostics. A fresh private backup with SQLite integrity OK and 133 workouts preceded installation. No restore or cleanup was applied to the phone.
