@@ -34,7 +34,7 @@ struct StandardWorkoutTypeView: View {
                             Spacer()
                             if selection == type.rawValue {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(Color.orAccent)
+                                    .foregroundStyle(Color.orAccentLabel)
                                     .fontWeight(.semibold)
                             }
                         }

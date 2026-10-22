@@ -71,12 +71,10 @@ struct WorkoutDetailView: View {
             .overlay {
                 if isDeleting {
                     ZStack {
-                        Color.black.opacity(0.12)
+                        Color.orBackground.opacity(0.4)
                             .ignoresSafeArea()
                         ProgressView()
-                            .padding(18)
-                            .background(Color.orForeground)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .moveCard(padding: 18)
                     }
                 }
             }
@@ -98,6 +96,7 @@ struct WorkoutDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     header(snapshot)
+                    hero(snapshot)
                     sections(snapshot)
                 }
                 .padding(20)
@@ -115,20 +114,50 @@ struct WorkoutDetailView: View {
     }
 
     private func header(_ snapshot: WorkoutDetailSnapshot) -> some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 14) {
             Image(systemName: snapshot.workoutType.sfSymbolName)
-                .font(.moveStat(34, relativeTo: .largeTitle))
-                .foregroundStyle(Color.orAccent)
-                .frame(width: 52)
+                .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(Color.orOnAccent)
+                .frame(width: 48, height: 48)
+                .background(Color.orAccent, in: Circle())
             VStack(alignment: .leading, spacing: 2) {
                 Text(snapshot.workoutType.description)
-                    .font(.moveStat(26, relativeTo: .title2))
+                    .font(.moveHeadline)
                     .foregroundStyle(Color.orPrimary)
                 Text(headerSubtitle(snapshot))
-                    .font(.system(.subheadline, weight: .bold))
-                    .foregroundStyle(Color.orSecondary)
+                    .moveLabelStyle()
             }
             Spacer(minLength: 0)
+        }
+    }
+
+    /// The headline numbers: distance at Display size, then active time and average speed or pace.
+    private func hero(_ snapshot: WorkoutDetailSnapshot) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            WorkoutStatText.hero(WorkoutStatFormat.distance(snapshot.distance))
+                .foregroundStyle(Color.orPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+            HStack(alignment: .top, spacing: 28) {
+                heroDetail(LS["Workout.ActiveDuration"], WorkoutStatFormat.duration(snapshot.activeDuration))
+                if let average = snapshot.averageSpeed {
+                    heroDetail(LS["WorkoutStats.AverageSpeed"], WorkoutStatFormat.speed(average))
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func heroDetail(_ title: String, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .moveLabelStyle()
+                .lineLimit(1)
+            WorkoutStatText.bigStat(value, style: .title)
+                .foregroundStyle(Color.orAccentLabel)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
         }
     }
 
@@ -261,13 +290,13 @@ struct WorkoutDetailView: View {
         StatSectionView(title: LS["WorkoutStats.Route"]) {
             RouteMapView(coordinates: snapshot.routeCoordinates, isInteractive: false)
                 .frame(height: 280)
-                .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .overlay(alignment: .bottomTrailing) {
                     Image(systemName: "arrow.up.left.and.arrow.down.right")
                         .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(.white)
-                        .padding(8)
-                        .background(.black.opacity(0.45), in: Circle())
+                        .foregroundStyle(Color.orPrimary)
+                        .frame(width: 36, height: 36)
+                        .background(Color.orForeground, in: Circle())
                         .padding(12)
                 }
                 .contentShape(Rectangle())
@@ -290,9 +319,7 @@ struct WorkoutDetailView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(14)
-            .background(Color.orForeground)
-            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+            .moveCard()
         }
     }
 

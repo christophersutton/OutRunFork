@@ -104,7 +104,7 @@ struct SettingsView: View {
                             .foregroundStyle(Color.orSecondary)
                     }
                     .padding(24)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    .background(Color.orForeground, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 }
             }
         }

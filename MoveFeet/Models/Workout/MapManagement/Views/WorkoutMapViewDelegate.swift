@@ -28,7 +28,9 @@ class WorkoutMapViewDelegate: NSObject, MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let renderer = MKPolylineRenderer(overlay: overlay)
         renderer.strokeColor = .accentColor
-        renderer.lineWidth = 8.0
+        renderer.lineWidth = 6.0
+        renderer.lineCap = .round
+        renderer.lineJoin = .round
         
         return renderer
     }

@@ -31,7 +31,7 @@ class WorkoutActionView: UIView {
     let button: UIButton = {
         let button = UIButton()
         button.backgroundColor = .foregroundColor
-        button.layer.cornerRadius = 15
+        button.layer.cornerRadius = 14
         return button
     }()
 

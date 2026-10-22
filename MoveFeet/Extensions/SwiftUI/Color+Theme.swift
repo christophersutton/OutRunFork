@@ -41,6 +41,13 @@ extension Font {
 }
 
 extension View {
+    /// A Move card: tile ground, radius 20, no border or shadow.
+    func moveCard(padding: CGFloat = 16) -> some View {
+        self.padding(padding)
+            .background(Color.orForeground)
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+
     /// Uppercase, +10% tracking, muted: the Move label style.
     func moveLabelStyle() -> some View {
         font(.moveLabel)
@@ -48,6 +55,48 @@ extension View {
             .tracking(1.3)
             .foregroundStyle(Color.orSecondary)
     }
+}
+
+// MARK: - Buttons
+
+/// Accent fill, ink text, 52pt tall, radius 14: the one primary action on a screen.
+struct MovePrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(.body, weight: .semibold))
+            .foregroundStyle(Color.orOnAccent)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(Color.orAccent.opacity(isEnabled ? 1 : 0.4))
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .opacity(configuration.isPressed ? 0.85 : 1)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.spring(duration: 0.2), value: configuration.isPressed)
+    }
+}
+
+/// Tile fill, paper text: secondary actions.
+struct MoveSecondaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(.body, weight: .semibold))
+            .foregroundStyle(Color.orPrimary)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(Color.orForeground)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .opacity(configuration.isPressed ? 0.85 : 1)
+    }
+}
+
+extension ButtonStyle where Self == MovePrimaryButtonStyle {
+    static var movePrimary: MovePrimaryButtonStyle { MovePrimaryButtonStyle() }
+}
+
+extension ButtonStyle where Self == MoveSecondaryButtonStyle {
+    static var moveSecondary: MoveSecondaryButtonStyle { MoveSecondaryButtonStyle() }
 }
 
 // MARK: - Mark

@@ -85,7 +85,7 @@ struct WorkoutTimelineView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(LS["WorkoutListViewController.Headline"])
                         .font(.moveTitle)
-                        .foregroundStyle(Color.orAccent)
+                        .foregroundStyle(Color.orPrimary)
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
                         .padding(.bottom, 12)

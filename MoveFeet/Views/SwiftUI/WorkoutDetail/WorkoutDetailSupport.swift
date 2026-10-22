@@ -87,27 +87,24 @@ extension Workout.WorkoutType {
 
 // MARK: - Tiles & sections
 
-/// A single small stat tile: a bold caption above a large value, on a rounded card.
+/// A single stat tile: a Move label above an Inter Tight value, on a card.
 struct StatTile: View {
     let title: String
     let value: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(title)
-                .font(.system(.caption, weight: .bold))
-                .foregroundStyle(Color.orSecondary)
+                .moveLabelStyle()
                 .lineLimit(1)
-            Text(value)
-                .font(.moveStat(26, relativeTo: .title2))
+                .minimumScaleFactor(0.8)
+            WorkoutStatText.bigStat(value, style: .title2)
                 .foregroundStyle(Color.orPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(Color.orForeground)
-        .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .moveCard()
     }
 }
 
@@ -139,7 +136,7 @@ struct StatTileGrid: View {
     }
 }
 
-/// A titled section: a heavy header above arbitrary content.
+/// A titled section: a Move headline above arbitrary content.
 struct StatSectionView<Content: View>: View {
     let title: String
     @ViewBuilder var content: Content
@@ -147,7 +144,7 @@ struct StatSectionView<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.moveStat(26, relativeTo: .title2))
+                .font(.moveHeadline)
                 .foregroundStyle(Color.orPrimary)
             content
         }

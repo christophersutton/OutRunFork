@@ -91,7 +91,7 @@ struct StatsView: View {
     private var header: some View {
         Text("stats")
             .font(.moveTitle)
-            .foregroundStyle(Color.orAccent)
+            .foregroundStyle(Color.orPrimary)
             .padding(.top, 8)
     }
 
@@ -108,9 +108,17 @@ struct StatsView: View {
 
     private func totalsSection(_ summary: StatsSummary) -> some View {
         StatSectionView(title: summary.period.windowCaption) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Distance")
+                    .moveLabelStyle()
+                WorkoutStatText.hero(WorkoutStatFormat.distance(summary.totalDistanceMeters))
+                    .foregroundStyle(Color.orPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
+            .accessibilityElement(children: .combine)
             StatTileGrid(tiles: [
                 StatTileData(title: "Workouts", value: "\(summary.workoutCount)"),
-                StatTileData(title: "Distance", value: WorkoutStatFormat.distance(summary.totalDistanceMeters)),
                 StatTileData(title: "Active Time", value: WorkoutStatFormat.duration(summary.totalDuration)),
                 StatTileData(title: "Calories", value: summary.totalEnergy.map(WorkoutStatFormat.energy) ?? "--")
             ])
@@ -255,17 +263,22 @@ private struct StatsTrendChart: View {
                 y: .value(metric.title, value(for: bucket))
             )
             .foregroundStyle(Color.orAccent)
-            .cornerRadius(4)
+            .cornerRadius(6)
         }
         .chartYAxis {
-            AxisMarks(position: .leading)
+            AxisMarks(position: .leading) { _ in
+                AxisGridLine().foregroundStyle(Color.orLine)
+                AxisValueLabel().font(.caption2.monospacedDigit()).foregroundStyle(Color.orSecondary)
+            }
         }
         .chartXAxis {
             AxisMarks { _ in
-                AxisValueLabel()
+                AxisValueLabel().font(.caption2.weight(.semibold)).foregroundStyle(Color.orSecondary)
             }
         }
-        .chartYAxisLabel(unitSymbol)
+        .chartYAxisLabel {
+            Text(unitSymbol).font(.caption2.weight(.semibold)).foregroundStyle(Color.orSecondary)
+        }
         .frame(height: 200)
         .overlay {
             if let emptyMessage {
@@ -274,9 +287,7 @@ private struct StatsTrendChart: View {
                     .foregroundStyle(Color.orSecondary)
             }
         }
-        .padding(14)
-        .background(Color.orForeground)
-        .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .moveCard()
     }
 }
 
@@ -303,13 +314,13 @@ private struct TypeMixRow: View {
                     .frame(width: 24)
 
                 Text(item.type.description)
-                    .font(.system(.subheadline, weight: .bold))
+                    .font(.custom(MoveTheme.FontName.bold, size: 17, relativeTo: .headline))
                     .foregroundStyle(Color.orPrimary)
 
                 Spacer(minLength: 8)
 
-                Text("\(item.count) • \(WorkoutStatFormat.distance(item.distanceMeters))")
-                    .font(.system(.caption, weight: .medium))
+                Text("\(item.count) · \(WorkoutStatFormat.distance(item.distanceMeters))")
+                    .font(.system(.footnote, weight: .semibold).monospacedDigit())
                     .foregroundStyle(Color.orSecondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -318,17 +329,15 @@ private struct TypeMixRow: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
-                        .fill(Color.orSecondary.opacity(0.18))
+                        .fill(Color.orLine)
                     Capsule()
                         .fill(Color.orAccent)
                         .frame(width: max(4, geo.size.width * fraction))
                 }
             }
-            .frame(height: 6)
+            .frame(height: 8)
         }
-        .padding(14)
-        .background(Color.orForeground)
-        .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .moveCard()
     }
 }
 
@@ -343,31 +352,27 @@ private struct RecordTile: View {
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
-                    Image(systemName: record.kind.sfSymbol)
-                        .font(.system(.caption, weight: .bold))
-                    Text(record.kind.title)
-                        .font(.system(.caption, weight: .bold))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
-                }
-                .foregroundStyle(Color.orSecondary)
+                Image(systemName: record.kind.sfSymbol)
+                    .font(.system(.body, weight: .bold))
+                    .foregroundStyle(Color.orAccentLabel)
+                    .padding(.bottom, 4)
+                Text(record.kind.title)
+                    .moveLabelStyle()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
 
-                Text(record.valueText)
-                    .font(.moveStat(22, relativeTo: .title3))
+                WorkoutStatText.bigStat(record.valueText, style: .title3)
                     .foregroundStyle(Color.orPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
 
                 Text(record.dateText)
-                    .font(.system(.caption2, weight: .medium))
+                    .font(.system(.caption, weight: .medium))
                     .foregroundStyle(Color.orSecondary)
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(14)
-            .background(Color.orForeground)
-            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+            .moveCard()
         }
         .buttonStyle(.plain)
     }

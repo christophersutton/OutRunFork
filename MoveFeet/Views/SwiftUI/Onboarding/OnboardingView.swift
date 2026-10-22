@@ -67,13 +67,13 @@ struct OnboardingView: View {
                 Button(LS["Back"]) {
                     withAnimation { step = OnboardingStep(rawValue: step.rawValue - 1) ?? .formalities }
                 }
-                .foregroundStyle(Color.orAccent)
+                .foregroundStyle(Color.orAccentLabel)
             }
             PageIndicator(count: OnboardingStep.allCases.count, current: step.rawValue)
             Spacer()
             Button(nextButtonTitle) { advance() }
                 .font(.system(.body, weight: .bold))
-                .foregroundStyle(nextEnabled ? Color.orAccent : Color.orSecondary)
+                .foregroundStyle(nextEnabled ? Color.orAccentLabel : Color.orSecondary)
                 .disabled(!nextEnabled)
         }
         .padding(.horizontal, 30)
@@ -141,23 +141,16 @@ private struct WelcomeStep: View {
 
             ScrollView {
                 VStack(spacing: 20) {
-                    FeatureCard(image: "setupRoute", title: LS["Setup.Feature.Route.Title"], message: LS["Setup.Feature.Route.Message"])
-                    FeatureCard(image: "setupChart", title: LS["Setup.Feature.Chart.Title"], message: LS["Setup.Feature.Chart.Message"])
-                    FeatureCard(image: "setupLock", title: LS["Setup.Feature.Lock.Title"], message: LS["Setup.Feature.Lock.Message"])
+                    FeatureCard(symbol: "point.topleft.down.to.point.bottomright.curvepath.fill", title: LS["Setup.Feature.Route.Title"], message: LS["Setup.Feature.Route.Message"])
+                    FeatureCard(symbol: "chart.bar.xaxis", title: LS["Setup.Feature.Chart.Title"], message: LS["Setup.Feature.Chart.Message"])
+                    FeatureCard(symbol: "lock.fill", title: LS["Setup.Feature.Lock.Title"], message: LS["Setup.Feature.Lock.Message"])
                 }
                 .padding(.horizontal, 30)
                 .padding(.vertical, 40)
             }
 
-            Button(action: onStart) {
-                Text(LS["Setup.StartButton"])
-                    .font(.system(.body, weight: .semibold))
-                    .foregroundStyle(Color.orOnAccent)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(Color.orAccent)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            }
+            Button(LS["Setup.StartButton"], action: onStart)
+                .buttonStyle(.movePrimary)
             .padding(.horizontal, 40)
             .padding(.bottom, 20)
         }
@@ -165,21 +158,21 @@ private struct WelcomeStep: View {
 }
 
 private struct FeatureCard: View {
-    let image: String
+    let symbol: String
     let title: String
     let message: String
 
     var body: some View {
-        HStack(alignment: .top, spacing: 15) {
-            Image(image)
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 60, height: 60)
-                .foregroundStyle(Color.orAccent)
-            VStack(alignment: .leading, spacing: 5) {
+        HStack(alignment: .top, spacing: 16) {
+            Image(systemName: symbol)
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(Color.orOnAccent)
+                .frame(width: 48, height: 48)
+                .background(Color.orAccent, in: Circle())
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.system(.subheadline, weight: .bold))
+                    .font(.custom(MoveTheme.FontName.bold, size: 17, relativeTo: .headline))
                     .foregroundStyle(Color.orPrimary)
                 Text(message)
                     .font(.system(.subheadline, weight: .medium))
@@ -220,9 +213,16 @@ private struct PageIndicator: View {
     var body: some View {
         HStack(spacing: 8) {
             ForEach(0..<count, id: \.self) { index in
-                Circle()
-                    .fill(index == current ? Color.orAccent : Color.orAccent.opacity(0.25))
-                    .frame(width: 8, height: 8)
+                // The current step is the Move ring; the rest are quiet dots.
+                if index == current {
+                    Circle()
+                        .strokeBorder(Color.orAccent, lineWidth: 3)
+                        .frame(width: 11, height: 11)
+                } else {
+                    Circle()
+                        .fill(Color.orLine)
+                        .frame(width: 8, height: 8)
+                }
             }
         }
     }
@@ -232,9 +232,7 @@ extension View {
     /// Wraps a step row in the app's rounded card styling.
     func onboardingCard() -> some View {
         self
-            .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.orForeground)
-            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+            .moveCard()
     }
 }

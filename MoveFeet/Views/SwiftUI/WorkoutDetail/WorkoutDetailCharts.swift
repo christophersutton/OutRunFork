@@ -62,8 +62,7 @@ struct WorkoutLineChartView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(unitSymbol.isEmpty ? title : "\(title) (\(unitSymbol))")
-                .font(.system(.subheadline, weight: .bold))
-                .foregroundStyle(Color.orSecondary)
+                .moveLabelStyle()
 
             Chart {
                 ForEach(Array(finitePoints.enumerated()), id: \.offset) { _, point in
@@ -73,19 +72,24 @@ struct WorkoutLineChartView: View {
                     )
                     .interpolationMethod(.monotone)
                     .foregroundStyle(color)
+                    .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
                 }
             }
             .chartYScale(domain: yScaleDomain)
             .chartYAxis {
-                AxisMarks(position: .trailing)
+                AxisMarks(position: .trailing) { _ in
+                    AxisGridLine().foregroundStyle(Color.orLine)
+                    AxisValueLabel().font(.caption2.monospacedDigit()).foregroundStyle(Color.orSecondary)
+                }
             }
             .chartXAxis {
                 AxisMarks { value in
-                    AxisGridLine()
-                    AxisTick()
+                    AxisGridLine().foregroundStyle(Color.orLine)
                     AxisValueLabel {
                         if let seconds = value.as(Double.self) {
                             Text(WorkoutStatFormat.axisClock(seconds))
+                                .font(.caption2.monospacedDigit())
+                                .foregroundStyle(Color.orSecondary)
                         }
                     }
                 }
@@ -93,8 +97,6 @@ struct WorkoutLineChartView: View {
             .frame(height: 150)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(Color.orForeground)
-        .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .moveCard()
     }
 }
