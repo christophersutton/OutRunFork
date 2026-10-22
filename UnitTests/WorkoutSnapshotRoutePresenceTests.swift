@@ -37,13 +37,13 @@ final class WorkoutSnapshotRoutePresenceTests: XCTestCase {
 
         let stack = try makeStack(at: url)
         defer { stack.unsafeRemoveAllPersistentStoresAndWait() }
-        XCTAssertEqual(try stack.fetchCount(From<WorkoutRouteDataSample>()), sampleCount + 1)
-        let monitor = stack.monitorList(From<Workout>().orderBy(.descending(\._startDate)))
-        let objects = monitor.objectsInAllSections()
-        let context = try XCTUnwrap(objects.first?.cs_toRaw().managedObjectContext)
+        let context = stack.unsafeContext()
         // Keep any accidentally materialized samples registered so this assertion cannot depend on
         // autorelease timing or CoreStore wrapper lifetimes. No wall-clock threshold is needed.
         context.retainsRegisteredObjects = true
+        XCTAssertEqual(try stack.fetchCount(From<WorkoutRouteDataSample>()), sampleCount + 1)
+        let monitor = stack.monitorList(From<Workout>().orderBy(.descending(\._startDate)))
+        let objects = monitor.objectsInAllSections()
         XCTAssertEqual(registeredRouteSampleCount(in: context), 0)
 
         let store = WorkoutStore(monitor: monitor)
