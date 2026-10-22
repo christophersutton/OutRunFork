@@ -57,6 +57,35 @@ extension View {
     }
 }
 
+// MARK: - Empty state
+
+/// The Move empty state: a 64pt glyph in muted, a headline, and one line on what to do next.
+struct MoveEmptyState: View {
+    let symbol: String
+    let title: String
+    let message: String
+
+    var body: some View {
+        VStack(spacing: 14) {
+            Image(systemName: symbol)
+                .font(.system(size: 64, weight: .regular))
+                .foregroundStyle(Color.orSecondary)
+                .padding(.bottom, 6)
+                .accessibilityHidden(true)
+            Text(title)
+                .font(.moveHeadline)
+                .foregroundStyle(Color.orPrimary)
+            Text(message)
+                .font(.body)
+                .foregroundStyle(Color.orSecondary)
+        }
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, 40)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .combine)
+    }
+}
+
 // MARK: - Buttons
 
 /// Accent fill, ink text, 52pt tall, radius 14: the one primary action on a screen.

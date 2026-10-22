@@ -35,7 +35,7 @@ class WorkoutActionView: UIView {
         return button
     }()
 
-    convenience init(title: String, color: UIColor = .accentColor, controller: UIViewController, workout: Workout, action: ((Workout, WorkoutActionView) -> Void)? = nil) {
+    convenience init(title: String, color: UIColor = .accentLabelColor, controller: UIViewController, workout: Workout, action: ((Workout, WorkoutActionView) -> Void)? = nil) {
         
         self.init(
             title: {
@@ -48,7 +48,7 @@ class WorkoutActionView: UIView {
         )
     }
     
-    init(title: @escaping (() -> String), color: UIColor = .accentColor, controller: UIViewController, workout: Workout, action: ((Workout, WorkoutActionView) -> Void)? = nil) {
+    init(title: @escaping (() -> String), color: UIColor = .accentLabelColor, controller: UIViewController, workout: Workout, action: ((Workout, WorkoutActionView) -> Void)? = nil) {
         
         self.workout = workout
         self.controller = controller

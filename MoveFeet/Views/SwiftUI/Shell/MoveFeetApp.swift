@@ -34,12 +34,17 @@ struct MoveFeetApp: App {
 
     init() {
         MoveTheme.registerFonts()
+        MoveTheme.applyNavigationBarStyle()
     }
 
     var body: some Scene {
         WindowGroup {
             RootView()
-                .tint(Color(uiColor: (MoveAccent(rawValue: accentRaw) ?? .default).fill))   // mirrors the legacy `window.tintColor = .accentColor`
+                .tint(Color(uiColor: (MoveAccent(rawValue: accentRaw) ?? .default).label))
+                .task(id: accentRaw) {
+                    do { try await MoveTheme.applyAppIcon(for: MoveAccent(rawValue: accentRaw) ?? .default) }
+                    catch { print("[MoveTheme] Could not reconcile app icon:", error.localizedDescription) }
+                }
                 .preferredColorScheme((MoveAppearance(rawValue: appearanceRaw) ?? .system).colorScheme)
         }
         .onChange(of: scenePhase) { _, phase in

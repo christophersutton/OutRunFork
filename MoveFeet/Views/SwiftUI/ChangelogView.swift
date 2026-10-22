@@ -34,7 +34,7 @@ struct ChangelogView: View {
 
                 Text("\(LS["ChangeLog"]) - \(Config.version)")
                     .font(.moveHeadline)
-                    .foregroundStyle(Color.orAccent)
+                    .foregroundStyle(Color.orAccentLabel)
                     .lineLimit(1)
 
                 ScrollView {

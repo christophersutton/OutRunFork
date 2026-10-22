@@ -84,7 +84,7 @@ struct WorkoutTimelineSortSheet: View {
                 Spacer()
                 if isSelected {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(Color.orAccent)
+                        .foregroundStyle(Color.orAccentLabel)
                         .fontWeight(.semibold)
                 }
             }

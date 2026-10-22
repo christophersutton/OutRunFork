@@ -35,7 +35,7 @@ struct WorkoutActivityWidget: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    WorkoutActivityMetric(title: "Time", accent: ActivityPalette.accent(context.attributes.accentHex)) {
+                    WorkoutActivityMetric(title: "Time", accent: ActivityPalette.accent(context.state.accentHex ?? context.attributes.accentHex)) {
                         WorkoutActivityTimerView(state: context.state)
                     }
                 }
@@ -45,10 +45,10 @@ struct WorkoutActivityWidget: Widget {
                     }
                 }
                 DynamicIslandExpandedRegion(.center) {
-                    WorkoutActivityGlyph(isStale: context.isStale, accent: ActivityPalette.accent(context.attributes.accentHex))
+                    WorkoutActivityGlyph(isStale: context.isStale, accent: ActivityPalette.accent(context.state.accentHex ?? context.attributes.accentHex))
                 }
             } compactLeading: {
-                WorkoutActivityCompactTimer(state: context.state, accent: ActivityPalette.accent(context.attributes.accentHex))
+                WorkoutActivityCompactTimer(state: context.state, accent: ActivityPalette.accent(context.state.accentHex ?? context.attributes.accentHex))
             } compactTrailing: {
                 Text(context.state.distanceText)
                     .font(.caption.monospacedDigit())
@@ -62,7 +62,7 @@ struct WorkoutActivityWidget: Widget {
                     .minimumScaleFactor(0.6)
             }
             .widgetURL(URL(string: "movefeet://workout/active"))
-            .keylineTint(context.isStale ? .gray : ActivityPalette.accent(context.attributes.accentHex))
+            .keylineTint(context.isStale ? .gray : ActivityPalette.accent(context.state.accentHex ?? context.attributes.accentHex))
         }
     }
 }
@@ -71,7 +71,7 @@ private struct WorkoutActivityLockScreenView: View {
     let context: ActivityViewContext<WorkoutActivityAttributes>
 
     var body: some View {
-        let accent = ActivityPalette.accent(context.attributes.accentHex)
+        let accent = ActivityPalette.accent(context.state.accentHex ?? context.attributes.accentHex)
         HStack(alignment: .firstTextBaseline, spacing: 18) {
             WorkoutActivityGlyph(isStale: context.isStale, accent: accent)
             WorkoutActivityMetric(title: "Time", accent: accent) {

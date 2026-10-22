@@ -14,6 +14,8 @@ import UniformTypeIdentifiers
 
 struct SettingsView: View {
 
+    @State private var isChangingAccent = false
+    @State private var showAccentError = false
     @State private var state = SettingsState()
 
     @AppStorage(MoveTheme.accentKey) private var accentRaw = MoveAccent.default.rawValue
@@ -48,16 +50,29 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                userSettingsSection
-                appearanceSection
-                unitPreferencesSection
-                recordingPreferencesSection
-                appleHealthSection
-                dataPreferencesSection
-                supportSection
-                appInfoSection
+                Group {
+                    userSettingsSection
+                    appearanceSection
+                    unitPreferencesSection
+                    recordingPreferencesSection
+                    appleHealthSection
+                    dataPreferencesSection
+                    supportSection
+                    appInfoSection
+                }
+                .listRowBackground(Color.orForeground)
             }
+            // Move ground and tile rows in both appearances; the darker accent shade keeps
+            // picker values and links readable on light.
+            .scrollContentBackground(.hidden)
+            .background(Color.orBackground)
+            .tint(Color.orAccentLabel)
             .navigationTitle(LS["Settings"])
+        }
+        .alert("Could not change accent", isPresented: $showAccentError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("The app icon could not be changed. Your previous accent is still selected. Please try again.")
         }
         .sheet(isPresented: $showTermsOfService) {
             PolicyView(type: .termsOfService)
@@ -312,8 +327,16 @@ struct SettingsView: View {
     private func accentSwatch(_ accent: MoveAccent) -> some View {
         let isSelected = accent == selectedAccent
         return Button {
-            accentRaw = accent.rawValue
-            MoveTheme.applyAppIcon(for: accent)
+            guard !isChangingAccent else { return }
+            isChangingAccent = true
+            Task { @MainActor in
+                defer { isChangingAccent = false }
+                do {
+                    try await MoveTheme.selectAccent(accent)
+                } catch {
+                    showAccentError = true
+                }
+            }
         } label: {
             Circle()
                 .fill(Color(uiColor: accent.fill))
@@ -323,6 +346,7 @@ struct SettingsView: View {
                 .frame(minWidth: 36, minHeight: 36)
         }
         .buttonStyle(.plain)
+        .disabled(isChangingAccent)
         .accessibilityLabel(accent == .default ? "\(accent.displayName), Run default" : accent.displayName)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }

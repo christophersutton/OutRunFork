@@ -63,10 +63,10 @@ struct StatsView: View {
             let key = currentStatsSummaryKey
 
             if let summary = statsSummary, statsSummaryKey == key, !summary.hasAnyWorkouts {
-                ContentUnavailableView(
-                    "No Stats Yet",
-                    systemImage: "chart.bar.xaxis",
-                    description: Text("Record a workout to start tracking your distance, time and trends.")
+                MoveEmptyState(
+                    symbol: "chart.bar.xaxis",
+                    title: "No Stats Yet",
+                    message: "Record a workout to start tracking your distance, time and trends."
                 )
             } else if let summary = statsSummary, statsSummaryKey == key {
                 ScrollView {
@@ -310,7 +310,7 @@ private struct TypeMixRow: View {
             HStack(spacing: 10) {
                 Image(systemName: item.type.sfSymbolName)
                     .font(.system(.body, weight: .semibold))
-                    .foregroundStyle(Color.orAccent)
+                    .foregroundStyle(Color.orAccentLabel)
                     .frame(width: 24)
 
                 Text(item.type.description)

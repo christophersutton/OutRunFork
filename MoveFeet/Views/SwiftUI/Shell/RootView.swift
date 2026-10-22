@@ -323,7 +323,7 @@ private struct StorageFailureView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Image(systemName: "externaldrive.badge.exclamationmark")
                     .font(.largeTitle)
-                    .foregroundStyle(Color.orAccent)
+                    .foregroundStyle(Color.orAccentLabel)
                 Text("Unable to open your workout data")
                     .font(.moveHeadline)
                 Text("Move Run cannot continue until its local storage is available. Retry after freeing device storage or restarting the app.")

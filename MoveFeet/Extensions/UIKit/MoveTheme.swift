@@ -52,9 +52,9 @@ enum MoveAccent: String, CaseIterable, Identifiable {
     /// Darker shade for accent-colored text on a light background.
     var textOnLightHex: UInt32 {
         switch self {
-        case .orange: return 0xC2410C
-        case .green: return 0x15803D
-        case .moonlight: return 0x8A6A2E
+        case .orange: return 0x9A3412
+        case .green: return 0x166534
+        case .moonlight: return 0x785A24
         case .teal: return 0x0F766E
         case .blue: return 0x1D4ED8
         case .purple: return 0x6D28D9
@@ -116,15 +116,27 @@ enum MoveTheme {
         MoveAppearance(rawValue: UserDefaults.standard.string(forKey: appearanceKey) ?? "") ?? .system
     }
 
-    /// Switches the home screen icon to match `accent`. iOS confirms the change with its own alert.
+    /// Update the icon before committing the choice, so a failed icon request
+    /// leaves the current accent selected and can be retried from Settings.
     @MainActor
-    static func applyAppIcon(for accent: MoveAccent) {
+    static func selectAccent(_ accent: MoveAccent) async throws {
+        try await applyAppIcon(for: accent)
+        UserDefaults.standard.set(accent.rawValue, forKey: accentKey)
+    }
+
+    /// Reconciles the icon with the saved accent, including choices from older builds.
+    @MainActor
+    static func applyAppIcon(for accent: MoveAccent) async throws {
         let application = UIApplication.shared
         guard application.supportsAlternateIcons,
               application.alternateIconName != accent.alternateIconName else { return }
-        application.setAlternateIconName(accent.alternateIconName) { error in
-            if let error {
-                print("[MoveTheme] Could not change the app icon:", error.localizedDescription)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            application.setAlternateIconName(accent.alternateIconName) { error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
             }
         }
     }
@@ -150,12 +162,24 @@ enum MoveTheme {
             }
         }
     }
+
+    /// Sets navigation titles in Inter Tight: large titles at the Move title size (34 / 800), inline titles in
+    /// Bold. Call after `registerFonts()`.
+    static func applyNavigationBarStyle() {
+        let appearance = UINavigationBar.appearance()
+        if let large = UIFont(name: FontName.extraBold, size: 34) {
+            appearance.largeTitleTextAttributes = [.font: UIFontMetrics(forTextStyle: .largeTitle).scaledFont(for: large)]
+        }
+        if let inline = UIFont(name: FontName.bold, size: 17) {
+            appearance.titleTextAttributes = [.font: UIFontMetrics(forTextStyle: .headline).scaledFont(for: inline)]
+        }
+    }
 }
 
 extension UIColor {
     /// Destructive actions and errors. Stays red whatever the accent is.
     static let moveError = UIColor {
-        $0.userInterfaceStyle == .dark ? UIColor(moveHex: 0xF87171) : UIColor(moveHex: 0xDC2626)
+        $0.userInterfaceStyle == .dark ? UIColor(moveHex: 0xF87171) : UIColor(moveHex: 0xB91C1C)
     }
 
     convenience init(moveHex hex: UInt32) {
