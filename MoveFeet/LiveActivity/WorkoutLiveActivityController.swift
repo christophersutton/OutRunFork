@@ -129,7 +129,7 @@ final class WorkoutLiveActivityController {
             return
         }
 
-        let attributes = WorkoutActivityAttributes()
+        let attributes = WorkoutActivityAttributes(accentHex: MoveTheme.accent.fillHex)
         let state = contentState(status: .recording)
         let content = activityContent(state: state, status: .recording)
 

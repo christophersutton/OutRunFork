@@ -31,13 +31,15 @@ class LabelledDataView: UIView, SmallStatView {
     
     fileprivate let dataLabel = UILabel(
         text: "--",
-        font: .preferredFont(forTextStyle: .title2, weight: .heavy)
+        font: .moveStat(size: 28)
     )
     
     init(title: String = "") {
         super.init(frame: .zero)
         
         self.titleLabel.text = title
+        self.titleLabel.applyMoveLabelStyle()
+        self.dataLabel.adjustsFontForContentSizeCategory = true
         
         self.addSubview(titleLabel)
         self.addSubview(dataLabel)

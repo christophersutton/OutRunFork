@@ -26,5 +26,10 @@ public struct WorkoutActivityAttributes: ActivityAttributes {
         }
     }
 
-    public init() {}
+    /// The person's Move accent as 0xRRGGBB, fixed for the activity's lifetime. Orange is Run's default.
+    public var accentHex: UInt32
+
+    public init(accentHex: UInt32 = 0xFF8A00) {
+        self.accentHex = accentHex
+    }
 }

@@ -90,7 +90,7 @@ struct StatsView: View {
 
     private var header: some View {
         Text("stats")
-            .font(Font.system(.largeTitle, weight: .heavy).lowercaseSmallCaps())
+            .font(.moveTitle)
             .foregroundStyle(Color.orAccent)
             .padding(.top, 8)
     }
@@ -354,7 +354,7 @@ private struct RecordTile: View {
                 .foregroundStyle(Color.orSecondary)
 
                 Text(record.valueText)
-                    .font(.system(.title3, weight: .heavy))
+                    .font(.moveStat(22, relativeTo: .title3))
                     .foregroundStyle(Color.orPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)

@@ -40,11 +40,11 @@ class WorkoutCompletionActionView: UIView {
         let button = UIButton()
         
         button.setTitle(LS["Save"], for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(MoveTheme.ink, for: .normal)
         button.titleLabel?.font = .preferredFont(forTextStyle: .body, weight: .bold)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.backgroundColor = .accentColor
-        button.layer.cornerRadius = 10
+        button.layer.cornerRadius = 14
         
         return button
         
@@ -55,11 +55,11 @@ class WorkoutCompletionActionView: UIView {
         let button = UIButton()
         
         button.setTitle(LS["Continue"], for: .normal)
-        button.setTitleColor(.gray, for: .normal)
+        button.setTitleColor(.primaryColor, for: .normal)
         button.titleLabel?.font = .preferredFont(forTextStyle: .body, weight: .bold)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.backgroundColor = .foregroundColor
-        button.layer.cornerRadius = 10
+        button.layer.cornerRadius = 14
         
         return button
         
@@ -70,11 +70,11 @@ class WorkoutCompletionActionView: UIView {
         let button = UIButton()
         
         button.setTitle(LS["Discard"], for: .normal)
-        button.setTitleColor(.gray, for: .normal)
+        button.setTitleColor(.moveError, for: .normal)
         button.titleLabel?.font = .preferredFont(forTextStyle: .body, weight: .bold)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.backgroundColor = .foregroundColor
-        button.layer.cornerRadius = 10
+        button.layer.cornerRadius = 14
         
         return button
         
@@ -96,8 +96,9 @@ class WorkoutCompletionActionView: UIView {
         guard isConfirmingDiscard else {
             isConfirmingDiscard = true
             discardButton.setTitle(LS["NewWorkoutCompletion.Discard.Confirm"], for: .normal)
-            discardButton.setTitleColor(.white, for: .normal)
-            discardButton.backgroundColor = .accentColor
+            // Destructive actions stay on the tile in error red; the second tap confirms.
+            discardButton.layer.borderWidth = 2
+            discardButton.layer.borderColor = UIColor.moveError.resolvedColor(with: discardButton.traitCollection).cgColor
             return
         }
 

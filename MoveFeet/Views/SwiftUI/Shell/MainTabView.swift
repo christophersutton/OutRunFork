@@ -266,7 +266,7 @@ private struct AddButton: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 20, height: 20)
-                .foregroundStyle(.white)
+                .foregroundStyle(Color.orOnAccent)
         }
         .contentShape(Circle())
         // Long-press takes priority over tap: a held press (≥0.4s) opens the workout-type menu and suppresses

@@ -16,6 +16,9 @@ struct SettingsView: View {
 
     @State private var state = SettingsState()
 
+    @AppStorage(MoveTheme.accentKey) private var accentRaw = MoveAccent.default.rawValue
+    @AppStorage(MoveTheme.appearanceKey) private var appearanceRaw = MoveAppearance.system.rawValue
+
     // Sheet presentation for the policy views.
     @State private var showTermsOfService = false
     @State private var showPrivacyPolicy = false
@@ -46,6 +49,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 userSettingsSection
+                appearanceSection
                 unitPreferencesSection
                 recordingPreferencesSection
                 appleHealthSection
@@ -272,6 +276,56 @@ struct SettingsView: View {
         }
     }
 
+    // MARK: Appearance
+
+    private var selectedAccent: MoveAccent { MoveAccent(rawValue: accentRaw) ?? .default }
+
+    private var appearanceSection: some View {
+        Section {
+            Picker(LS["Settings.Appearance.Mode"], selection: $appearanceRaw) {
+                ForEach(MoveAppearance.allCases) { appearance in
+                    Text(appearance.displayName).tag(appearance.rawValue)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text(LS["Settings.Appearance.Accent"])
+                    Spacer()
+                    Text(selectedAccent.displayName)
+                        .foregroundStyle(Color.orSecondary)
+                }
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 8), spacing: 8) {
+                    ForEach(MoveAccent.allCases) { accent in
+                        accentSwatch(accent)
+                    }
+                }
+            }
+            .padding(.vertical, 6)
+        } header: {
+            Text(LS["Settings.Appearance"])
+        } footer: {
+            Text(LS["Settings.Appearance.Message"])
+        }
+    }
+
+    private func accentSwatch(_ accent: MoveAccent) -> some View {
+        let isSelected = accent == selectedAccent
+        return Button {
+            accentRaw = accent.rawValue
+            MoveTheme.applyAppIcon(for: accent)
+        } label: {
+            Circle()
+                .fill(Color(uiColor: accent.fill))
+                .padding(5)
+                .overlay(Circle().strokeBorder(isSelected ? Color(uiColor: accent.fill) : .clear, lineWidth: 2))
+                .frame(minWidth: 36, minHeight: 36)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(accent == .default ? "\(accent.displayName), Run default" : accent.displayName)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
+    }
+
     // MARK: S3 - Recording Preferences
 
     private var recordingPreferencesSection: some View {
@@ -443,7 +497,7 @@ struct SettingsView: View {
             }
 
             Button {
-                if let url = URL(string: "mailto:support@wavelength.computer?subject=Move:%20Feet") {
+                if let url = URL(string: "mailto:support@wavelength.computer?subject=Move%20Run") {
                     UIApplication.shared.open(url)
                 }
             } label: {
@@ -458,6 +512,21 @@ struct SettingsView: View {
 
     private var appInfoSection: some View {
         Section {
+            HStack(spacing: 14) {
+                MoveRunMark()
+                    .frame(width: 44, height: 44)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Move Run")
+                        .font(.moveHeadline)
+                        .foregroundStyle(Color.orPrimary)
+                    Text("A Move app by Wavelength Computing Co.")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.orSecondary)
+                }
+            }
+            .padding(.vertical, 6)
+            .accessibilityElement(children: .combine)
+
             NavigationLink {
                 ContributorsView()
             } label: {

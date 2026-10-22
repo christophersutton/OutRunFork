@@ -124,12 +124,16 @@ private struct WelcomeStep: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
+                MoveRunMark()
+                    .frame(width: 72, height: 72)
+                    .padding(.bottom, 16)
                 Text(LS["Setup.Headline"])
-                    .font(.system(.largeTitle, weight: .bold))
-                    .foregroundStyle(Color.orPrimary)
-                Text(LS["OutRun"])
-                    .font(Font.system(size: 42, weight: .heavy).lowercaseSmallCaps())
-                    .foregroundStyle(Color.orAccent)
+                    .font(.moveHeadline)
+                    .foregroundStyle(Color.orSecondary)
+                (Text("move ").foregroundStyle(Color.orPrimary) + Text("run").foregroundStyle(Color.orAccentLabel))
+                    .font(.custom(MoveTheme.FontName.black, size: 48, relativeTo: .largeTitle))
+                    .tracking(-1.9)
+                    .accessibilityLabel(LS["OutRun"])
             }
             .multilineTextAlignment(.center)
             .padding(.top, 40)
@@ -146,13 +150,13 @@ private struct WelcomeStep: View {
             }
 
             Button(action: onStart) {
-                Text(LS["Setup.StartButton"].uppercased())
-                    .font(.system(.body, weight: .bold))
-                    .foregroundStyle(.white)
+                Text(LS["Setup.StartButton"])
+                    .font(.system(.body, weight: .semibold))
+                    .foregroundStyle(Color.orOnAccent)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 50)
+                    .frame(height: 52)
                     .background(Color.orAccent)
-                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
             .padding(.horizontal, 40)
             .padding(.bottom, 20)
@@ -196,7 +200,7 @@ struct OnboardingStepHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(.title2, weight: .heavy))
+                .font(.moveHeadline)
                 .foregroundStyle(Color.orPrimary)
                 .fixedSize(horizontal: false, vertical: true)
             Text(message)

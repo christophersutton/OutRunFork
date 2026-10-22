@@ -32,12 +32,14 @@ class NewWorkoutControllerActionButton: UIView {
     lazy var stopButton = baseButton(withTitle: LS["Stop"], backgroundColor: .accentColor, selector: #selector(stopWorkout))
     lazy var pauseOrContinueButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .gray
+        button.backgroundColor = .foregroundColor
         button.setImage(.pause, for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
         button.imageView?.contentMode = .scaleAspectFit
-        button.layer.cornerRadius = 20
-        button.imageView?.tintColor = .white
+        button.layer.cornerRadius = 14
+        button.layer.cornerCurve = .continuous
+        button.tintColor = .primaryColor
+        button.imageView?.tintColor = .primaryColor
         button.addTarget(self, action: #selector(pauseOrContinueWorkout), for: .touchUpInside)
         return button
     }()
@@ -128,7 +130,7 @@ class NewWorkoutControllerActionButton: UIView {
 
         let isActive = status.isActiveStatus
         let isReady = status == .ready
-        startButton.backgroundColor = isReady ? .accentColor : .gray
+        startButton.backgroundColor = isReady ? .accentColor : .foregroundColor
         startButton.isEnabled = isReady
         startButton.isUserInteractionEnabled = isReady
         startButton.isHidden = isActive || status.isReviewingStatus
@@ -136,16 +138,18 @@ class NewWorkoutControllerActionButton: UIView {
         pauseOrContinueButton.isHidden = !isActive
     }
 
-    private func baseButton(withTitle title: String, backgroundColor: UIColor = .gray, selector: Selector) -> UIButton {
+    private func baseButton(withTitle title: String, backgroundColor: UIColor = .foregroundColor, selector: Selector) -> UIButton {
         let button = UIButton()
         button.backgroundColor = backgroundColor
         button.setTitle(title, for: .normal)
         button.setTitle("...", for: .disabled)
-        button.setTitleColor(.white, for: .normal)
-        button.setTitleColor(.lightGray, for: .disabled)
-        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .headline)
+        // Text on an accent fill is always ink.
+        button.setTitleColor(MoveTheme.ink, for: .normal)
+        button.setTitleColor(.secondaryColor, for: .disabled)
+        button.titleLabel?.font = .moveFont(size: 20, relativeTo: .headline)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = 14
+        button.layer.cornerCurve = .continuous
         button.addTarget(self, action: selector, for: .touchUpInside)
         return button
     }

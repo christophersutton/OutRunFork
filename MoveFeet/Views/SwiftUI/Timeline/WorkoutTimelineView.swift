@@ -84,7 +84,7 @@ struct WorkoutTimelineView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(LS["WorkoutListViewController.Headline"])
-                        .font(Font.system(.largeTitle, weight: .heavy).lowercaseSmallCaps())
+                        .font(.moveTitle)
                         .foregroundStyle(Color.orAccent)
                         .padding(.horizontal, 20)
                         .padding(.top, 8)

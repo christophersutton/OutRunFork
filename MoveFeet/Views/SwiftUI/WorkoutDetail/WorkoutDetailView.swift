@@ -117,12 +117,12 @@ struct WorkoutDetailView: View {
     private func header(_ snapshot: WorkoutDetailSnapshot) -> some View {
         HStack(spacing: 16) {
             Image(systemName: snapshot.workoutType.sfSymbolName)
-                .font(.system(size: 34, weight: .semibold))
+                .font(.moveStat(34, relativeTo: .largeTitle))
                 .foregroundStyle(Color.orAccent)
                 .frame(width: 52)
             VStack(alignment: .leading, spacing: 2) {
                 Text(snapshot.workoutType.description)
-                    .font(.system(.title2, weight: .heavy))
+                    .font(.moveStat(26, relativeTo: .title2))
                     .foregroundStyle(Color.orPrimary)
                 Text(headerSubtitle(snapshot))
                     .font(.system(.subheadline, weight: .bold))

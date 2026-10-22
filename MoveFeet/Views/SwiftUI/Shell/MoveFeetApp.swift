@@ -28,10 +28,19 @@ struct MoveFeetApp: App {
     /// idempotent on its own.
     @State private var renderSuspended = false
 
+    /// Move accent and appearance choices from Settings; changing either re-tints the app live.
+    @AppStorage(MoveTheme.accentKey) private var accentRaw = MoveAccent.default.rawValue
+    @AppStorage(MoveTheme.appearanceKey) private var appearanceRaw = MoveAppearance.system.rawValue
+
+    init() {
+        MoveTheme.registerFonts()
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView()
-                .tint(Color.orAccent)   // mirrors the legacy `window.tintColor = .accentColor`
+                .tint(Color(uiColor: (MoveAccent(rawValue: accentRaw) ?? .default).fill))   // mirrors the legacy `window.tintColor = .accentColor`
+                .preferredColorScheme((MoveAppearance(rawValue: appearanceRaw) ?? .system).colorScheme)
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {

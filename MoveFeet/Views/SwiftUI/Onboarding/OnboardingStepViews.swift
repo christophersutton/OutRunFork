@@ -328,7 +328,7 @@ private struct OnboardingPermissionRow: View {
                     }
                 }
                 .font(.system(.caption, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(granted ? Color.orOnAccent : Color.orBackground)
                 .frame(minWidth: 64)
                 .frame(height: 32)
                 .padding(.horizontal, 12)

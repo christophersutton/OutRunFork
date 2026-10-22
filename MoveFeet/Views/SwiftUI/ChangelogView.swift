@@ -33,7 +33,7 @@ struct ChangelogView: View {
                 }
 
                 Text("\(LS["ChangeLog"]) - \(Config.version)")
-                    .font(.system(.title2, weight: .heavy))
+                    .font(.moveHeadline)
                     .foregroundStyle(Color.orAccent)
                     .lineLimit(1)
 

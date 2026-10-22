@@ -326,11 +326,11 @@ private struct StorageFailureView: View {
                     .foregroundStyle(Color.orAccent)
                 Text("Unable to open your workout data")
                     .font(.title2.bold())
-                Text("Move: Feet cannot continue until its local storage is available. Retry after freeing device storage or restarting the app.")
+                Text("Move Run cannot continue until its local storage is available. Retry after freeing device storage or restarting the app.")
                 Button("Retry", action: retry)
                     .buttonStyle(.borderedProminent)
                 Text("If this keeps happening, contact support for recovery help. Keep the app installed to preserve its local data.")
-                Link("Contact support", destination: URL(string: "mailto:support@wavelength.computer?subject=Move:%20Feet%20storage%20recovery")!)
+                Link("Contact support", destination: URL(string: "mailto:support@wavelength.computer?subject=Move%20Run%20storage%20recovery")!)
                 DisclosureGroup("Technical details") {
                     Text(detail).font(.caption).textSelection(.enabled)
                 }
