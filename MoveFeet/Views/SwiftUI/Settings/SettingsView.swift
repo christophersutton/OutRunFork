@@ -317,6 +317,7 @@ struct SettingsView: View {
         } label: {
             Circle()
                 .fill(Color(uiColor: accent.fill))
+                .overlay(Circle().strokeBorder(Color.orLine, lineWidth: 1))
                 .padding(5)
                 .overlay(Circle().strokeBorder(isSelected ? Color(uiColor: accent.fill) : .clear, lineWidth: 2))
                 .frame(minWidth: 36, minHeight: 36)

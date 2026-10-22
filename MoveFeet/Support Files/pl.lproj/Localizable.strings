@@ -4,6 +4,7 @@
 "TabBar.Settings" = "Ustawienia";
 "TabBar.Timeline" = "Oś czasu";
 "Next" = "Następny";
+"Back" = "Wstecz";
 "No" = "Nie";
 "Yes" = "Tak";
 "NoData.Message" = "Nic tu nie ma.";

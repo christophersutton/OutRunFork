@@ -25,6 +25,7 @@
 "Skip" = "Ohita";
 "Finish" = "Valmis";
 "Next" = "Seuraava";
+"Back" = "Takaisin";
 "No" = "Ei";
 "Yes" = "Kyllä";
 "NoData.Message" = "Täällä ei näytä olevan mitään.";

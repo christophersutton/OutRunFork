@@ -256,6 +256,7 @@
 "Skip" = "Ignorer";
 "Finish" = "Terminer";
 "Next" = "Suivant";
+"Back" = "Retour";
 "No" = "Non";
 "Yes" = "Oui";
 "NoData.Message" = "Il n'y a malheureusement rien ici.";

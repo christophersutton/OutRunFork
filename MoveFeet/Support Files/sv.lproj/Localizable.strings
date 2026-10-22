@@ -161,6 +161,7 @@
 "Skip" = "Hoppa över";
 "Finish" = "Klar";
 "Next" = "Nästa";
+"Back" = "Tillbaka";
 "No" = "Nej";
 "Yes" = "Ja";
 "NoData.Message" = "Det verkar inte finnas något här.";

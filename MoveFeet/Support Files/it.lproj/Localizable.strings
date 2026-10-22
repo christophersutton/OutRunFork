@@ -245,6 +245,7 @@
 "Skip" = "Salta";
 "Finish" = "Fine";
 "Next" = "Avanti";
+"Back" = "Indietro";
 "Yes" = "Sì";
 "NoData.Message" = "Qui sembra non esserci nulla.";
 "NoDataAvailable" = "Nessun Dato Disponibile";

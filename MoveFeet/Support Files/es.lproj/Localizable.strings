@@ -260,6 +260,7 @@
 "Skip" = "Saltar";
 "Finish" = "Terminar";
 "Next" = "Siguiente";
+"Back" = "Atrás";
 "No" = "No";
 "Yes" = "Sí";
 "NoData.Message" = "Parece que no hay nada aquí.";

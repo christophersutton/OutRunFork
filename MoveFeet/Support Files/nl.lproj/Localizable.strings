@@ -26,6 +26,7 @@
 "Skip" = "Overslaan";
 "Finish" = "Afronden";
 "Next" = "Volgende";
+"Back" = "Terug";
 "No" = "Nee";
 "Yes" = "Ja";
 "NoData.Message" = "Er lijkt hier niets te zijn.";

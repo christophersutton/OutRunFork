@@ -249,6 +249,7 @@
 "Skip" = "Pular";
 "Finish" = "Terminar";
 "Next" = "Próximo";
+"Back" = "Voltar";
 "No" = "Não";
 "Yes" = "Sim";
 "NoData.Message" = "Parece que não há nada aqui.";

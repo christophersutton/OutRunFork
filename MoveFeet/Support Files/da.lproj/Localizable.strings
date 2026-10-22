@@ -263,6 +263,7 @@
 "Skip" = "Springe";
 "Finish" = "Afslut";
 "Next" = "Næste";
+"Back" = "Tilbage";
 "No" = "Ingen";
 "Yes" = "Ja";
 "NoData.Message" = "Der synes ikke at være noget her.";

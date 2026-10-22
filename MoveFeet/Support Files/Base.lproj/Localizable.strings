@@ -37,6 +37,7 @@
 "Yes" = "Yes";
 "No" = "No";
 "Next" = "Next";
+"Back" = "Back";
 "Finish" = "Finish";
 "Skip" = "Skip";
 "Grant" = "Grant";
@@ -292,4 +293,4 @@
 "Settings.Appearance" = "Appearance";
 "Settings.Appearance.Mode" = "Theme";
 "Settings.Appearance.Accent" = "Accent Color";
-"Settings.Appearance.Message" = "The accent colors buttons, routes and the home screen icon. Orange is Move Run's own color.";
+"Settings.Appearance.Message" = "Your accent is used for buttons and highlights, and the app icon changes to match.";

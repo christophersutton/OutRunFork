@@ -8,6 +8,7 @@
 "WorkoutDeletion.AppleHealth.Message" = "Želiš li također izbrisati trening koji je spremljen u Appleovom programu „Zdravlje”?";
 "Settings.EnergyUnit" = "Jedinica energije";
 "Next" = "Dalje";
+"Back" = "Natrag";
 "Settings.ImportBackupData" = "Uvezi sigurnosnu kopiju";
 "Setup.AppleHealth.SyncWeight" = "Sinkronizraj težinu";
 "Setup.Permission.Location.Restricted.Message" = "Tvojoj lokaciji možemo pristupiti samo dok je ovaj program otvoren. Za praćenje treninga preporučuje se omogućiti pristup lokaciji u pozadini, tako da mobitel ne mora biti cijelo vrijeme uključen s otvorenim programom. Za stalni pristup tvojoj lokaciji, otvori postavke telefona i ručno promijeni način pristupa.";
