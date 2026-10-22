@@ -25,9 +25,9 @@ MOVEFEET_DEVICE="15" scripts/install-movefeet.sh
 
 1. Lists paired physical iOS devices with `devicectl`.
 2. Verifies Xcode exposes the selected phone as a `MoveFeet` scheme destination.
-3. Builds `MoveFeet.xcworkspace` / `MoveFeet` / `Debug` for `iphoneos`.
+3. Builds `MoveFeet.xcworkspace` / `MoveFeet` / `Release` for `iphoneos`.
 4. Writes build output to `build/DerivedData-device`.
-5. Installs `build/DerivedData-device/Build/Products/Debug-iphoneos/MoveFeet.app`.
+5. Installs `build/DerivedData-device/Build/Products/Release-iphoneos/MoveFeet.app`.
 6. Launches `com.wcc.movefeet` with `--terminate-existing`.
 7. Verifies the app process is running on the phone.
 
@@ -66,3 +66,5 @@ scripts/install-movefeet.sh --skip-build
 ```
 
 If signing fails, confirm the Apple Development account for team `W67CF9C739` is signed into Xcode and that the current Apple Developer Program license agreement has been accepted.
+
+Normal device installs use optimized Release builds. For profiling or debugging that needs debug-only diagnostics, explicitly run `MOVEFEET_CONFIGURATION=Debug scripts/install-movefeet.sh`; use the same override with `--skip-build` to select that Debug artifact.

@@ -16,7 +16,7 @@ cd "$ROOT_DIR"
 
 WORKSPACE="$ROOT_DIR/MoveFeet.xcworkspace"
 SCHEME="${MOVEFEET_SCHEME:-MoveFeet}"
-CONFIGURATION="${MOVEFEET_CONFIGURATION:-Debug}"
+CONFIGURATION="${MOVEFEET_CONFIGURATION:-Release}"
 BUNDLE_ID="${MOVEFEET_BUNDLE_ID:-com.wcc.movefeet}"
 if [ -n "${MOVEFEET_DEVICE+x}" ]; then
   DEVICE_QUERY="$MOVEFEET_DEVICE"
@@ -51,7 +51,7 @@ Options:
   --app-path <path>
       Install an existing MoveFeet.app and skip the build.
   --skip-build
-      Reuse build/DerivedData-device/Build/Products/Debug-iphoneos/MoveFeet.app.
+      Reuse build/DerivedData-device/Build/Products/Release-iphoneos/MoveFeet.app.
   --build-only
       Build the device app and stop before install.
   --no-launch
@@ -67,7 +67,7 @@ Options:
 
 Environment:
   MOVEFEET_DEVICE                    Default device selector; default: 15
-  MOVEFEET_CONFIGURATION             Xcode configuration; default: Debug
+  MOVEFEET_CONFIGURATION             Xcode configuration; default: Release
   MOVEFEET_DERIVED_DATA_PATH         Default: build/DerivedData-device
   MOVEFEET_DEVICE_ARTIFACT_DIR       Default: build/device-install
   MOVEFEET_ALLOW_PROVISIONING_UPDATES Set to 0 to omit -allowProvisioningUpdates

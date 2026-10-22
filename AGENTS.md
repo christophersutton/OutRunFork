@@ -39,7 +39,7 @@ scripts/install-movefeet.sh --list-devices
   - CoreDevice id: `BED61CC7-21C4-5023-B681-06E810C54492`
 
 - The script builds from `MoveFeet.xcworkspace`, installs the built app with `xcrun devicectl`, launches `com.wcc.movefeet`, and verifies the running process.
-- Build output path: `build/DerivedData-device/Build/Products/Debug-iphoneos/MoveFeet.app`.
+- Build output path: `build/DerivedData-device/Build/Products/Release-iphoneos/MoveFeet.app`.
 - Device install artifacts/logs: `build/device-install/`.
 - If the app is already built, reinstall without rebuilding:
 
@@ -73,3 +73,7 @@ scripts/install-movefeet.sh --skip-build --no-launch
 ## Delegation Boundary
 
 - Subagents can audit code or implement repo changes, but the main agent should own physical-device build/install/launch verification. Do not ask subagents to run `scripts/install-movefeet.sh` or direct `devicectl` installs.
+
+## Device build configuration
+
+- Normal device installs default to optimized `Release`. Use `MOVEFEET_CONFIGURATION=Debug` explicitly when debugging/profiling requires debug diagnostics. Keep the same configuration override when reusing an artifact with `--skip-build`.
