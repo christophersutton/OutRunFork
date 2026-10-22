@@ -47,7 +47,7 @@ struct GPSAccuracyView: View {
                             Spacer()
                             if selection == option.value {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(Color.orAccent)
+                                    .foregroundStyle(Color.orAccentLabel)
                                     .fontWeight(.semibold)
                             }
                         }

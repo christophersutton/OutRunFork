@@ -130,7 +130,7 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
         builder.checkpointError = { [weak self] _ in
             guard let self, !self.didShowCheckpointError else { return }
             self.didShowCheckpointError = true
-            self.displayError(withMessage: "Recording recovery could not be updated. Keep Feet open and save this workout before closing the app.")
+            self.displayError(withMessage: "Recording recovery could not be updated. Keep Move Run open and save this workout before closing the app.")
         }
     }
 
@@ -140,7 +140,7 @@ class NewWorkoutViewController: MapViewControllerWithContainerView, UIGestureRec
         super.viewDidAppear(animated)
         guard builder.hasRecovery, presentedViewController == nil else { return }
         let alert = UIAlertController(title: "Recover workout?",
-            message: "Feet has an unfinished recording. Review it to save or continue. Time while Feet was closed will be excluded.", preferredStyle: .alert)
+            message: "Move Run has an unfinished recording. Review it to save or continue. Time while Move Run was closed will be excluded.", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Review workout", style: .default) { [weak self] _ in
             guard let self else { return }
             do {

@@ -22,14 +22,15 @@ struct TimelineGutter: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .fill(Color.orAccent.opacity(0.25))
-                .frame(width: 4)
+                .fill(Color.orLine)
+                .frame(width: 3)
                 .frame(maxHeight: .infinity)
             if showRing {
+                // The Move ring: the same stroke-to-radius ratio as the family's "o".
                 Circle()
                     .fill(Color.orBackground)
-                    .overlay(Circle().strokeBorder(Color.orAccent, lineWidth: 4))
-                    .frame(width: 20, height: 20)
+                    .overlay(Circle().strokeBorder(Color.orAccent, lineWidth: 6))
+                    .frame(width: 22, height: 22)
             }
         }
         .frame(width: Self.width)
@@ -45,8 +46,7 @@ struct TimelineDayHeader: View {
         HStack(spacing: 0) {
             TimelineGutter()
             Text(text)
-                .font(.system(.body, weight: .bold))
-                .foregroundStyle(Color.orSecondary)
+                .moveLabelStyle()
             Spacer(minLength: 0)
         }
         .frame(height: 40)
@@ -79,12 +79,11 @@ struct WorkoutTimelineRow: View {
     private var card: some View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(snapshot.workoutType.description.uppercased())
-                    .font(.system(.subheadline, weight: .bold))
-                    .foregroundStyle(Color.orSecondary)
+                Text(snapshot.workoutType.description)
+                    .moveLabelStyle()
                 WorkoutStatText.bigStat(Self.distanceString(snapshot), style: .largeTitle)
                     .foregroundStyle(Color.orPrimary)
-                WorkoutStatText.bigStat(Self.durationString(snapshot), style: .title2)
+                WorkoutStatText.bigStat(Self.durationString(snapshot), style: .title3)
                     .foregroundStyle(Color.orSecondary)
             }
             .padding(.leading, 20)
@@ -103,11 +102,11 @@ struct WorkoutTimelineRow: View {
         .frame(minHeight: routeImage == nil ? 0 : 120)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.orForeground)
-        .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay {
             if snapshot.isRace {
-                RoundedRectangle(cornerRadius: 25, style: .continuous)
-                    .strokeBorder(Color.orAccent.opacity(0.5), lineWidth: 4)
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .strokeBorder(Color.orAccent, lineWidth: 2)
             }
         }
         .onGeometryChange(for: CGSize.self) { proxy in
@@ -166,27 +165,54 @@ struct WorkoutTimelineRow: View {
 // MARK: - Big-number stat text
 
 enum WorkoutStatText {
-    /// Renders a "number unit" string as large normal digits + lowercase-small-caps unit at the same size
-    /// (matching the legacy `attributedStringWithBigNumbers`). Numeric tokens stay upright; the rest is small-caps.
+    /// Renders a "number unit" string as Inter Tight tabular digits with the unit set smaller and muted beside
+    /// them (the Move stat style). Numeric tokens get the stat face; the rest is the unit.
     ///
     /// Splits on any Unicode whitespace (so locales that separate the number and unit — or group digits — with a
     /// no-break/narrow space, e.g. fr_FR's U+202F, still split correctly) and treats a token as numeric if it
     /// contains any digit (so grouped numbers like "1,234" render upright). This is a deliberate improvement over
     /// the legacy split-on-ASCII-space + `NumberFormatter` parse, which lost the styling in those locales.
     static func bigStat(_ string: String, style: Font.TextStyle) -> Text {
-        let base = Font.system(style, weight: .bold)
-        let smallCaps = base.lowercaseSmallCaps()
+        let size = statSize(for: style)
+        let base = Font.moveStat(size, relativeTo: style)
+        let unit = Font.custom(MoveTheme.FontName.bold, size: (size * 0.5).rounded(), relativeTo: style)
         let tokens = string.split(whereSeparator: \.isWhitespace).map(String.init)
 
         var text = Text("")
         for (index, token) in tokens.enumerated() {
             let isNumber = token.contains(where: \.isNumber)
-            let piece = Text(token).font(isNumber ? base : smallCaps)
+            let piece = isNumber
+                ? Text(token).font(base)
+                : Text(token).font(unit).foregroundStyle(Color.orSecondary)
             if index == 0 {
                 text = piece
             } else {
                 text = text + Text(" ").font(base) + piece
             }
+        }
+        return text
+    }
+
+    /// Point size for a stat set at a text style (Display, Stat and smaller stat steps).
+    static func statSize(for style: Font.TextStyle) -> CGFloat {
+        switch style {
+        case .largeTitle: return 34
+        case .title: return 28
+        case .title2: return 24
+        case .title3: return 20
+        default: return 17
+        }
+    }
+
+    /// The hero number: Inter Tight Black at Display size, unit beside it in muted Inter Tight Bold.
+    static func hero(_ string: String) -> Text {
+        let tokens = string.split(whereSeparator: \.isWhitespace).map(String.init)
+        var text = Text("")
+        for (index, token) in tokens.enumerated() {
+            let piece = token.contains(where: \.isNumber)
+                ? Text(token).font(.moveDisplay)
+                : Text(token).font(.custom(MoveTheme.FontName.bold, size: 22, relativeTo: .title2)).foregroundStyle(Color.orSecondary)
+            text = index == 0 ? piece : text + Text(" ").font(.moveDisplay) + piece
         }
         return text
     }

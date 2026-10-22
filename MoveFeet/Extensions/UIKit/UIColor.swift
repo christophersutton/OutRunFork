@@ -22,12 +22,19 @@ import UIKit
 
 extension UIColor {
     
-    static let accentColor = UIColor(named: "accentColor") ?? .orange
-    static let accentColorSwapped = UIColor(named: "accentColorSwapped") ?? UIColor.orange.withAlphaComponent(0.9)
+    /// The person's chosen Move accent (orange by default). Resolved on every draw, so views pick up a new
+    /// choice the next time they render.
+    static var accentColor: UIColor { UIColor { _ in MoveTheme.accent.fill } }
+    /// Pressed/secondary variant of the accent. In the Move identity there is no second hue, so it is the
+    /// same signal color.
+    static var accentColorSwapped: UIColor { accentColor }
+    /// Accent-colored text: darker shade on light backgrounds.
+    static var accentLabelColor: UIColor { UIColor { traits in MoveTheme.accent.label.resolvedColor(with: traits) } }
     static let primaryColor = UIColor(named: "primaryColor") ?? .black
     static let secondaryColor = UIColor(named: "secondaryColor") ?? UIColor(white: 118/255, alpha: 1)
     static let backgroundColor = UIColor(named: "backgroundColor") ??  UIColor.white
     static let foregroundColor = UIColor(named: "foregroundColor") ?? UIColor(white: 248/255, alpha: 1)
-    static let tableViewSeparator = UIColor(white: 0.5, alpha: 0.25)
+    static let lineColor = UIColor(named: "lineColor") ?? UIColor(white: 0.5, alpha: 0.25)
+    static let tableViewSeparator = lineColor
     
 }

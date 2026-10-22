@@ -166,7 +166,7 @@ struct EditWorkoutForm: View {
             HStack {
                 Text(LS["Workout.Duration"]).foregroundStyle(Color.orPrimary)
                 Spacer()
-                Text(formattedDuration).foregroundStyle(showDurationWheels ? Color.orAccent : Color.orSecondary)
+                Text(formattedDuration).foregroundStyle(showDurationWheels ? Color.orAccentLabel : Color.orSecondary)
             }
             .contentShape(Rectangle())
         }

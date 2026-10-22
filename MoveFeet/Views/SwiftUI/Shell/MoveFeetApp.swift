@@ -28,10 +28,24 @@ struct MoveFeetApp: App {
     /// idempotent on its own.
     @State private var renderSuspended = false
 
+    /// Move accent and appearance choices from Settings; changing either re-tints the app live.
+    @AppStorage(MoveTheme.accentKey) private var accentRaw = MoveAccent.default.rawValue
+    @AppStorage(MoveTheme.appearanceKey) private var appearanceRaw = MoveAppearance.system.rawValue
+
+    init() {
+        MoveTheme.registerFonts()
+        MoveTheme.applyNavigationBarStyle()
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView()
-                .tint(Color.orAccent)   // mirrors the legacy `window.tintColor = .accentColor`
+                .tint(Color(uiColor: (MoveAccent(rawValue: accentRaw) ?? .default).label))
+                .task(id: accentRaw) {
+                    do { try await MoveTheme.applyAppIcon(for: MoveAccent(rawValue: accentRaw) ?? .default) }
+                    catch { print("[MoveTheme] Could not reconcile app icon:", error.localizedDescription) }
+                }
+                .preferredColorScheme((MoveAppearance(rawValue: appearanceRaw) ?? .system).colorScheme)
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {

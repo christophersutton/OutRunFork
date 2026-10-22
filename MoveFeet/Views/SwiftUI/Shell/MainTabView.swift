@@ -218,7 +218,7 @@ private struct CustomTabBar: View {
                 Text(title)
                     .font(.system(.caption2, weight: .medium))
             }
-            .foregroundStyle(isSelected ? Color.orAccent : Color.orSecondary)
+            .foregroundStyle(isSelected ? Color.orAccentLabel : Color.orSecondary)
             .frame(width: 64)
             .contentShape(Rectangle())
         }
@@ -238,7 +238,7 @@ private struct CustomTabBar: View {
                 Text(title)
                     .font(.system(.caption2, weight: .medium))
             }
-            .foregroundStyle(isSelected ? Color.orAccent : Color.orSecondary)
+            .foregroundStyle(isSelected ? Color.orAccentLabel : Color.orSecondary)
             .frame(width: 64)
             .contentShape(Rectangle())
         }
@@ -266,7 +266,7 @@ private struct AddButton: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 20, height: 20)
-                .foregroundStyle(.white)
+                .foregroundStyle(Color.orOnAccent)
         }
         .contentShape(Circle())
         // Long-press takes priority over tap: a held press (≥0.4s) opens the workout-type menu and suppresses

@@ -46,7 +46,7 @@ class WorkoutBuilderReadinessIndicationView: UIView {
         super.init(frame: .zero)
         
         self.backgroundColor = .backgroundColor
-        self.layer.cornerRadius = 15
+        self.layer.cornerRadius = 14
         
         snp.makeConstraints { (make) in
             make.height.equalTo(30)

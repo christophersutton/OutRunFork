@@ -288,7 +288,7 @@ private struct OnboardingLinkToggleRow: View {
             Button(action: link) {
                 Text(title)
                     .font(.system(.body, weight: .semibold))
-                    .foregroundStyle(Color.orAccent)
+                    .foregroundStyle(Color.orAccentLabel)
                     .underline()
             }
             Spacer()
@@ -327,12 +327,13 @@ private struct OnboardingPermissionRow: View {
                         Text(LS["Grant"].uppercased())
                     }
                 }
-                .font(.system(.caption, weight: .bold))
-                .foregroundStyle(.white)
+                .font(.system(.footnote, weight: .bold))
+                .tracking(0.6)
+                .foregroundStyle(granted ? Color.orAccentLabel : Color.orOnAccent)
                 .frame(minWidth: 64)
-                .frame(height: 32)
+                .frame(height: 34)
                 .padding(.horizontal, 12)
-                .background(granted ? Color.orAccent : Color.orSecondary)
+                .background(granted ? Color.orBackground : Color.orAccent)
                 .clipShape(Capsule())
             }
             .disabled(granted)

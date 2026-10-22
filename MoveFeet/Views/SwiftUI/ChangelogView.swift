@@ -33,8 +33,8 @@ struct ChangelogView: View {
                 }
 
                 Text("\(LS["ChangeLog"]) - \(Config.version)")
-                    .font(.system(.title2, weight: .heavy))
-                    .foregroundStyle(Color.orAccent)
+                    .font(.moveHeadline)
+                    .foregroundStyle(Color.orAccentLabel)
                     .lineLimit(1)
 
                 ScrollView {
@@ -45,7 +45,7 @@ struct ChangelogView: View {
                 }
             }
             .padding(20)
-            .background(Color.orBackground, in: RoundedRectangle(cornerRadius: 25))
+            .background(Color.orBackground, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
             .padding(.horizontal, 25)
             .frame(maxHeight: .infinity)
             .padding(.vertical, 40)

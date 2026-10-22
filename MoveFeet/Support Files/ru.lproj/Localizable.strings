@@ -5,7 +5,7 @@
 "No" = "Нет";
 "TabBar.Timeline" = "История";
 "TabBar.Settings" = "Настройки";
-"OutRun" = "Move: Feet";
+"OutRun" = "Move Run";
 "Continue" = "Продолжить";
 "Delete" = "Удалить";
 "Loading" = "Загрузка...";
@@ -16,6 +16,7 @@
 "NoData.Message" = "Кажется, здесь ничего нет.";
 "Yes" = "Да";
 "Next" = "Следующий";
+"Back" = "Назад";
 "Finish" = "Закончить";
 "Skip" = "Пропустить";
 "Grant" = "Предоставить";

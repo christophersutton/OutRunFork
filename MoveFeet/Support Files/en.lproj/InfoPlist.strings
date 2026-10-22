@@ -18,8 +18,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-"NSHealthUpdateUsageDescription" = "Feet saves workouts, routes, activity measurements and body weight to Apple Health when you enable Health integration.";
-"NSHealthShareUsageDescription" = "Feet reads workouts, routes, heart rate, steps and body weight from Apple Health when you enable Health integration.";
+"NSHealthUpdateUsageDescription" = "Move Run saves workouts, routes, activity measurements and body weight to Apple Health when you enable Health integration.";
+"NSHealthShareUsageDescription" = "Move Run reads workouts, routes, heart rate, steps and body weight from Apple Health when you enable Health integration.";
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "This app needs your location to track workouts";
 "NSLocationAlwaysUsageDescription" = "This app needs your location to track workouts";
 "NSLocationWhenInUseUsageDescription" = "This app needs your location to track workouts";

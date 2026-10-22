@@ -83,6 +83,7 @@
 		22877542234A73060078CE12 /* LS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22877541234A73060078CE12 /* LS.swift */; };
 		22877544234A75A10078CE12 /* Units.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22877543234A75A10078CE12 /* Units.swift */; };
 		2288F6B422E0FB5C0014471C /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2288F6B322E0FB5C0014471C /* UIColor.swift */; };
+		4D0E5A202C7B4E9A00C0FFEE /* MoveTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D0E5A1F2C7B4E9A00C0FFEE /* MoveTheme.swift */; };
 		228B4F9327CA6C5400CD82E5 /* NewWorkout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B4F9227CA6C5400CD82E5 /* NewWorkout.swift */; };
 		228BD39023EB51910019C322 /* BackupDocumentPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228BD38F23EB51910019C322 /* BackupDocumentPickerDelegate.swift */; };
 		228CDFFA2577C66B0023E8F7 /* Computation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228CDFF92577C66B0023E8F7 /* Computation.swift */; };
@@ -339,6 +340,7 @@
 		22877541234A73060078CE12 /* LS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LS.swift; sourceTree = "<group>"; };
 		22877543234A75A10078CE12 /* Units.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Units.swift; sourceTree = "<group>"; };
 		2288F6B322E0FB5C0014471C /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		4D0E5A1F2C7B4E9A00C0FFEE /* MoveTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveTheme.swift; sourceTree = "<group>"; };
 		228B4F9227CA6C5400CD82E5 /* NewWorkout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewWorkout.swift; sourceTree = "<group>"; };
 		228BD38F23EB51910019C322 /* BackupDocumentPickerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDocumentPickerDelegate.swift; sourceTree = "<group>"; };
 		228CDFF92577C66B0023E8F7 /* Computation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Computation.swift; sourceTree = "<group>"; };
@@ -1132,6 +1134,7 @@
 			children = (
 				221F56EA2345D87C00706E2E /* UIAlertController.swift */,
 				2288F6B322E0FB5C0014471C /* UIColor.swift */,
+				4D0E5A1F2C7B4E9A00C0FFEE /* MoveTheme.swift */,
 				22B6CF7822CA11D6002D2FB0 /* UIFont.swift */,
 				22AB2FB6233CC925002EF0DE /* UIImage.swift */,
 				228187F32393990900400135 /* UILabel.swift */,
@@ -1573,6 +1576,7 @@
 				224AF62A237624E80047CBDE /* CustomDateFormatting.swift in Sources */,
 				22C1108024532C69009ACE81 /* WorkoutMapImageRequest.swift in Sources */,
 				2288F6B422E0FB5C0014471C /* UIColor.swift in Sources */,
+				4D0E5A202C7B4E9A00C0FFEE /* MoveTheme.swift in Sources */,
 				221436C12443960A0010D82B /* UnitCount.swift in Sources */,
 				22FEA0AD24CDD4CA0007CA9C /* FileManager.swift in Sources */,
 				22DBFBE12349362900DE6E92 /* UserPreferences.swift in Sources */,
@@ -1970,6 +1974,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B7B80C6D5321FB4D11930C34 /* Pods-MoveFeet.debug.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-green AppIcon-moonlight AppIcon-teal AppIcon-blue AppIcon-purple AppIcon-pink AppIcon-red";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MoveFeet/MoveFeet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1994,6 +1999,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DFAEA5FDFE2B7C5A905A9B89 /* Pods-MoveFeet.release.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-green AppIcon-moonlight AppIcon-teal AppIcon-blue AppIcon-purple AppIcon-pink AppIcon-red";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MoveFeet/MoveFeet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

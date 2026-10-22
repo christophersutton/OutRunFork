@@ -31,6 +31,14 @@ final class WorkoutLiveActivityController {
     private func bind(builder: WorkoutBuilder, liveStats: LiveStats) {
         let output = builder.tranform(WorkoutBuilder.Input())
 
+        NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
+            .receive(on: DispatchQueue.main)
+            .map { _ in MoveTheme.accent.fillHex }
+            .prepend(MoveTheme.accent.fillHex)
+            .removeDuplicates()
+            .sink { [weak self] _ in self?.updateActivityIfNeeded() }
+            .store(in: &cancellables)
+
         output.startDate
             .receive(on: DispatchQueue.main)
             .sink { [weak self] startDate in
@@ -129,7 +137,7 @@ final class WorkoutLiveActivityController {
             return
         }
 
-        let attributes = WorkoutActivityAttributes()
+        let attributes = WorkoutActivityAttributes(accentHex: MoveTheme.accent.fillHex)
         let state = contentState(status: .recording)
         let content = activityContent(state: state, status: .recording)
 
@@ -161,7 +169,8 @@ final class WorkoutLiveActivityController {
             timerStart: timerStart,
             pauseTime: pauseTime,
             isPaused: isPaused,
-            distanceText: distanceText
+            distanceText: distanceText,
+            accentHex: MoveTheme.accent.fillHex
         )
     }
 

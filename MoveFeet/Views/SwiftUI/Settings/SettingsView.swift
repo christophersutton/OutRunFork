@@ -14,7 +14,12 @@ import UniformTypeIdentifiers
 
 struct SettingsView: View {
 
+    @State private var isChangingAccent = false
+    @State private var showAccentError = false
     @State private var state = SettingsState()
+
+    @AppStorage(MoveTheme.accentKey) private var accentRaw = MoveAccent.default.rawValue
+    @AppStorage(MoveTheme.appearanceKey) private var appearanceRaw = MoveAppearance.system.rawValue
 
     // Sheet presentation for the policy views.
     @State private var showTermsOfService = false
@@ -45,15 +50,29 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                userSettingsSection
-                unitPreferencesSection
-                recordingPreferencesSection
-                appleHealthSection
-                dataPreferencesSection
-                supportSection
-                appInfoSection
+                Group {
+                    userSettingsSection
+                    appearanceSection
+                    unitPreferencesSection
+                    recordingPreferencesSection
+                    appleHealthSection
+                    dataPreferencesSection
+                    supportSection
+                    appInfoSection
+                }
+                .listRowBackground(Color.orForeground)
             }
+            // Move ground and tile rows in both appearances; the darker accent shade keeps
+            // picker values and links readable on light.
+            .scrollContentBackground(.hidden)
+            .background(Color.orBackground)
+            .tint(Color.orAccentLabel)
             .navigationTitle(LS["Settings"])
+        }
+        .alert("Could not change accent", isPresented: $showAccentError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("The app icon could not be changed. Your previous accent is still selected. Please try again.")
         }
         .sheet(isPresented: $showTermsOfService) {
             PolicyView(type: .termsOfService)
@@ -100,7 +119,7 @@ struct SettingsView: View {
                             .foregroundStyle(Color.orSecondary)
                     }
                     .padding(24)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    .background(Color.orForeground, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 }
             }
         }
@@ -270,6 +289,66 @@ struct SettingsView: View {
         } header: {
             Text(LS["Settings.UnitPreferences"])
         }
+    }
+
+    // MARK: Appearance
+
+    private var selectedAccent: MoveAccent { MoveAccent(rawValue: accentRaw) ?? .default }
+
+    private var appearanceSection: some View {
+        Section {
+            Picker(LS["Settings.Appearance.Mode"], selection: $appearanceRaw) {
+                ForEach(MoveAppearance.allCases) { appearance in
+                    Text(appearance.displayName).tag(appearance.rawValue)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text(LS["Settings.Appearance.Accent"])
+                    Spacer()
+                    Text(selectedAccent.displayName)
+                        .foregroundStyle(Color.orSecondary)
+                }
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 8), spacing: 8) {
+                    ForEach(MoveAccent.allCases) { accent in
+                        accentSwatch(accent)
+                    }
+                }
+            }
+            .padding(.vertical, 6)
+        } header: {
+            Text(LS["Settings.Appearance"])
+        } footer: {
+            Text(LS["Settings.Appearance.Message"])
+        }
+    }
+
+    private func accentSwatch(_ accent: MoveAccent) -> some View {
+        let isSelected = accent == selectedAccent
+        return Button {
+            guard !isChangingAccent else { return }
+            isChangingAccent = true
+            Task { @MainActor in
+                defer { isChangingAccent = false }
+                do {
+                    try await MoveTheme.selectAccent(accent)
+                } catch {
+                    showAccentError = true
+                }
+            }
+        } label: {
+            Circle()
+                .fill(Color(uiColor: accent.fill))
+                .overlay(Circle().strokeBorder(Color.orLine, lineWidth: 1))
+                .padding(5)
+                .overlay(Circle().strokeBorder(isSelected ? Color(uiColor: accent.fill) : .clear, lineWidth: 2))
+                .frame(minWidth: 36, minHeight: 36)
+        }
+        .buttonStyle(.plain)
+        .disabled(isChangingAccent)
+        .accessibilityLabel(accent == .default ? "\(accent.displayName), Run default" : accent.displayName)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }
 
     // MARK: S3 - Recording Preferences
@@ -443,7 +522,7 @@ struct SettingsView: View {
             }
 
             Button {
-                if let url = URL(string: "mailto:support@wavelength.computer?subject=Move:%20Feet") {
+                if let url = URL(string: "mailto:support@wavelength.computer?subject=Move%20Run") {
                     UIApplication.shared.open(url)
                 }
             } label: {
@@ -458,6 +537,21 @@ struct SettingsView: View {
 
     private var appInfoSection: some View {
         Section {
+            HStack(spacing: 14) {
+                MoveRunMark()
+                    .frame(width: 44, height: 44)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Move Run")
+                        .font(.moveHeadline)
+                        .foregroundStyle(Color.orPrimary)
+                    Text("A Move app by Wavelength Computing Co.")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.orSecondary)
+                }
+            }
+            .padding(.vertical, 6)
+            .accessibilityElement(children: .combine)
+
             NavigationLink {
                 ContributorsView()
             } label: {

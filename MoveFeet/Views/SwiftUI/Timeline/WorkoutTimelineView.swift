@@ -79,13 +79,17 @@ struct WorkoutTimelineView: View {
     private var content: some View {
         let snapshots = displayedSnapshots
         if store.isLoaded && snapshots.isEmpty {
-            ContentUnavailableView(LS["NoData.Message"], systemImage: "figure.run")
+            MoveEmptyState(
+                symbol: "figure.run",
+                title: "No Workouts Yet",
+                message: "Tap + to record a run, walk or hike. Hold it to pick the type first."
+            )
         } else {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(LS["WorkoutListViewController.Headline"])
-                        .font(Font.system(.largeTitle, weight: .heavy).lowercaseSmallCaps())
-                        .foregroundStyle(Color.orAccent)
+                        .font(.moveTitle)
+                        .foregroundStyle(Color.orPrimary)
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
                         .padding(.bottom, 12)

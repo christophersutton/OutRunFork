@@ -54,8 +54,9 @@ struct RouteMapView: UIViewRepresentable {
             guard let polyline = overlay as? MKPolyline else { return MKOverlayRenderer(overlay: overlay) }
             let renderer = MKPolylineRenderer(polyline: polyline)
             renderer.strokeColor = .accentColor
-            renderer.lineWidth = 8.0
+            renderer.lineWidth = 6.0
             renderer.lineCap = .round
+            renderer.lineJoin = .round
             return renderer
         }
     }

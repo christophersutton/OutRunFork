@@ -302,7 +302,7 @@ private struct MigrationView: View {
             Color.orBackground.ignoresSafeArea()
             VStack(spacing: 10) {
                 Text(LS["Loading-DoNotClose"])
-                    .font(.system(.body, weight: .bold))
+                    .font(.moveHeadline)
                     .foregroundStyle(Color.orPrimary)
                     .multilineTextAlignment(.center)
                 ProgressView(value: progress)
@@ -323,14 +323,14 @@ private struct StorageFailureView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Image(systemName: "externaldrive.badge.exclamationmark")
                     .font(.largeTitle)
-                    .foregroundStyle(Color.orAccent)
+                    .foregroundStyle(Color.orAccentLabel)
                 Text("Unable to open your workout data")
-                    .font(.title2.bold())
-                Text("Move: Feet cannot continue until its local storage is available. Retry after freeing device storage or restarting the app.")
+                    .font(.moveHeadline)
+                Text("Move Run cannot continue until its local storage is available. Retry after freeing device storage or restarting the app.")
                 Button("Retry", action: retry)
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.movePrimary)
                 Text("If this keeps happening, contact support for recovery help. Keep the app installed to preserve its local data.")
-                Link("Contact support", destination: URL(string: "mailto:support@wavelength.computer?subject=Move:%20Feet%20storage%20recovery")!)
+                Link("Contact support", destination: URL(string: "mailto:support@wavelength.computer?subject=Move%20Run%20storage%20recovery")!)
                 DisclosureGroup("Technical details") {
                     Text(detail).font(.caption).textSelection(.enabled)
                 }

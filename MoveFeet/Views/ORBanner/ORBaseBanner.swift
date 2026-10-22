@@ -30,7 +30,7 @@ public class ORBaseBanner: UIView {
     public var onDismiss: ((ORBaseBanner) -> Void)?
     
     /// The corner radius used for rounding off the subviews of the banner
-    private let cornerRadius: CGFloat = 15
+    private let cornerRadius: CGFloat = 20
     
     /// The spacing around the banner; meaning the distance it will have to the edge of the screen
     private let spacing: CGFloat = 15
@@ -38,12 +38,13 @@ public class ORBaseBanner: UIView {
     /// The height and width of the dismiss button
     private let dismissButtonSize: CGFloat = 36
     
-    /// The effect view used to display a blur effect as the background of the banner
+    /// The banner's ground. Move cards are a solid tile, so this carries no blur effect.
     private lazy var effectView: UIVisualEffectView = {
         
         let effectView = UIVisualEffectView()
         
-        effectView.effect = UIBlurEffect(style: .regular)
+        effectView.effect = nil
+        effectView.backgroundColor = .foregroundColor
         effectView.clipsToBounds = true
         effectView.layer.cornerRadius = self.cornerRadius
         
@@ -92,14 +93,9 @@ public class ORBaseBanner: UIView {
         
         super.init(frame: .zero)
         
-        self.layer.shadowColor = UIColor.gray.cgColor
-        self.layer.shadowOpacity = 0.25
-        self.layer.shadowOffset = .zero
-        self.layer.shadowRadius = 10
-        
         self.layer.cornerRadius = self.cornerRadius
         
-        self.backgroundColor = UIColor.backgroundColor.withAlphaComponent(0.5)
+        self.backgroundColor = .clear
         
         self.addSubview(effectView)
         self.addSubview(contentView)

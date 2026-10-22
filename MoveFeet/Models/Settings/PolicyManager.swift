@@ -56,14 +56,14 @@ class PolicyManager {
             switch self {
             case .privacyPolicy:
                 return """
-                Move: Feet — Privacy
+                Move Run — Privacy
                 Updated October 21, 2026
 
-                Move: Feet stores your workouts, routes, measurements and preferences on your device. Recording uses location, including in the background during a workout, and motion data. Apple Maps supplies map content.
+                Move Run stores your workouts, routes, measurements and preferences on your device. Recording uses location, including in the background during a workout, and motion data. Apple Maps supplies map content.
 
-                Apple Health integration is optional. When enabled and authorized, Feet can read workouts and related route, heart-rate, step and weight data, and write workouts and measurements. You control Health access in iOS Settings. Disabling synchronization stops future synchronization; it does not remove records already saved in Apple Health.
+                Apple Health integration is optional. When enabled and authorized, Move Run can read workouts and related route, heart-rate, step and weight data, and write workouts and measurements. You control Health access in iOS Settings. Disabling synchronization stops future synchronization; it does not remove records already saved in Apple Health.
 
-                Feet has no account service, advertising or developer analytics service. The app does not upload your workout history to a developer server. Apple services, device backups and any destinations you choose when sharing exports operate under their own settings and policies. Exported backups and GPX files can contain sensitive location and health information; share them only with recipients you choose.
+                Move Run has no account service, advertising or developer analytics service. The app does not upload your workout history to a developer server. Apple services, device backups and any destinations you choose when sharing exports operate under their own settings and policies. Exported backups and GPX files can contain sensitive location and health information; share them only with recipients you choose.
 
                 You can delete local workouts or all local data in Settings. Local deletion and Apple Health deletion are separate operations. Copies you export or include in device backups may remain until you delete those copies.
 
@@ -73,12 +73,12 @@ class PolicyManager {
                 """
             case .termsOfService:
                 return """
-                Move: Feet — About use
+                Move Run — About use
                 Updated October 21, 2026
 
-                Move: Feet is a personal workout recorder provided by Chris Sutton / Wavelength. Recording, distance, timing and calorie estimates may be incomplete or inaccurate. The app is not a medical device or a source of medical advice. Use your own judgment when exercising and keep backups of history you wish to retain.
+                Move Run is a personal workout recorder provided by Chris Sutton / Wavelength. Recording, distance, timing and calorie estimates may be incomplete or inaccurate. The app is not a medical device or a source of medical advice. Use your own judgment when exercising and keep backups of history you wish to retain.
 
-                Feet is a fork of OutRun by Tim Fraedrich. The application is provided under the GNU General Public License version 3 or later, without warranty, to the extent permitted by that license and applicable law. Nothing here limits the rights granted by that license. The license and attribution are included with the project.
+                Move Run is a fork of OutRun by Tim Fraedrich. The application is provided under the GNU General Public License version 3 or later, without warranty, to the extent permitted by that license and applicable law. Nothing here limits the rights granted by that license. The license and attribution are included with the project.
 
                 Source and license: https://github.com/christophersutton/OutRunFork
                 Support: support@wavelength.computer

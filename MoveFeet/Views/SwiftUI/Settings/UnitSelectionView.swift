@@ -60,7 +60,7 @@ struct UnitSelectionView<UnitType: Unit>: View {
                 Spacer()
                 if isSelected {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(Color.orAccent)
+                        .foregroundStyle(Color.orAccentLabel)
                         .fontWeight(.semibold)
                 }
             }

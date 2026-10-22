@@ -37,7 +37,7 @@ class HKImportObjectCell: UITableViewCell {
         font: .preferredFont(forTextStyle: .caption1, weight: .bold)
     )
     
-    let timeLabel = UILabel(font: .preferredFont(forTextStyle: .title3, weight: .heavy))
+    let timeLabel = UILabel(font: .moveStat(size: 20))
     
     let typeLabel = UILabel(
         textColor: .secondaryColor,
@@ -46,12 +46,12 @@ class HKImportObjectCell: UITableViewCell {
     )
     
     let distanceLabel = UILabel(
-        font: .preferredFont(forTextStyle: .title3, weight: .heavy),
+        font: .moveStat(size: 20),
         textAlignment: .right
     )
     
     let durationLabel = UILabel(
-        font: .preferredFont(forTextStyle: .title3, weight: .heavy),
+        font: .moveStat(size: 20),
         textAlignment: .right
     )
     

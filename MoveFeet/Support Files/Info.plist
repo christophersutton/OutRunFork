@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Move: Feet</string>
+	<string>Run</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -36,9 +36,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Feet reads workouts and measurements from Apple Health when you enable Health integration.</string>
+	<string>Move Run reads workouts and measurements from Apple Health when you enable Health integration.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Feet saves workouts and measurements to Apple Health when you enable Health integration.</string>
+	<string>Move Run saves workouts and measurements to Apple Health when you enable Health integration.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs your location to track workouts</string>
 	<key>NSLocationAlwaysUsageDescription</key>

@@ -31,7 +31,7 @@ class FloatingButton: UIButton {
         super.init(frame: .zero)
         
         self.backgroundColor = .backgroundColor
-        self.layer.cornerRadius = 15
+        self.layer.cornerRadius = 14
         
         self.setTitle(title.uppercased(), for: .normal)
         self.titleLabel?.snp.makeConstraints({ (make) in
