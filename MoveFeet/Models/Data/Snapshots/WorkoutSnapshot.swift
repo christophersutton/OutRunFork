@@ -11,6 +11,7 @@
 //  decouples the SwiftUI layer from CoreStore's threading model.
 //
 
+import CoreStore
 import Foundation
 
 struct WorkoutSnapshot: Identifiable, Hashable {
@@ -54,7 +55,10 @@ struct WorkoutSnapshot: Identifiable, Hashable {
         self.comment = workout._comment.value
         self.isUserModified = workout._isUserModified.value
         self.healthKitUUID = workout._healthKitUUID.value
-        self.hasRouteData = !workout._routeData.value.isEmpty
+        // `.value` eagerly creates a CoreStore wrapper for every related route sample. Read only
+        // relationship IDs instead, on this same queue so pending inserts/removals are respected too.
+        self.hasRouteData = !workout.cs_toRaw()
+            .objectIDs(forRelationshipNamed: workout._routeData.cs_keyPathString).isEmpty
         self.dayIdentifier = workout._dayIdentifier.value
     }
 }
