@@ -14,6 +14,7 @@
 		02D986E9FE1A788D2DF68AED /* WorkoutTimelineRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 310945F9B6C2BA4EF15E215A /* WorkoutTimelineRow.swift */; };
 		02FC87B0EA78F8D8740E9B11 /* EditWorkoutState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34556719D859341BB37E6DD7 /* EditWorkoutState.swift */; };
 		0563BD247295323AD3FD42A5 /* CoreStorePresentationSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 482E96B1483F125042919B4B /* CoreStorePresentationSnapshotTests.swift */; };
+		FE10210000000000000001B1 /* WorkoutSnapshotRoutePresenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10210000000000000000B1 /* WorkoutSnapshotRoutePresenceTests.swift */; };
 		07BE6791C22C708724B7A059 /* WorkoutEditSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A467FF576C5E482C1FFD0B /* WorkoutEditSnapshot.swift */; };
 		111842888F5A9AB54CD3CF7A /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83409E6DA8392FBB7CBC324 /* MainTabView.swift */; };
 		12C0BFFB7D880F9BF456CE53 /* WorkoutDetailSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92D1CAE9256DFED51A31E5F /* WorkoutDetailSupport.swift */; };
@@ -468,6 +469,7 @@
 		3F35FB551FC0CA6FB8E06726 /* RouteMapView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RouteMapView.swift; path = MoveFeet/Views/SwiftUI/RouteMapView.swift; sourceTree = "<group>"; };
 		423F2493BA9FDAF929D69067 /* Pods_MoveFeet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MoveFeet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		482E96B1483F125042919B4B /* CoreStorePresentationSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CoreStorePresentationSnapshotTests.swift; sourceTree = "<group>"; };
+		FE10210000000000000000B1 /* WorkoutSnapshotRoutePresenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSnapshotRoutePresenceTests.swift; sourceTree = "<group>"; };
 		527830B391FBD6E449D2B281 /* PolicyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PolicyView.swift; path = MoveFeet/Views/SwiftUI/PolicyView.swift; sourceTree = "<group>"; };
 		58A3B5D27FAE44448206DBB0 /* ContributorsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContributorsView.swift; path = MoveFeet/Views/SwiftUI/Settings/ContributorsView.swift; sourceTree = "<group>"; };
 		5BB197FB483D98436A1C4E74 /* UIApplication+Scene.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIApplication+Scene.swift"; path = "MoveFeet/Views/SwiftUI/Shell/UIApplication+Scene.swift"; sourceTree = "<group>"; };
@@ -1111,6 +1113,7 @@
 				22DD15A8280C5CCF002CDB45 /* MapImageRenderSuspensionTests.swift */,
 				22DD15B0280C5CD2002CDB45 /* CoreStoreTempConversionThreadingTests.swift */,
 				482E96B1483F125042919B4B /* CoreStorePresentationSnapshotTests.swift */,
+				FE10210000000000000000B1 /* WorkoutSnapshotRoutePresenceTests.swift */,
 			);
 			path = UnitTests;
 			sourceTree = SOURCE_ROOT;
@@ -1741,6 +1744,7 @@
 				22DD15A9280C5CCF002CDB45 /* MapImageRenderSuspensionTests.swift in Sources */,
 				22DD15B1280C5CD2002CDB45 /* CoreStoreTempConversionThreadingTests.swift in Sources */,
 				0563BD247295323AD3FD42A5 /* CoreStorePresentationSnapshotTests.swift in Sources */,
+				FE10210000000000000001B1 /* WorkoutSnapshotRoutePresenceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
